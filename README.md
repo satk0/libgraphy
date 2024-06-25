@@ -1,2 +1,2 @@
-# libgraphy
-LibGraphy - Directed Graph Library Project
+# LibGraphy
+Directed Graph Library Project
