@@ -17,8 +17,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src"]
+#[tool.hatch.build.targets.wheel]
+#packages = ["libgraphy"]
 
 
 [project.urls]
