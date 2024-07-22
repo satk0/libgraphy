@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, Any, Self
+from copy import deepcopy
 try:
     import graphviz as gv
 except ImportError:
@@ -11,10 +12,38 @@ except ImportError:
 
 
 class Vertex:
-    def __init__(self, id: int, weight: int = 0) -> None:
-        self.id: int = id
-        self.neighbors: list[int] =  []
-        self.weight: int = weight
+    def __init__(self, name: Any, value: Any = 0) -> None:
+        self.graph: Graph | None = None
+        self.name: Any = name
+        self.neighbors: list[Self] =  []
+        self.value: int = value
+
+    def isConnected(self, vertex: Self) -> bool:
+        return vertex in self.neighbors
+
+
+    # assign and add a neighbor to the current vertex (+= sign)
+    def __iadd__(self, vertex: Self) -> Self:
+        self.neighbors.append(vertex)
+        return self
+
+    # add a neighbor to the current vertex (+ sign)
+    def __add__(self, vertex: Self) -> Self:
+        v: Self = deepcopy(self)
+        v.neighbors.append(vertex)
+        return v
+
+    # get i-th neighbor of the current vertex
+    def __getitem__(self, key: int) -> Self:
+        return self.neighbors[key]
+
+    # add i-th neighbor of the current vertex
+    def __setitem__(self, key: int, value: Self) -> None:
+        self.neighbors[key] = value
+
+    # delete i-th neighbor of the current vertex
+    def __delitem__(self, key: int) -> None:
+        del self.neighbors[key]
 
 
 class Edge:
@@ -29,7 +58,7 @@ class Graph:
         self.vertices: Dict[int, Vertex] = {}
         self.edges: list[Edge] = []
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
 
         repr_txt += '{'
@@ -56,7 +85,7 @@ class Graph:
         self.vertices[destination].neighbors.append(source)
 
 
-    def _repr_svg_(self):
+    def _repr_svg_(self) -> str | None:
         if not ipds:
             print("No IPython imported")
             return
@@ -75,7 +104,7 @@ class Graph:
 
         ipds.display_svg(g)
 
-    def _repr_png_(self):
+    def _repr_png_(self) -> str | None:
         if not ipds:
             print("No IPython imported")
             return
@@ -94,7 +123,7 @@ class Graph:
 
         ipds.display_png(g)
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         latex_txt = r"$$\begin{gathered}" + '\n'
 
         latex_txt += "Vertices:"
