@@ -10,6 +10,8 @@ try:
 except ImportError:
     ipds = None
 
+from .multidispatch import multidispatch
+
 
 class Vertex:
     def __init__(self, name: Any, value: Any = 0) -> None:
@@ -37,7 +39,7 @@ class Vertex:
     def __getitem__(self, key: int) -> Self:
         return self.neighbors[key]
 
-    # add i-th neighbor of the current vertex
+    # change i-th neighbor of the current vertex
     def __setitem__(self, key: int, value: Self) -> None:
         self.neighbors[key] = value
 
@@ -65,8 +67,65 @@ class Edge:
 
 class Graph:
     def __init__(self) -> None:
-        self.vertices: Dict[int, Vertex] = {}
+        self.vertices: list[Vertex] = []
         self.edges: list[Edge] = []
+
+    # get i-th vertex of the graph
+    def __getitem__(self, key: int) -> Vertex:
+        return self.vertices[key]
+
+    # change i-th vertex in the graph
+    def __setitem__(self, key: int, value: Vertex) -> None:
+        neighbors = self.vertices[key].neighbors
+        self.vertices[key] = value
+        self.vertices[key].neighbors = neighbors
+
+    # delete i-th vertex of the graph
+    def __delitem__(self, key: int) -> None:
+        del self.vertices[key]
+
+    # assign and add a vertex to the graph (+= sign)
+    @multidispatch(Vertex)
+    def __iadd__(self, vertex: Vertex) -> Self:
+        vertex.graph = self
+        self.vertices.append(vertex)
+        return self
+
+    @multidispatch(Edge)
+    def __iadd__(self, edge: Edge) -> Self:
+        edge.predecessor.graph = self
+        edge.successor.graph = self
+
+        edge.predecessor += edge.successor
+        edge.successor += edge.predecessor
+
+        edge.graph = self
+        self.edges.append(edge)
+        return self
+
+    # add a neighbor to the current vertex (+ sign)
+    @multidispatch(Vertex)
+    def __add__(self, vertex: Vertex) -> Self:
+        g: Self = deepcopy(self)
+
+        vertex.graph = self
+        g.vertices.append(vertex)
+        return g
+
+    @multidispatch(Edge)
+    def __add__(self, edge: Edge) -> Self:
+        g: Self = deepcopy(self)
+
+        edge.predecessor.graph = self
+        edge.successor.graph = self
+
+        edge.predecessor += edge.successor
+        edge.successor += edge.predecessor
+
+        edge.graph = self
+
+        g.edges.append(edge)
+        return self
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
@@ -139,11 +198,11 @@ class Graph:
         latex_txt += "Vertices:"
         latex_txt += " \\\\ \n"
 
-        latex_txt += "\{"
+        latex_txt += r"\{"
         for v in self.vertices.keys():
             latex_txt += f'{v},'
         latex_txt = latex_txt.removesuffix(',')
-        latex_txt += "\} \\\\ \n"
+        latex_txt += r"\} \\\\ \n"
 
         latex_txt += "Edges:"
         latex_txt += " \\\\ \n"
