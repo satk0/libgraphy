@@ -16,10 +16,26 @@ Directed Graph Library Project
 1. Create a new virtual environment in a new directory.
 2. install libgraphy with:
 
-    pip install libgraphy
+```bash
+pip install libgraphy
+```
+
 
 ## Using Jupyter:
 
 1. Create a new virtual environment (kernel).
 2. Make any change to the codebase.
 3. Reinstall libgraphy (as for Python) and **restart the kernel**.
+
+# Tests
+
+Run test via:
+```bash
+pytest
+```
+
+Check test coverage with:
+```bash
+pytest --cov=libgraphy
+```
+

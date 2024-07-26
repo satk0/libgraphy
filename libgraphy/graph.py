@@ -47,10 +47,20 @@ class Vertex:
 
 
 class Edge:
-    def __init__(self, source: int, destination: int, weight: int = 0) -> None:
-        self.source: int = source
-        self.destination: int = destination
-        self.weight: int = weight
+    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 0) -> None:
+        self.graph: Graph | None = None
+        self.predecessor: Vertex = precedessor
+        self.successor: Vertex = successor
+        self.value: Any = value
+
+    def __imul__(self, scalar: int | float) -> Self:
+        self.value *= scalar
+        return self
+
+    def __mul__(self, scalar: int | float) -> Self:
+        e: Self = deepcopy(self)
+        e.value *= scalar
+        return e
 
 
 class Graph:
