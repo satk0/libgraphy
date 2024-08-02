@@ -150,6 +150,7 @@ class TestGraph(unittest.TestCase):
         assert dbg.source == GRAPHVIZ_SOURCE
 
     def test_graph_graphviz_import_error(self):
+        gv = sys.modules['graphviz']
         self.monkeypatch.setitem(sys.modules, 'graphviz', None)
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
@@ -168,13 +169,18 @@ class TestGraph(unittest.TestCase):
 
         g += e1
 
-        out = g._repr_png_()
+        out_png = g._repr_png_()
+        out_svg = g._repr_svg_()
 
-        # comparing type suffices
-        assert type(out) == type(ImportError())
+        # comparing types suffices
+        assert type(out_png) == type(ImportError())
+        assert type(out_svg) == type(ImportError())
+
+        self.monkeypatch.setitem(sys.modules, 'graphviz', gv)
 
     def test_graph_ipython_import_error(self):
-        #self.monkeypatch.setitem(sys.modules, 'ipython', None)
+        ipd = sys.modules['IPython']
+        self.monkeypatch.setitem(sys.modules, 'IPython', None)
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
 
@@ -192,7 +198,11 @@ class TestGraph(unittest.TestCase):
 
         g += e1
 
-        out = g._repr_png_()
+        out_png = g._repr_png_()
+        out_svg = g._repr_svg_()
 
-        assert type(out) != type(ImportError())
+        assert type(out_png) == type(ImportError())
+        assert type(out_svg) == type(ImportError())
+
+        self.monkeypatch.setitem(sys.modules, 'IPython', ipd)
 

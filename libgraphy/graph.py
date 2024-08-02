@@ -150,6 +150,7 @@ class Graph:
     class _DebugGraphviz():
         source: str = ""
 
+    # dbg is passed as a object reference
     def _repr_svg_(self, dbg: _DebugGraphviz | None = None) -> ImportError | None:
         if not ipds:
             print("No IPython installed")
@@ -191,8 +192,6 @@ class Graph:
         for e in self.edges:
             g.edge(str(e.predecessor), str(e.successor), label=str(e.value))
 
-        #print("graphviz")
-        #print(sys.modules["graphviz"])
         if dbg:
             dbg.source = g.source
 
