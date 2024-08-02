@@ -8,6 +8,7 @@ Directed Graph Library Project
 * [ ] - Graph class
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
+* [ ] - Djikstra Algorithm
 
 # Debugging
 
@@ -16,10 +17,7 @@ Directed Graph Library Project
 1. Create a new virtual environment in a new directory.
 2. install libgraphy with:
 
-```bash
-pip install libgraphy
-```
-
+    pip install libgraphy
 
 ## Using Jupyter:
 
@@ -30,12 +28,14 @@ pip install libgraphy
 # Tests
 
 Run test via:
-```bash
-pytest
-```
+
+    python -m pytest
 
 Check test coverage with:
-```bash
-pytest --cov=libgraphy
-```
+
+    python -m pytest --cov=libgraphy
+
+to HTML (in `htmlcov` directory):
+
+    python -m pytest --cov=libgraphy --cov-report=html
 

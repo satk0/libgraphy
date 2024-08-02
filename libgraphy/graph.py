@@ -1,5 +1,7 @@
 from typing import Dict, Any, Self
 from copy import deepcopy
+import sys
+
 try:
     import graphviz as gv
 except ImportError:
@@ -10,8 +12,7 @@ try:
 except ImportError:
     ipds = None
 
-from .multidispatch import multidispatch
-
+from .decorators.multidispatch import multidispatch
 
 class Vertex:
     def __init__(self, name: Any, value: Any = 0) -> None:
@@ -23,6 +24,8 @@ class Vertex:
     def isConnected(self, vertex: Self) -> bool:
         return vertex in self.neighbors
 
+    def __str__(self) -> str:
+        return str(self.name)
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Self) -> Self:
@@ -108,7 +111,7 @@ class Graph:
     def __add__(self, vertex: Vertex) -> Self:
         g: Self = deepcopy(self)
 
-        vertex.graph = self
+        vertex.graph = g
         g.vertices.append(vertex)
         return g
 
@@ -122,7 +125,7 @@ class Graph:
         edge.predecessor += edge.successor
         edge.successor += edge.predecessor
 
-        edge.graph = self
+        edge.graph = g
 
         g.edges.append(edge)
         return self
@@ -131,66 +134,70 @@ class Graph:
         repr_txt = "Vertices:\n"
 
         repr_txt += '{'
-        for v in self.vertices.keys():
-            repr_txt += f'{v}, '
+        for v in self.vertices:
+            repr_txt += f'{str(v)}, '
 
         repr_txt = repr_txt.removesuffix(', ')
         repr_txt += '}\n'
 
         repr_txt += "Edges:\n"
         for e in self.edges:
-            repr_txt += f"w_{e.source}{e.destination} = {e.weight}"
+            repr_txt += f"w_{str(e.predecessor)}{str(e.successor)} = {e.value}"
 
         return repr_txt
 
+    # This class is used only for tests
+    class _DebugGraphviz():
+        source: str = ""
 
-    def add_vertex(self, id: int) -> None:
-        self.vertices[id] = Vertex(id)
-
-    def add_edge(self, source: int, destination: int, weight: int) -> None:
-        self.edges.append(Edge(source, destination, weight))
-
-        self.vertices[source].neighbors.append(destination)
-        self.vertices[destination].neighbors.append(source)
-
-
-    def _repr_svg_(self) -> str | None:
+    def _repr_svg_(self, dbg: _DebugGraphviz | None = None) -> ImportError | None:
         if not ipds:
-            print("No IPython imported")
-            return
+            print("No IPython installed")
+            return ImportError()
 
         if not gv:
             print("No GraphViz installed")
-            return
+            return ImportError()
 
         g = gv.Digraph('G')
 
-        for _, v in self.vertices.items():
-            g.node(str(v.id))
+        for v in self.vertices:
+            g.node(str(v))
 
         for e in self.edges:
-            g.edge(str(e.source), str(e.destination), label=str(e.weight))
+            g.edge(str(e.predecessor), str(e.successor), label=str(e.value))
+
+        if dbg:
+            dbg.source = g.source
 
         ipds.display_svg(g)
 
-    def _repr_png_(self) -> str | None:
+        return None
+
+    def _repr_png_(self, dbg: _DebugGraphviz | None = None) -> ImportError | None:
         if not ipds:
-            print("No IPython imported")
-            return
+            print("No IPython installed")
+            return ImportError()
 
         if not gv:
             print("No GraphViz installed")
-            return
+            return ImportError()
 
         g = gv.Digraph('G')
 
-        for _, v in self.vertices.items():
-            g.node(str(v.id))
+        for v in self.vertices:
+            g.node(str(v))
 
         for e in self.edges:
-            g.edge(str(e.source), str(e.destination), label=str(e.weight))
+            g.edge(str(e.predecessor), str(e.successor), label=str(e.value))
+
+        #print("graphviz")
+        #print(sys.modules["graphviz"])
+        if dbg:
+            dbg.source = g.source
 
         ipds.display_png(g)
+        return None
 
     def _repr_latex_(self) -> str:
         latex_txt = r"$$\begin{gathered}" + '\n'
@@ -199,16 +206,16 @@ class Graph:
         latex_txt += " \\\\ \n"
 
         latex_txt += r"\{"
-        for v in self.vertices.keys():
-            latex_txt += f'{v},'
+        for v in self.vertices:
+            latex_txt += f'{str(v)},'
         latex_txt = latex_txt.removesuffix(',')
-        latex_txt += r"\} \\\\ \n"
+        latex_txt += r"\} \\\\" + "\n"
 
         latex_txt += "Edges:"
         latex_txt += " \\\\ \n"
 
         for e in self.edges:
-            latex_txt += r"w_{%d%d} = %d \\" % (e.source, e.destination, e.weight) + '\n'
+            latex_txt += r"w_{%s%s} = %s \\" % (str(e.predecessor), str(e.successor), e.value) + '\n'
 
         latex_txt += r"\end{gathered}$$"
 
