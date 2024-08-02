@@ -31,6 +31,8 @@ class TestGraph(unittest.TestCase):
         v1 += v3
 
         assert v1.neighbors == [v2, v3]
+        assert v1.isConnected(v2)
+        assert v1[1] == v3
 
         del v1[0]
         v1[0] = v2
@@ -54,36 +56,53 @@ class TestGraph(unittest.TestCase):
     def test_graph_vertex_add(self):
         v1 = Vertex(1)
         v2 = Vertex(2)
+        v3 = Vertex(3)
 
         g = Graph()
 
         g += v1
         g += v2
+        g += v3
 
-        assert g.vertices == [v1, v2]
+        assert g.vertices == [v1, v2, v3]
         assert g[0] == v1
         assert g[0].graph == g
 
         del g[0]
-        assert g[0] == v2
+        g[0] = v1
+        assert g[0] == v1
+
+        f = g + v2
+        assert len(f.vertices) == 3
+        assert f.vertices[0].name == v1.name
+        assert f.vertices[1].name == v3.name
+        assert f.vertices[2] == v2
 
     def test_graph_edge_add(self):
         v1 = Vertex(1)
         v2 = Vertex(2)
 
-        e = Edge(v1, v2, 10)
+        e1 = Edge(v1, v2, 10)
 
         g = Graph()
 
         g += v1
         g += v2
 
-        g += e
+        g += e1
 
-        assert g.edges == [e]
-        assert e.graph == g
-        assert e.predecessor.neighbors == [e.successor]
-        assert e.successor.neighbors == [e.predecessor]
+        assert g.edges == [e1]
+        assert e1.graph == g
+        assert e1.predecessor.neighbors == [e1.successor]
+        assert e1.successor.neighbors == [e1.predecessor]
+
+        e2 = Edge(v1, v2, 10)
+        f = g + e2
+
+        assert len(f.edges) == 2
+        assert f.edges[1] == e2
+        assert f.edges[0].graph == f
+        assert e2.graph == f
 
     @staticmethod
     def repr_init_graph():

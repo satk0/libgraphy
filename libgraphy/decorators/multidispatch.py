@@ -2,7 +2,7 @@ import functools
 
 # Makes overloading methods in python possible
 # see: https://stackoverflow.com/a/25344433
-def multidispatch(*types):
+def multidispatch(*types): # pragma: no cover
     def register(function):
         name = function.__name__
         mm = multidispatch.registry.get(name)

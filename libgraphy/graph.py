@@ -119,8 +119,8 @@ class Graph:
     def __add__(self, edge: Edge) -> Self:
         g: Self = deepcopy(self)
 
-        edge.predecessor.graph = self
-        edge.successor.graph = self
+        edge.predecessor.graph = g
+        edge.successor.graph = g
 
         edge.predecessor += edge.successor
         edge.successor += edge.predecessor
@@ -128,7 +128,7 @@ class Graph:
         edge.graph = g
 
         g.edges.append(edge)
-        return self
+        return g
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
