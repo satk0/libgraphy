@@ -16,9 +16,9 @@ Directed Graph Library Project
 
 1. Create a new virtual environment in a new directory.
 2. install libgraphy with:
-
-    pip install libgraphy
-
+```bash
+pip install <PROJECT_DIRECTORY_PATH>
+```
 ## Using Jupyter:
 
 1. Create a new virtual environment (kernel).
