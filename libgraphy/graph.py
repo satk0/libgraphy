@@ -1,6 +1,11 @@
-from typing import Dict, Any, Self
-from copy import deepcopy
-import sys
+from __future__ import annotations
+
+__all__ = ["Graph"]
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: # pragma: no cover
+    from .vertex import Vertex
+    from .edge import Edge
 
 try:
     import graphviz as gv
@@ -12,61 +17,9 @@ try:
 except ImportError:
     ipds = None
 
-from .decorators.multidispatch import multidispatch
-
-class Vertex:
-    def __init__(self, name: Any, value: Any = 0) -> None:
-        self.graph: Graph | None = None
-        self.name: Any = name
-        self.neighbors: list[Self] =  []
-        self.value: int = value
-
-    def isConnected(self, vertex: Self) -> bool:
-        return vertex in self.neighbors
-
-    def __str__(self) -> str:
-        return str(self.name)
-
-    # assign and add a neighbor to the current vertex (+= sign)
-    def __iadd__(self, vertex: Self) -> Self:
-        self.neighbors.append(vertex)
-        return self
-
-    # add a neighbor to the current vertex (+ sign)
-    def __add__(self, vertex: Self) -> Self:
-        v: Self = deepcopy(self)
-        v.neighbors.append(vertex)
-        return v
-
-    # get i-th neighbor of the current vertex
-    def __getitem__(self, key: int) -> Self:
-        return self.neighbors[key]
-
-    # change i-th neighbor of the current vertex
-    def __setitem__(self, key: int, value: Self) -> None:
-        self.neighbors[key] = value
-
-    # delete i-th neighbor of the current vertex
-    def __delitem__(self, key: int) -> None:
-        del self.neighbors[key]
-
-
-class Edge:
-    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 0) -> None:
-        self.graph: Graph | None = None
-        self.predecessor: Vertex = precedessor
-        self.successor: Vertex = successor
-        self.value: Any = value
-
-    def __imul__(self, scalar: int | float) -> Self:
-        self.value *= scalar
-        return self
-
-    def __mul__(self, scalar: int | float) -> Self:
-        e: Self = deepcopy(self)
-        e.value *= scalar
-        return e
-
+# TODO:
+# - raise instead of return errors !! (check networkx errors implementation)
+# - fix vertex, edge objects addition (like in list objects)
 
 class Graph:
     def __init__(self) -> None:
@@ -87,48 +40,11 @@ class Graph:
     def __delitem__(self, key: int) -> None:
         del self.vertices[key]
 
-    # assign and add a vertex to the graph (+= sign)
-    @multidispatch(Vertex)
-    def __iadd__(self, vertex: Vertex) -> Self:
-        vertex.graph = self
-        self.vertices.append(vertex)
-        return self
+    def __iadd__(self, element: Vertex | Edge) -> Graph:
+        return element._graph__iadd__(self)
 
-    @multidispatch(Edge)
-    def __iadd__(self, edge: Edge) -> Self:
-        edge.predecessor.graph = self
-        edge.successor.graph = self
-
-        edge.predecessor += edge.successor
-        edge.successor += edge.predecessor
-
-        edge.graph = self
-        self.edges.append(edge)
-        return self
-
-    # add a neighbor to the current vertex (+ sign)
-    @multidispatch(Vertex)
-    def __add__(self, vertex: Vertex) -> Self:
-        g: Self = deepcopy(self)
-
-        vertex.graph = g
-        g.vertices.append(vertex)
-        return g
-
-    @multidispatch(Edge)
-    def __add__(self, edge: Edge) -> Self:
-        g: Self = deepcopy(self)
-
-        edge.predecessor.graph = g
-        edge.successor.graph = g
-
-        edge.predecessor += edge.successor
-        edge.successor += edge.predecessor
-
-        edge.graph = g
-
-        g.edges.append(edge)
-        return g
+    def __add__(self, element: Vertex | Edge) -> Graph:
+        return element._graph__add__(self)
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"

@@ -3,7 +3,7 @@ import unittest
 from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
-from ..graph import Vertex, Edge, Graph
+from libgraphy import Vertex, Edge, Graph
 
 import sys
 
@@ -11,98 +11,6 @@ class TestGraph(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
 
-    def test_vertex_add(self):
-        v1 = Vertex(1)
-        v2 = Vertex("2")
-
-        v1 += v2
-        v3 = v2 + v1
-
-        assert v1.neighbors == [v2]
-        assert v3.neighbors == [v1]
-        assert v2 != v3
-
-    def test_vertex_access(self):
-        v1 = Vertex(1)
-        v2 = Vertex(2)
-        v3 = Vertex(3)
-
-        v1 += v2
-        v1 += v3
-
-        assert v1.neighbors == [v2, v3]
-        assert v1.isConnected(v2)
-        assert v1[1] == v3
-
-        del v1[0]
-        v1[0] = v2
-
-        assert v1.neighbors == [v2]
-
-    def test_edge_mult(self):
-        v1 = Vertex(1)
-        v2 = Vertex(2)
-
-        e1 = Edge(v1, v2, 10)
-        e1 *= 10
-
-        assert e1.value == 100
-
-        e2 = e1 * 10
-
-        assert e2.value == 1000 
-        assert e1 != e2
-
-    def test_graph_vertex_add(self):
-        v1 = Vertex(1)
-        v2 = Vertex(2)
-        v3 = Vertex(3)
-
-        g = Graph()
-
-        g += v1
-        g += v2
-        g += v3
-
-        assert g.vertices == [v1, v2, v3]
-        assert g[0] == v1
-        assert g[0].graph == g
-
-        del g[0]
-        g[0] = v1
-        assert g[0] == v1
-
-        f = g + v2
-        assert len(f.vertices) == 3
-        assert f.vertices[0].name == v1.name
-        assert f.vertices[1].name == v3.name
-        assert f.vertices[2] == v2
-
-    def test_graph_edge_add(self):
-        v1 = Vertex(1)
-        v2 = Vertex(2)
-
-        e1 = Edge(v1, v2, 10)
-
-        g = Graph()
-
-        g += v1
-        g += v2
-
-        g += e1
-
-        assert g.edges == [e1]
-        assert e1.graph == g
-        assert e1.predecessor.neighbors == [e1.successor]
-        assert e1.successor.neighbors == [e1.predecessor]
-
-        e2 = Edge(v1, v2, 10)
-        f = g + e2
-
-        assert len(f.edges) == 2
-        assert f.edges[1] == e2
-        assert f.edges[0].graph == f
-        assert e2.graph == f
 
     @staticmethod
     def repr_init_graph():
@@ -174,7 +82,7 @@ class TestGraph(unittest.TestCase):
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
 
-        from ..graph import Vertex, Edge, Graph
+        from .. import Vertex, Edge, Graph
 
         v1 = Vertex(1)
         v2 = Vertex(2)
@@ -203,7 +111,7 @@ class TestGraph(unittest.TestCase):
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
 
-        from ..graph import Vertex, Edge, Graph
+        from .. import Vertex, Edge, Graph
 
         v1 = Vertex(1)
         v2 = Vertex(2)
