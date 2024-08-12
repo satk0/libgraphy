@@ -4,6 +4,19 @@ import pytest
 from libgraphy import Vertex, Graph
 
 class TestVertex(unittest.TestCase):
+    def test__add__(self):
+        v1 = Vertex(1)
+        v2 = Vertex()
+        v3 = Vertex()
+
+        v1 = v1 + v2
+        v4 = v1 + v3
+
+        assert len(v1.neighbors) == 1
+        assert v1.neighbors[0] == v4.neighbors[0]
+        assert v4.neighbors[1] == v3
+
+
     def test_vertex_add(self):
         v1 = Vertex(1)
         v2 = Vertex("2")
