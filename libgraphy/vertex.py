@@ -16,10 +16,13 @@ class Vertex:
         self.graph: Graph | None = graph
 
     def isConnected(self, vertex: Self) -> bool:
-        return vertex in self.neighbors
+        return vertex in self.neighbors or self in vertex.neighbors
 
     def __str__(self) -> str:
-        return str(self.name)
+        if self.name:
+            return str(self.name)
+        else:
+            return str(id(self))
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Self) -> Self:
