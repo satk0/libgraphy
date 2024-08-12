@@ -11,6 +11,22 @@ class TestGraph(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
 
+    def test__graph__item__(self):
+        v0 = Vertex(1)
+        v2 = Vertex(2)
+
+        g = Graph()
+
+        g += v0
+        g += v2
+
+        v = g[0]
+        del g[0]
+        g[0] = v
+
+        assert g.vertices == [v0]
+        print(g._get_vertices_ids)
+        assert g._get_vertices_ids == [0]
 
     @staticmethod
     def repr_init_graph():

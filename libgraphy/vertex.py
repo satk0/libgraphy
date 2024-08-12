@@ -9,11 +9,17 @@ if TYPE_CHECKING: # pragma: no cover
 from copy import deepcopy
 
 class Vertex:
+    __id = 0
+
     def __init__(self, name: Any = "", value: Any = 0, graph: Graph | None = None) -> None:
         self.name: Any = name
         self.neighbors: list[Self] | list = []
         self.value: int = value
         self.graph: Graph | None = graph
+
+        # to uniquely identify vertex
+        self._id = Vertex.__id
+        Vertex.__id += 1
 
     def isConnected(self, vertex: Self) -> bool:
         return vertex in self.neighbors or self in vertex.neighbors
@@ -22,7 +28,7 @@ class Vertex:
         if self.name:
             return str(self.name)
         else:
-            return str(id(self))
+            return str(self._id)
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Self) -> Self:
@@ -31,10 +37,13 @@ class Vertex:
 
     # add a neighbor to the current vertex (+ sign)
     def __add__(self, vertex: Self) -> Vertex:
-        v: Vertex = Vertex(self.name, self.value, self.graph)
+        v: Vertex = self.copy()
         v.neighbors = [* self.neighbors]
         v.neighbors.append(vertex)
         return v
+
+    def copy(self) -> Vertex:
+        return Vertex(self.name, self.value, self.graph)
 
     # get i-th neighbor of the current vertex
     def __getitem__(self, key: int) -> Self:
@@ -56,10 +65,12 @@ class Vertex:
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:
-        g: Graph = deepcopy(graph)
+        g: Graph = graph.copy()
+        g.vertices = [Vertex(v.name, v.value, g) for v in g.vertices]
 
-        self.graph = g
-        g.vertices.append(self)
+        v = self.copy()
+        v.graph = g
+        g.vertices.append(v)
         return g
 
     # ***************************

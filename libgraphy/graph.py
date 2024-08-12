@@ -46,6 +46,19 @@ class Graph:
     def __add__(self, element: Vertex | Edge) -> Graph:
         return element._graph__add__(self)
 
+    def copy(self) -> Graph:
+        g = Graph()
+        g.vertices = [* self.vertices]
+        g.edges = [* self.edges]
+
+        return g
+
+    def __mult__(self, scalar: int | float) -> Graph:
+        g = Graph()
+        g.edges = [Edge(e.predecessor, e.successor, e.value * scalar) for e in self.edges]
+        g.vertices = [* self.vertices]
+        return g
+
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
 
@@ -135,4 +148,10 @@ class Graph:
         latex_txt += r"\end{gathered}$$"
 
         return latex_txt
+
+    def _get_vertices_ids(self) -> list[int] | None:
+        [e._id for e in self.edges]
+
+    def _get_edge_ids(self) -> list[int] | None:
+        [e._id for e in self.edges]
 
