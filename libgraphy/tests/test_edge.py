@@ -46,7 +46,7 @@ class TestEdge(unittest.TestCase):
         assert e1.predecessor.neighbors == [e1.successor]
         assert e1.predecessor.graph == g
         assert e1.successor.graph == g
-        assert e1.successor.neighbors == [e1.predecessor]
+        assert e1.successor.neighbors == []
 
     def test__graph__add__(self):
         v1 = Vertex(1)

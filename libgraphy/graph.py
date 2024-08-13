@@ -71,7 +71,7 @@ class Graph:
 
         repr_txt += "Edges:\n"
         for e in self.edges:
-            repr_txt += f"w_{str(e.predecessor)}{str(e.successor)} = {e.value}"
+            repr_txt += f"w_{str(e.predecessor)}{str(e.successor)} = {e.value}; "
 
         return repr_txt
 
@@ -80,14 +80,12 @@ class Graph:
         source: str = ""
 
     # dbg is passed as a object reference
-    def _repr_svg_(self, dbg: _DebugGraphviz | None = None) -> ImportError | None:
+    def _repr_svg_(self, dbg: _DebugGraphviz | None = None) -> ImportError:
         if not ipds:
-            print("No IPython installed")
-            return ImportError()
+            raise ImportError("No IPython installed")
 
         if not gv:
-            print("No GraphViz installed")
-            return ImportError()
+            raise ImportError("No GraphViz installed")
 
         g = gv.Digraph('G')
 
@@ -104,14 +102,12 @@ class Graph:
 
         return None
 
-    def _repr_png_(self, dbg: _DebugGraphviz | None = None) -> ImportError | None:
+    def _repr_png_(self, dbg: _DebugGraphviz | None = None) -> ImportError:
         if not ipds:
-            print("No IPython installed")
-            return ImportError()
+            raise ImportError("No IPython installed")
 
         if not gv:
-            print("No GraphViz installed")
-            return ImportError()
+            raise ImportError("No GraphViz installed")
 
         g = gv.Digraph('G')
 
@@ -148,10 +144,3 @@ class Graph:
         latex_txt += r"\end{gathered}$$"
 
         return latex_txt
-
-    def _get_vertices_ids(self) -> list[int] | None:
-        [e._id for e in self.edges]
-
-    def _get_edge_ids(self) -> list[int] | None:
-        [e._id for e in self.edges]
-

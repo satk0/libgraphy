@@ -25,8 +25,6 @@ class TestGraph(unittest.TestCase):
         g[0] = v
 
         assert g.vertices == [v0]
-        print(g._get_vertices_ids)
-        assert g._get_vertices_ids == [0]
 
     @staticmethod
     def repr_init_graph():
@@ -58,7 +56,7 @@ class TestGraph(unittest.TestCase):
         # use pytest --pdb
         # and then in shell: repr(g)
         # to fix this in future
-        REPR_RES = "Vertices:\n{1, 2, c}\nEdges:\nw_12 = 2w_c2 = -3w_1c = 3w_c1 = aa"
+        REPR_RES = "Vertices:\n{1, 2, c}\nEdges:\nw_12 = 2; w_c2 = -3; w_1c = 3; w_c1 = aa; "
 
         assert repr(g) == REPR_RES
 
@@ -112,12 +110,11 @@ class TestGraph(unittest.TestCase):
 
         g += e1
 
-        out_png = g._repr_png_()
-        out_svg = g._repr_svg_()
+        with pytest.raises(ImportError):
+            g._repr_png_()
+        with pytest.raises(ImportError):
+            g._repr_svg_()
 
-        # comparing types suffices
-        assert type(out_png) == type(ImportError())
-        assert type(out_svg) == type(ImportError())
 
         self.monkeypatch.setitem(sys.modules, 'graphviz', gv)
 
@@ -141,11 +138,11 @@ class TestGraph(unittest.TestCase):
 
         g += e1
 
-        out_png = g._repr_png_()
-        out_svg = g._repr_svg_()
+        with pytest.raises(ImportError):
+            g._repr_png_()
+        with pytest.raises(ImportError):
+            g._repr_svg_()
 
-        assert type(out_png) == type(ImportError())
-        assert type(out_svg) == type(ImportError())
 
         self.monkeypatch.setitem(sys.modules, 'IPython', ipd)
 

@@ -9,18 +9,14 @@ if TYPE_CHECKING: # pragma: no cover
 
 from copy import deepcopy
 
-class Edge:
-    __id = 0
+from .exception import LibgraphyError
 
+class Edge:
     def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 0, graph: Graph | None = None) -> None:
         self.predecessor: Vertex = precedessor
         self.successor: Vertex = successor
         self.value: Any = value
         self.graph: Graph | None = graph
-
-        # to uniquely identify vertex
-        self._id = Edge.__id
-        Edge.__id += 1
 
     def __imul__(self, scalar: int | float) -> Self:
         self.value *= scalar
@@ -37,34 +33,63 @@ class Edge:
 
     # don't move this !!
     def _graph__iadd__(self, graph: Graph) -> Graph:
+        if (self.predecessor.graph not in [None, graph]):
+            raise LibgraphyError("Predecessor belongs to a different graph")
+        if (self.successor.graph not in [None, graph]):
+            raise LibgraphyError("Successor belongs to a different graph")
+
+        for e in graph.edges:
+            if e.successor is self.successor and e.predecessor is self.predecessor:
+                raise LibgraphyError("Edge already exists")
+
+        if self.predecessor not in graph.vertices:
+            graph.vertices.append(self.predecessor)
+
+        if self.successor not in graph.vertices:
+            graph.vertices.append(self.successor)
+
         self.predecessor.graph = graph
         self.successor.graph = graph
 
+        # defines "self.successor" as neighbor
         self.predecessor += self.successor
-        self.successor += self.predecessor
 
         self.graph = graph
         graph.edges.append(self)
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:
-        g: Graph = graph.copy()
-        g.edges = [Edge(e.predecessor, e.successor, e.value, g) for e in g.edges]
+        if (self.predecessor.graph not in [None, graph]):
+            raise LibgraphyError("Predecessor belongs to a different graph")
+        if (self.successor.graph not in [None, graph]):
+            raise LibgraphyError("Successor belongs to a different graph")
 
-        e = self.copy()
+        for e in graph.edges:
+            if e.successor is self.successor and e.predecessor is self.predecessor:
+                raise LibgraphyError("Edge already exists")
 
-        e.predecessor = e.predecessor.copy()
-        e.successor = e.successor.copy()
+        graph.edges.append(self)
 
+        to_delete = 0
+        if self.predecessor not in graph.vertices:
+            graph.vertices.append(self.predecessor)
+            to_delete += 1
+
+        if self.successor not in graph.vertices:
+            graph.vertices.append(self.successor)
+            to_delete += 1
+
+        g: Graph = deepcopy(graph)
+
+        del graph.edges[-1]
+        for _ in range(to_delete):
+            del graph.vertices[-1]
+
+        e = g.edges[-1]
+        e.graph = g
         e.predecessor.graph = g
         e.successor.graph = g
-
         e.predecessor += e.successor
-        e.successor += e.predecessor
 
-        e.graph = g
-
-        g.edges.append(e)
         return g
-
 
