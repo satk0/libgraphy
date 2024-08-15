@@ -19,10 +19,10 @@ except ImportError:
 
 # TODO:
 # - raise instead of return errors !! (check networkx errors implementation)
-# - fix vertex, edge objects addition (like in list objects)
+# - fix vertex, edge objects addition
 
 class Graph:
-    def __init__(self) -> None:
+    def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
         self.edges: list[Edge] = []
 

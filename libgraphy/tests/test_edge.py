@@ -70,3 +70,8 @@ class TestEdge(unittest.TestCase):
             assert e.predecessor.name == correct_edges[i][0]
             assert e.successor.name == correct_edges[i][1]
             assert e.value == correct_edges[i][2]
+
+        # ensure nothing has been changed
+        assert g.edges == [e1]
+        assert g.vertices == [v1, v2]
+

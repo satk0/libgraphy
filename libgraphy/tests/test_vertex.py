@@ -148,6 +148,42 @@ class TestVertex(unittest.TestCase):
             assert v.value == 0
             assert v.graph == f
 
+        # make sure nothing has been changed on the original graph
+        assert g.vertices == [v0]
+
+    def test__graph__add__neighbors(self):
+        v0 = Vertex("a")
+        vertices = ["v2","v3","v4","v5"]
+        for v in vertices:
+            v0 += Vertex(v)
+
+        pre_neighbors = [* v0.neighbors]
+
+        g = Graph()
+        g += v0
+        f = g + v0.neighbors[0]
+        for i in range(1, len(v0.neighbors)):
+            f = f + v0.neighbors[i]
+
+        # only a -> v2 because with each "+" operation graph is deepcopied
+        assert len(f.edges) == 1
+
+        e = f.edges[-1]
+        p = e.predecessor
+        s = e.successor
+        assert p in f.vertices and s in f.vertices
+        assert s in p.neighbors
+        assert p.name == "a" and s.name == "v2"
+        assert p.graph is f and s.graph is f
+        assert e.graph is f
+
+        # Should not change original vertices
+        assert v0.neighbors == pre_neighbors
+        for i, n in enumerate(v0):
+            assert n.name == pre_neighbors[i].name
+            assert n.value == pre_neighbors[i].value
+            assert n.graph is None
+
     def test__graph__add__exception(self):
         v0 = Vertex()
 

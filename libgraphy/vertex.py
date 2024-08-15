@@ -106,6 +106,8 @@ class Vertex:
             del graph.edges[-1]
         
         g.vertices[-1].graph = g
+        for i in range(1, edges_added + 1):
+            g.edges[-i].graph = g
 
         return g
 

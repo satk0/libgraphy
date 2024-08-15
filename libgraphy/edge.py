@@ -81,14 +81,17 @@ class Edge:
 
         g: Graph = deepcopy(graph)
 
+        # Bring back
         del graph.edges[-1]
         for _ in range(to_delete):
             del graph.vertices[-1]
+        # **********
 
         e = g.edges[-1]
         e.graph = g
         e.predecessor.graph = g
         e.successor.graph = g
+
         e.predecessor += e.successor
 
         return g
