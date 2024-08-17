@@ -2,6 +2,7 @@ import unittest
 import pytest
 
 from libgraphy import Vertex, Edge, Graph
+from libgraphy.exception import LibgraphyError
 
 class TestEdge(unittest.TestCase):
     def test___mult__(self):
@@ -27,6 +28,15 @@ class TestEdge(unittest.TestCase):
         assert id(e) == prev_id
         assert e.value == 100
         assert [e.predecessor, e.successor] == prev_edge
+
+    def test_copy(self):
+        e = Edge(Vertex(), Vertex(), 34.23)
+
+        ecp = e.copy()
+
+        assert ecp.predecessor is e.predecessor 
+        assert ecp.successor is e.successor 
+        assert ecp.value is e.value 
 
     def test__graph__iadd__(self):
         v1 = Vertex(1)
@@ -59,6 +69,36 @@ class TestEdge(unittest.TestCase):
             assert e.value == correct_edges[i][2]
             assert s in p.neighbors and p not in s.neighbors
             assert p.graph is g and s.graph is g and e.graph is g
+
+    def test__graph__iadd__exceptions(self):
+        v0 = Vertex(1)
+        v1 = Vertex(2)
+
+        edge0 = Edge(v0, v1, 10)
+        edge1 = Edge(v1, v0, -1)
+        edge2 = Edge(Vertex(), Vertex(), 0)
+
+        g0 = Graph()
+        g1 = Graph()
+
+        g0 += v0
+        with pytest.raises(LibgraphyError) as e:
+            g1 += edge0
+        assert str(e.value) == "Predecessor belongs to a different graph"
+
+        with pytest.raises(LibgraphyError) as e:
+            g1 += edge1
+        assert str(e.value) == "Successor belongs to a different graph"
+
+        g0 += edge0
+        with pytest.raises(LibgraphyError) as e:
+            g0 += edge0 
+        assert str(e.value) == "Edge already exists"
+
+        g0 += edge2
+        with pytest.raises(LibgraphyError) as e:
+            g1 += edge2 
+        assert str(e.value) == "Edge belongs to a different graph"
 
     def test__graph__add__(self):
         v1 = Vertex(1)
@@ -97,4 +137,34 @@ class TestEdge(unittest.TestCase):
         assert e1.graph is None and e2.graph is None
         assert g.vertices == [v1, v2]
         assert v1.graph is g and v2.graph is g
+
+    def test__graph__add__exceptions(self):
+        v0 = Vertex(1)
+        v1 = Vertex(2)
+
+        edge0 = Edge(v0, v1, 10)
+        edge1 = Edge(v1, v0, -1)
+        edge2 = Edge(Vertex(), Vertex(), 0)
+
+        g0 = Graph()
+        g1 = Graph()
+
+        g0 += v0
+        with pytest.raises(LibgraphyError) as e:
+            g1 = g1 + edge0
+        assert str(e.value) == "Predecessor belongs to a different graph"
+
+        with pytest.raises(LibgraphyError) as e:
+            g1 = g1 + edge1
+        assert str(e.value) == "Successor belongs to a different graph"
+
+        g0 += edge0
+        with pytest.raises(LibgraphyError) as e:
+            g0 = g0 + edge0 
+        assert str(e.value) == "Edge already exists"
+
+        g0 += edge2
+        with pytest.raises(LibgraphyError) as e:
+            g1 = g1 + edge2 
+        assert str(e.value) == "Edge belongs to a different graph"
 

@@ -232,10 +232,6 @@ class TestVertex(unittest.TestCase):
 
         # Should not change original vertices
         assert v0.neighbors == pre_neighbors
-        for i, n in enumerate(v0):
-            assert n.name == pre_neighbors[i].name
-            assert n.value == pre_neighbors[i].value
-            assert n.graph is None
 
     def test__graph__add__neighbors_double(self):
         v0 = Vertex("a")

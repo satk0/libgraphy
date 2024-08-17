@@ -33,14 +33,17 @@ class Edge:
 
     # don't move this !!
     def _graph__iadd__(self, graph: Graph) -> Graph:
+        # Don't change the order of errors !!
+        for e in graph.edges:
+            if e.successor is self.successor and e.predecessor is self.predecessor:
+                raise LibgraphyError("Edge already exists")
+
+        if self.graph is not None:
+            raise LibgraphyError("Edge belongs to a different graph")
         if (self.predecessor.graph not in [None, graph]):
             raise LibgraphyError("Predecessor belongs to a different graph")
         if (self.successor.graph not in [None, graph]):
             raise LibgraphyError("Successor belongs to a different graph")
-
-        for e in graph.edges:
-            if e.successor is self.successor and e.predecessor is self.predecessor:
-                raise LibgraphyError("Edge already exists")
 
         if self.predecessor not in graph.vertices:
             graph.vertices.append(self.predecessor)
@@ -59,14 +62,17 @@ class Edge:
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:
+        # Don't change the order of errors !!
+        for e in graph.edges:
+            if e.successor is self.successor and e.predecessor is self.predecessor:
+                raise LibgraphyError("Edge already exists")
+
+        if self.graph is not None:
+            raise LibgraphyError("Edge belongs to a different graph")
         if (self.predecessor.graph not in [None, graph]):
             raise LibgraphyError("Predecessor belongs to a different graph")
         if (self.successor.graph not in [None, graph]):
             raise LibgraphyError("Successor belongs to a different graph")
-
-        for e in graph.edges:
-            if e.successor is self.successor and e.predecessor is self.predecessor:
-                raise LibgraphyError("Edge already exists")
 
         graph.edges.append(self)
 

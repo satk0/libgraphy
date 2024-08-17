@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Graph"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .edge import Edge
@@ -16,6 +16,8 @@ try:
     import IPython.display as ipds
 except ImportError:
     ipds = None
+
+from copy import deepcopy
 
 # TODO:
 # - raise instead of return errors !! (check networkx errors implementation)
@@ -53,10 +55,14 @@ class Graph:
 
         return g
 
-    def __mult__(self, scalar: int | float) -> Graph:
-        g = Graph()
-        g.edges = [Edge(e.predecessor, e.successor, e.value * scalar) for e in self.edges]
-        g.vertices = [* self.vertices]
+    def __imul__(self, scalar: int | float) -> Self:
+        self.edges = [Edge(e.predecessor, e.successor, e.value * scalar) for e in self.edges]
+        return self
+
+    def __mul__(self, scalar: int | float) -> Graph:
+        g = deepcopy(self)
+        g *= scalar
+
         return g
 
     def __repr__(self) -> str:
@@ -99,8 +105,6 @@ class Graph:
             dbg.source = g.source
 
         ipds.display_svg(g)
-
-        return None
 
     def _repr_png_(self, dbg: _DebugGraphviz | None = None) -> ImportError:
         if not ipds:
