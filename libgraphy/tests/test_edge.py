@@ -34,9 +34,9 @@ class TestEdge(unittest.TestCase):
 
         ecp = e.copy()
 
-        assert ecp.predecessor is e.predecessor 
-        assert ecp.successor is e.successor 
-        assert ecp.value is e.value 
+        assert ecp.predecessor is e.predecessor
+        assert ecp.successor is e.successor
+        assert ecp.value is e.value
 
     def test__graph__iadd__(self):
         v1 = Vertex(1)
@@ -92,12 +92,12 @@ class TestEdge(unittest.TestCase):
 
         g0 += edge0
         with pytest.raises(LibgraphyError) as e:
-            g0 += edge0 
+            g0 += edge0
         assert str(e.value) == "Edge already exists"
 
         g0 += edge2
         with pytest.raises(LibgraphyError) as e:
-            g1 += edge2 
+            g1 += edge2
         assert str(e.value) == "Edge belongs to a different graph"
 
     def test__graph__add__(self):
@@ -133,6 +133,7 @@ class TestEdge(unittest.TestCase):
             assert p.graph is f and s.graph is f and e.graph is f
 
         # ensure nothing has been changed
+        print(g.vertices)
         assert g.edges == []
         assert e1.graph is None and e2.graph is None
         assert g.vertices == [v1, v2]
@@ -160,11 +161,11 @@ class TestEdge(unittest.TestCase):
 
         g0 += edge0
         with pytest.raises(LibgraphyError) as e:
-            g0 = g0 + edge0 
+            g0 = g0 + edge0
         assert str(e.value) == "Edge already exists"
 
         g0 += edge2
         with pytest.raises(LibgraphyError) as e:
-            g1 = g1 + edge2 
+            g1 = g1 + edge2
         assert str(e.value) == "Edge belongs to a different graph"
 

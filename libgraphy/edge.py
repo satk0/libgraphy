@@ -63,42 +63,17 @@ class Edge:
 
     def _graph__add__(self, graph: Graph) -> Graph:
         # Don't change the order of errors !!
-        for e in graph.edges:
-            if e.successor is self.successor and e.predecessor is self.predecessor:
-                raise LibgraphyError("Edge already exists")
+        vertices_len = len(graph.vertices)
 
-        if self.graph is not None:
-            raise LibgraphyError("Edge belongs to a different graph")
-        if (self.predecessor.graph not in [None, graph]):
-            raise LibgraphyError("Predecessor belongs to a different graph")
-        if (self.successor.graph not in [None, graph]):
-            raise LibgraphyError("Successor belongs to a different graph")
-
-        graph.edges.append(self)
-
-        to_delete = 0
-        if self.predecessor not in graph.vertices:
-            graph.vertices.append(self.predecessor)
-            to_delete += 1
-
-        if self.successor not in graph.vertices:
-            graph.vertices.append(self.successor)
-            to_delete += 1
-
+        graph += self
         g: Graph = deepcopy(graph)
 
+        to_delete = len(g.vertices) - vertices_len
         # Bring back
         del graph.edges[-1]
         for _ in range(to_delete):
             del graph.vertices[-1]
+        self.graph = None
         # **********
-
-        e = g.edges[-1]
-        e.graph = g
-        e.predecessor.graph = g
-        e.successor.graph = g
-
-        e.predecessor += e.successor
-
         return g
 
