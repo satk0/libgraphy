@@ -31,6 +31,8 @@ class Edge:
     def copy(self) -> Edge:
         return Edge(self.predecessor, self.successor, self.value, self.graph)
 
+    # ********** Graph **********
+
     # don't move this !!
     def _graph__iadd__(self, graph: Graph) -> Graph:
         # Don't change the order of errors !!
@@ -62,18 +64,20 @@ class Edge:
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:
-        # Don't change the order of errors !!
         vertices_len = len(graph.vertices)
 
         graph += self
         g: Graph = deepcopy(graph)
 
-        to_delete = len(g.vertices) - vertices_len
-        # Bring back
+        vertices_added = len(g.vertices) - vertices_len
+
+        # Bringing self back
         del graph.edges[-1]
-        for _ in range(to_delete):
+        for _ in range(vertices_added):
             del graph.vertices[-1]
         self.graph = None
         # **********
         return g
+
+    # ***************************
 

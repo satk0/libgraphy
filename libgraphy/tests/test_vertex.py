@@ -107,7 +107,6 @@ class TestVertex(unittest.TestCase):
 
         g += v0
 
-        print(g.edges)
         for i, e in enumerate(g.edges):
             assert e.predecessor is vertices[i] and e.successor is v0
             assert e.predecessor not in e.successor.neighbors
@@ -145,7 +144,6 @@ class TestVertex(unittest.TestCase):
         g1 += v1
         with pytest.raises(LibgraphyError) as e:
             g1 += v1
-        print(e.value)
         assert str(e.value) == "Vertex already belongs to this graph"
 
     def test__graph__add__(self):
@@ -271,6 +269,5 @@ class TestVertex(unittest.TestCase):
         g1 += v1
         with pytest.raises(LibgraphyError) as e:
             g1 = g1 + v1
-        print(e.value)
         assert str(e.value) == "Vertex already belongs to this graph"
 

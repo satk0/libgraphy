@@ -69,42 +69,32 @@ class Vertex:
 
         for v in graph.vertices:
             if self in v.neighbors:
-                graph.edges.append(Edge(v, self, graph))
+                graph += Edge(v, self, graph)
             if v in self.neighbors:
-                graph.edges.append(Edge(self, v, graph))
+                graph += Edge(self, v, graph)
+
+        if graph.vertices and graph.vertices[-1] is self:
+            # Vertex already added by Edge class
+            return graph
 
         graph.vertices.append(self)
         return graph
 
+
     def _graph__add__(self, graph: Graph) -> Graph:
-        if self.graph is graph:
-            raise LibgraphyError("Vertex already belongs to this graph")
-        if self.graph is not None:
-            raise LibgraphyError("Vertex already belongs to another graph")
+        edges_len = len(graph.edges)
 
-        edges_added = 0
-        for v in graph.vertices:
-            if self in v.neighbors:
-                graph.edges.append(Edge(v, self, graph))
-                edges_added += 1
-
-            if v in self.neighbors:
-                graph.edges.append(Edge(self, v, graph))
-                edges_added += 1
-
-        graph.vertices.append(self)
-
+        graph += self
         g: Graph = deepcopy(graph)
 
         self.graph = None
+        edges_added = len(g.edges) - edges_len
 
+        # Bringing self back
         del graph.vertices[-1]
         for _ in range(edges_added):
             del graph.edges[-1]
-
-        g.vertices[-1].graph = g
-        for i in range(1, edges_added + 1):
-            g.edges[-i].graph = g
+        # **********
 
         return g
 
