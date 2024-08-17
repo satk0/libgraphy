@@ -173,9 +173,46 @@ class TestVertex(unittest.TestCase):
         s = e.successor
         assert p in f.vertices and s in f.vertices
         assert s in p.neighbors
+        assert p not in s.neighbors
         assert p.name == "a" and s.name == "v2"
         assert p.graph is f and s.graph is f
         assert e.graph is f
+
+        # Should not change original vertices
+        assert v0.neighbors == pre_neighbors
+        for i, n in enumerate(v0):
+            assert n.name == pre_neighbors[i].name
+            assert n.value == pre_neighbors[i].value
+            assert n.graph is None
+
+        # ***** reverse order *****
+
+        v0 = Vertex("a")
+        v1 = Vertex("b")
+        vertices = [Vertex(i) for i in range(4)]
+        for v in vertices:
+            v += v0
+            v += v1
+
+        pre_neighbors = [* v0.neighbors]
+
+        g = Graph()
+        for v in vertices:
+            g += v
+
+        f = g + v0
+        f += v1
+
+        assert len(f.edges) == 4
+        for i, e in enumerate(f.edges):
+            p = e.predecessor
+            s = e.successor
+            assert p in f.vertices and s in f.vertices
+            assert p.name == vertices[i].name and s.name == v0.name
+            assert s in p.neighbors
+            assert p not in s.neighbors
+            assert p.graph is f and s.graph is f
+            assert e.graph is f
 
         # Should not change original vertices
         assert v0.neighbors == pre_neighbors

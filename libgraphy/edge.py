@@ -12,7 +12,7 @@ from copy import deepcopy
 from .exception import LibgraphyError
 
 class Edge:
-    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 0, graph: Graph | None = None) -> None:
+    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 1, graph: Graph | None = None) -> None:
         self.predecessor: Vertex = precedessor
         self.successor: Vertex = successor
         self.value: Any = value
