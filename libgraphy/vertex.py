@@ -23,10 +23,7 @@ class Vertex:
         return vertex in self.neighbors
 
     def __str__(self) -> str:
-        try:
-            return str(self.name)
-        except:
-            return ""
+        return str(self.name)
 
     def __iter__(self) -> Generator[Self]:
         yield from self.neighbors
@@ -104,7 +101,7 @@ class Vertex:
         del graph.vertices[-1]
         for _ in range(edges_added):
             del graph.edges[-1]
-        
+
         g.vertices[-1].graph = g
         for i in range(1, edges_added + 1):
             g.edges[-i].graph = g

@@ -55,9 +55,6 @@ class TestVertex(unittest.TestCase):
         v = Vertex("name")
         assert v.__str__() == v.name
 
-        v = Vertex()
-        assert v.__str__() == ""
-
     def test_isConnected(self):
         v0 = Vertex(0)
         v1 = Vertex(1)
@@ -95,6 +92,7 @@ class TestVertex(unittest.TestCase):
 
         for i, e in enumerate(g.edges):
             assert e.predecessor is v0 and e.successor is v0.neighbors[i]
+            assert e.predecessor not in e.successor.neighbors
             # a -> v2, a -> v3, ...
 
         # reverse order
@@ -112,7 +110,25 @@ class TestVertex(unittest.TestCase):
         print(g.edges)
         for i, e in enumerate(g.edges):
             assert e.predecessor is vertices[i] and e.successor is v0
+            assert e.predecessor not in e.successor.neighbors
             # v2 -> a, v3 -> a, ...
+
+    def test__graph__iadd__neighbors_double(self):
+        v0 = Vertex("a")
+        v1 = Vertex("b")
+
+        v0 += v1
+        v1 += v0
+
+        g = Graph()
+
+        g += v0
+        g += v1
+
+        edges = [[v0, v1], [v1, v0]]
+
+        for i, e in enumerate(g.edges):
+            assert e.predecessor is edges[i][0] and e.successor is edges[i][1]
 
     def test__graph__iadd__exception(self):
         v0 = Vertex()
@@ -220,6 +236,29 @@ class TestVertex(unittest.TestCase):
             assert n.name == pre_neighbors[i].name
             assert n.value == pre_neighbors[i].value
             assert n.graph is None
+
+    def test__graph__add__neighbors_double(self):
+        v0 = Vertex("a")
+        v1 = Vertex("b")
+
+        v0 += v1
+        v1 += v0
+
+        g = Graph()
+
+        g += v0
+        f = g + v1
+
+        edges = [["a", "b"], ["b", "a"]]
+
+        assert len(f.vertices) == 2
+        for i, e in enumerate(f.edges):
+            p = e.predecessor
+            s = e.successor
+            assert p.name is edges[i][0] and s.name is edges[i][1]
+            assert p in s.neighbors and s in p.neighbors
+            assert p in f.vertices and s in f.vertices
+            assert p.graph is f and s.graph is f and e.graph is f
 
     def test__graph__add__exception(self):
         v0 = Vertex()
