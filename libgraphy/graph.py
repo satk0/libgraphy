@@ -19,9 +19,6 @@ except ImportError:
 
 from copy import deepcopy
 
-# TODO:
-# - raise instead of return errors !! (check networkx errors implementation)
-# - fix vertex, edge objects addition
 
 class Graph:
     def __init__(self, incidence_matrix = None) -> None:
@@ -60,8 +57,12 @@ class Graph:
         return self
 
     def __mul__(self, scalar: int | float) -> Graph:
+        tmp_edges = self.edges
+
+        self *= scalar
         g = deepcopy(self)
-        g *= scalar
+
+        self.edges = tmp_edges
 
         return g
 
@@ -86,7 +87,7 @@ class Graph:
         source: str = ""
 
     # dbg is passed as a object reference
-    def _repr_svg_(self, dbg: _DebugGraphviz | None = None) -> ImportError:
+    def _repr_svg_(self, dbg: _DebugGraphviz | None = None):
         if not ipds:
             raise ImportError("No IPython installed")
 
@@ -106,7 +107,7 @@ class Graph:
 
         ipds.display_svg(g)
 
-    def _repr_png_(self, dbg: _DebugGraphviz | None = None) -> ImportError:
+    def _repr_png_(self, dbg: _DebugGraphviz | None = None):
         if not ipds:
             raise ImportError("No IPython installed")
 
@@ -125,7 +126,6 @@ class Graph:
             dbg.source = g.source
 
         ipds.display_png(g)
-        return None
 
     def _repr_latex_(self) -> str:
         latex_txt = r"$$\begin{gathered}" + '\n'
