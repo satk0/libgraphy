@@ -26,7 +26,7 @@ class Edge:
         return Edge(self.predecessor, self.successor, self.value * scalar)
 
     def __rmul__(self, scalar: int | float) -> Edge:
-        return self.__mul__(scalar)
+        return self * scalar
 
     def copy(self) -> Edge:
         return Edge(self.predecessor, self.successor, self.value, self.graph)

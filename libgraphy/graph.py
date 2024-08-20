@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-__all__ = ["Graph"]
+__all__ = ["Graph", "AlgorithmEnum"]
 
 from typing import TYPE_CHECKING, Self
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .edge import Edge
+
+from enum import Enum
+from .algorithm import _Algorithm, _AlgorithmFunction
 
 try:
     import graphviz as gv
@@ -19,8 +22,17 @@ except ImportError:
 
 from copy import deepcopy
 
+class AlgorithmEnum(Enum): 
+    DJIKSTRA = 1
+    BELLMANFORD = 2
 
 class Graph:
+
+    __algorithms = {
+            AlgorithmEnum.DJIKSTRA: _Algorithm.djikstra,
+            AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
+    }
+
     def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
         self.edges: list[Edge] = []
@@ -45,15 +57,8 @@ class Graph:
     def __add__(self, element: Vertex | Edge) -> Graph:
         return element._graph__add__(self)
 
-    def copy(self) -> Graph:
-        g = Graph()
-        g.vertices = [* self.vertices]
-        g.edges = [* self.edges]
-
-        return g
-
     def __imul__(self, scalar: int | float) -> Self:
-        self.edges = [Edge(e.predecessor, e.successor, e.value * scalar) for e in self.edges]
+        self.edges = [Edge(e.predecessor, e.successor, e.value * scalar, self) for e in self.edges]
         return self
 
     def __mul__(self, scalar: int | float) -> Graph:
@@ -148,3 +153,17 @@ class Graph:
         latex_txt += r"\end{gathered}$$"
 
         return latex_txt
+
+
+    def copy(self) -> Graph:
+        g = Graph()
+        g.vertices = [* self.vertices]
+        g.edges = [* self.edges]
+
+        return g
+
+    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex):
+        path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
+        path_algorithm(self, start, end)
+        return
+

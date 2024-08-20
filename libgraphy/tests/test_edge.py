@@ -133,7 +133,6 @@ class TestEdge(unittest.TestCase):
             assert p.graph is f and s.graph is f and e.graph is f
 
         # ensure nothing has been changed
-        print(g.vertices)
         assert g.edges == []
         assert e1.graph is None and e2.graph is None
         assert g.vertices == [v1, v2]

@@ -80,20 +80,19 @@ class Vertex:
         graph.vertices.append(self)
         return graph
 
-
     def _graph__add__(self, graph: Graph) -> Graph:
         edges_len = len(graph.edges)
 
         graph += self
         g: Graph = deepcopy(graph)
 
-        self.graph = None
         edges_added = len(g.edges) - edges_len
 
         # Bringing self back
         del graph.vertices[-1]
         for _ in range(edges_added):
             del graph.edges[-1]
+        self.graph = None
         # **********
 
         return g
