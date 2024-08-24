@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-__all__ = ["_Algorithm", "_AlgorithmFunction"]
+__all__ = ["Route"]
 
-from typing import TYPE_CHECKING, Self, Callable
+from typing import TYPE_CHECKING, Self
 if TYPE_CHECKING: # pragma: no cover
     from .edge import Edge
     from .graph import Graph
