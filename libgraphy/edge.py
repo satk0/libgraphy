@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Edge"]
 
-from typing import Self, Any, TYPE_CHECKING
+from typing import Optional, Self, Any, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
@@ -16,7 +16,7 @@ class Edge:
         self.predecessor: Vertex = precedessor
         self.successor: Vertex = successor
         self.value: Any = value
-        self.graph: Graph | None = graph
+        self.graph: Optional[Graph] = graph
 
     def __imul__(self, scalar: int | float) -> Self:
         self.value *= scalar
@@ -58,6 +58,8 @@ class Edge:
 
         # defines "self.successor" as neighbor
         self.predecessor += self.successor
+        pre_adj: Vertex.Adjacency = next(a for a in self.predecessor.adjacencies if a.vertex is self.successor)
+        pre_adj.edge = self
 
         self.graph = graph
         graph.edges.append(self)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Vertex"]
 
-from typing import Self, Any, Generator, TYPE_CHECKING
+from typing import Optional, Self, Any, Generator, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
 
@@ -12,50 +12,58 @@ from .exception import LibgraphyError
 from copy import deepcopy
 
 class Vertex:
+
+    class Adjacency:
+        def __init__(self, vertex: Vertex, edge: Optional[Edge]) -> None:
+            self.vertex: Vertex = vertex
+            self.edge: Optional[Edge] = edge # Distance to the neighbor
+
     def __init__(self, name: Any = "", value: Any = 0, graph: Graph | None = None) -> None:
         self.name: Any = name
-        self.neighbors: list[Self] | list = []
+        self.adjacencies: list[Vertex.Adjacency] = []
         self.value: int = value
-        self.graph: Graph | None = graph
+        self.graph: Optional[Graph] = graph
 
-    def isConnected(self, vertex: Self) -> bool:
+    def isConnected(self, vertex: Vertex) -> bool:
         """Checks if self is connected to vertex"""
-        return vertex in self.neighbors
+        for a in self.adjacencies:
+            if a.vertex is vertex:
+                return True
+        return False
 
     def __str__(self) -> str:
         return str(self.name)
 
-    def __iter__(self) -> Generator[Self]:
-        yield from self.neighbors
+    def __iter__(self) -> Generator[Vertex.Adjacency]:
+        yield from self.adjacencies
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Self) -> Self:
-        if vertex not in self.neighbors:
-            self.neighbors.append(vertex)
+        if not self.isConnected(vertex):
+            self.adjacencies.append(Vertex.Adjacency(vertex, None))
         return self
 
     # add a neighbor to the current vertex (+ sign)
     def __add__(self, vertex: Self) -> Vertex:
         v: Vertex = self.copy()
-        v.neighbors = [* self.neighbors]
-        if vertex not in v.neighbors:
-            v.neighbors.append(vertex)
+        v.adjacencies = [* self.adjacencies]
+        v += vertex
         return v
 
     def copy(self) -> Vertex:
         return Vertex(self.name, self.value, self.graph)
 
-    # get i-th neighbor of the current vertex
-    def __getitem__(self, key: int) -> Self:
-        return self.neighbors[key]
+    # get i-th adjacency of the current vertex
+    def __getitem__(self, key: int) -> Vertex.Adjacency:
+        return self.adjacencies[key]
 
-    # change i-th neighbor of the current vertex
+    # change i-th adjacency of the current vertex
     def __setitem__(self, key: int, value: Self) -> None:
-        self.neighbors[key] = value
+        self.adjacencies[key] = Vertex.Adjacency(value, None)
 
-    # delete i-th neighbor of the current vertex
+    # delete i-th adjacency of the current vertex
     def __delitem__(self, key: int) -> None:
-        del self.neighbors[key]
+        del self.adjacencies[key]
 
     # ********** Graph **********
 
@@ -68,9 +76,9 @@ class Vertex:
         self.graph = graph
 
         for v in graph.vertices:
-            if self in v.neighbors:
+            if v.isConnected(self):
                 graph += Edge(v, self, graph)
-            if v in self.neighbors:
+            if self.isConnected(v):
                 graph += Edge(self, v, graph)
 
         if graph.vertices and graph.vertices[-1] is self:

@@ -67,7 +67,7 @@ class TestEdge(unittest.TestCase):
             assert p in g.vertices and s in g.vertices
             assert p.name == correct_edges[i][0] and s.name == correct_edges[i][1]
             assert e.value == correct_edges[i][2]
-            assert s in p.neighbors and p not in s.neighbors
+            assert p.isConnected(s) and not s.isConnected(p)
             assert p.graph is g and s.graph is g and e.graph is g
 
     def test__graph__iadd__exceptions(self):
@@ -129,7 +129,7 @@ class TestEdge(unittest.TestCase):
             assert p in f.vertices and s in f.vertices
             assert p.name == correct_edges[i][0] and s.name == correct_edges[i][1]
             assert e.value == correct_edges[i][2]
-            assert s in p.neighbors and p not in s.neighbors
+            assert p.isConnected(s) and not s.isConnected(p)
             assert p.graph is f and s.graph is f and e.graph is f
 
         # ensure nothing has been changed

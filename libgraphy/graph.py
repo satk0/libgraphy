@@ -43,9 +43,7 @@ class Graph:
 
     # change i-th vertex in the graph
     def __setitem__(self, key: int, value: Vertex) -> None:
-        neighbors = self.vertices[key].neighbors
         self.vertices[key] = value
-        self.vertices[key].neighbors = neighbors
 
     # delete i-th vertex of the graph
     def __delitem__(self, key: int) -> None:
