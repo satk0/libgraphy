@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["_Algorithm", "_AlgorithmFunction"]
 
-from typing import TYPE_CHECKING, Optional, Self, Callable, Dict, cast
+from typing import TYPE_CHECKING, Optional, Callable, Dict
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
@@ -20,18 +20,16 @@ INFINITY = float("inf")
 class _Algorithm:
     @staticmethod
     def djikstra(graph: Graph, start: Vertex, end: Vertex) -> Route:
-        print("djikstra algorithm")
+        # Taken and tweaked form of the following code:
+        # https://github.com/dmahugh/dijkstra-algorithm/blob/master/dijkstra_algorithm.py
+        unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited
 
-        unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited.
-
-        # Create a dictionary of each node's distance from start_node. We will
-        # update each node's distance whenever we find a shorter path.
+        # Dictionary of each vertex's distance from start
         distance_from_start: Dict[Vertex, float] = {
             vertex: (0 if vertex == start else INFINITY) for vertex in graph.vertices
         }
 
-        # Initialize previous_node, the dictionary that maps each node to the
-        # node it was visited from when the the shortest path to it was found.
+        # Visited edge to reach vertex
         previous_edge: Dict[Vertex, Optional[Edge]] = {vertex: None for vertex in graph.vertices}
 
         while unvisited_vertices:
@@ -53,7 +51,7 @@ class _Algorithm:
                     previous_edge[a.vertex] = a.edge
 
             if current_vertex == end:
-                break # we've visited the destination node, so we're done
+                break # Visited the destination vertex, finish
 
         route = Route(graph)
         path = deque()
