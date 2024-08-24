@@ -2,10 +2,11 @@ from __future__ import annotations
 
 __all__ = ["Graph", "AlgorithmEnum"]
 
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Self, Dict
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .edge import Edge
+    from .route import Route
 
 from enum import Enum
 from .algorithm import _Algorithm, _AlgorithmFunction
@@ -28,7 +29,7 @@ class AlgorithmEnum(Enum):
 
 class Graph:
 
-    __algorithms = {
+    __algorithms: Dict[AlgorithmEnum, _AlgorithmFunction] = {
             AlgorithmEnum.DJIKSTRA: _Algorithm.djikstra,
             AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
     }
@@ -160,8 +161,8 @@ class Graph:
 
         return g
 
-    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex):
+    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex) -> Route:
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
-        path_algorithm(self, start, end)
-        return
+        r: Route = path_algorithm(self, start, end)
+        return r
 

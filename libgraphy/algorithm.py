@@ -7,17 +7,19 @@ if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
     from .edge import Edge
-    from .route import Route
+#    from .route import Route
+
+from .route import Route
 
 from collections import deque 
 
-type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], None]
+type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], Route]
 
 INFINITY = float("inf")
 
 class _Algorithm:
     @staticmethod
-    def djikstra(graph: Graph, start: Vertex, end: Vertex):
+    def djikstra(graph: Graph, start: Vertex, end: Vertex) -> Route:
         print("djikstra algorithm")
 
         unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited.
@@ -57,14 +59,16 @@ class _Algorithm:
         path = deque()
         current_vertex = end
         while previous_edge[current_vertex] is not None:
-            pe: Edge = cast(Edge, previous_edge[current_vertex])
+            pe: Edge = previous_edge[current_vertex]
             path.appendleft(pe)
             current_vertex = pe.predecessor
 
         route.edges = list(path)
+        route.value = distance_from_start[end]
 
-        return route, distance_from_start[end]
+        return route
 
     @staticmethod
-    def bellmanFord(graph: Graph, start: Vertex, end: Vertex):
+    def bellmanFord(graph: Graph, start: Vertex, end: Vertex) -> Route:
         print("Bellman-Ford algorithm")
+        return Route(Graph())

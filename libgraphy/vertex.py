@@ -13,6 +13,7 @@ from copy import deepcopy
 
 class Vertex:
 
+    # Make it separate: "neighbours" and "adjacent_edges"
     class Adjacency:
         def __init__(self, vertex: Vertex, edge: Optional[Edge]) -> None:
             self.vertex: Vertex = vertex
