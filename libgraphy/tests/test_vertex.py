@@ -179,9 +179,9 @@ class TestVertex(unittest.TestCase):
 
         g = Graph()
         g += v0
-        f = g + v0[0]
+        f = g + v0[0] # v2
         for i in range(1, len(v0.neighbors)):
-            f = f + v0[i]
+            f = f + v0[i] # v3, v4, v5
 
         # only a -> v2 because with each "+" operation graph is deepcopied
         assert len(f.edges) == 1
@@ -225,7 +225,6 @@ class TestVertex(unittest.TestCase):
         for i, e in enumerate(f.edges):
             p = e.predecessor
             s = e.successor
-            assert p.adjacent_edges == [] # should not add any edge
             assert p in f.vertices and s in f.vertices
             assert p.name == vertices[i].name and s.name == v0.name
             assert p.isConnected(s) and not s.isConnected(p)
@@ -234,6 +233,7 @@ class TestVertex(unittest.TestCase):
 
         # Should not change original vertices
         assert v0.neighbors == pre_neighbors
+        assert v0.adjacent_edges == [] # should not add any edge
 
     def test__graph__add__neighbors_double(self):
         v0 = Vertex("a")

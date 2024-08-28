@@ -83,21 +83,21 @@ class Vertex:
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:
-        edges_len = len(graph.edges)
+        edges_len: int = len(graph.edges)
 
-        pre_adjacent_edges = [* self.adjacent_edges]
         graph += self
         g: Graph = deepcopy(graph)
 
-        edges_added = len(g.edges) - edges_len
+        edges_added: int = len(g.edges) - edges_len
 
-        # Bringing self back
+        # * Bringing self back *
         del graph.vertices[-1]
         for _ in range(edges_added):
+            e: Edge = graph.edges[-1]
+            del e.predecessor.adjacent_edges[-1]
             del graph.edges[-1]
         self.graph = None
-        self.adjacent_edges = pre_adjacent_edges
-        # **********
+        # **********************
 
         return g
 

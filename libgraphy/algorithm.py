@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["_Algorithm", "_AlgorithmFunction"]
 
-from typing import TYPE_CHECKING, Optional, Callable, Dict, cast
+from typing import TYPE_CHECKING, Deque, Optional, Callable, Dict, cast
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
@@ -33,7 +33,7 @@ class _Algorithm:
         previous_edge: Dict[Vertex, Optional[Edge]] = {vertex: None for vertex in graph.vertices}
 
         while unvisited_vertices:
-            current_vertex = min(
+            current_vertex: Vertex = min(
                     unvisited_vertices, key=lambda vertex: distance_from_start[vertex]
                 )
             unvisited_vertices.remove(current_vertex)
@@ -42,9 +42,9 @@ class _Algorithm:
                 break
 
             for e in current_vertex.adjacent_edges:
-                s = e.successor
+                s: Vertex = e.successor
 
-                new_path = distance_from_start[current_vertex] + e.value
+                new_path: float = distance_from_start[current_vertex] + e.value
                 if new_path < distance_from_start[s]:
                     distance_from_start[s] = new_path
                     previous_edge[s] = e
@@ -52,9 +52,9 @@ class _Algorithm:
             if current_vertex == end:
                 break # Visited the destination vertex, finish
 
-        route = Route(graph)
-        path = deque()
-        current_vertex = end
+        route: Route = Route(graph)
+        path: Deque = deque()
+        current_vertex: Vertex = end
 
         pe: Optional[Edge] = previous_edge[current_vertex]
         while pe is not None:
