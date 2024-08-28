@@ -3,12 +3,12 @@ Directed Graph Library Project
 
 ## TODO:
 * [x] - Vertex class
-* [ ] - Edge class
-* [ ] - Route class
-* [ ] - Graph class
+* [x] - Edge class
+* [x] - Route class
+* [x] - Graph class
+* [x] - Djikstra Algorithm
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
-* [ ] - Djikstra Algorithm
 
 # Debugging
 
@@ -17,7 +17,7 @@ Directed Graph Library Project
 1. Create a new virtual environment in a new directory.
 2. install libgraphy with:
 ```bash
-pip install <PROJECT_DIRECTORY_PATH>
+pip install --index-url https://test.pypi.org/simple/ libgraphy
 ```
 ## Using Jupyter:
 
