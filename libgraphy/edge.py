@@ -12,7 +12,7 @@ from copy import deepcopy
 from .exception import LibgraphyError
 
 class Edge:
-    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 1, graph: Graph | None = None) -> None:
+    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 1, graph: Optional[Graph] = None) -> None:
         self.predecessor: Vertex = precedessor
         self.successor: Vertex = successor
         self.value: Any = value
@@ -58,8 +58,7 @@ class Edge:
 
         # defines "self.successor" as neighbor
         self.predecessor += self.successor
-        pre_adj: Vertex.Adjacency = next(a for a in self.predecessor.adjacencies if a.vertex is self.successor)
-        pre_adj.edge = self
+        self.predecessor.adjacent_edges.append(self)
 
         self.graph = graph
         graph.edges.append(self)
@@ -79,6 +78,10 @@ class Edge:
             del graph.vertices[-1]
         self.graph = None
         # **********
+        # XXX:
+        # Check if self.predecessor.graph got changed
+        # etc...
+        # Check if self.predecessor.adjacent_edges got changed
         return g
 
     # ***************************

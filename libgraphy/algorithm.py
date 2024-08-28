@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["_Algorithm", "_AlgorithmFunction"]
 
-from typing import TYPE_CHECKING, Optional, Callable, Dict
+from typing import TYPE_CHECKING, Optional, Callable, Dict, cast
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
@@ -41,14 +41,13 @@ class _Algorithm:
             if distance_from_start[current_vertex] == INFINITY:
                 break
 
-            for a in current_vertex.adjacencies:
-                if not a.edge: # Skip not connected adjacencies
-                    continue
+            for e in current_vertex.adjacent_edges:
+                s = e.successor
 
-                new_path = distance_from_start[current_vertex] + a.edge.value
-                if new_path < distance_from_start[a.vertex]:
-                    distance_from_start[a.vertex] = new_path
-                    previous_edge[a.vertex] = a.edge
+                new_path = distance_from_start[current_vertex] + e.value
+                if new_path < distance_from_start[s]:
+                    distance_from_start[s] = new_path
+                    previous_edge[s] = e
 
             if current_vertex == end:
                 break # Visited the destination vertex, finish
@@ -56,10 +55,12 @@ class _Algorithm:
         route = Route(graph)
         path = deque()
         current_vertex = end
-        while previous_edge[current_vertex] is not None:
-            pe: Edge = previous_edge[current_vertex]
+
+        pe: Optional[Edge] = previous_edge[current_vertex]
+        while pe is not None:
             path.appendleft(pe)
             current_vertex = pe.predecessor
+            pe = previous_edge[current_vertex]
 
         route.edges = list(path)
         route.value = distance_from_start[end]

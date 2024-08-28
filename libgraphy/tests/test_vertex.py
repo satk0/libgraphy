@@ -12,16 +12,15 @@ class TestVertex(unittest.TestCase):
 
         prev_id = id(v0)
         v0 = v0 + v1
-        for a in v0.adjacencies:
-            assert a.vertex == v1
-            assert a.edge == None
-        assert v1.adjacencies == []
+        assert v0.neighbors == [v1]
+        assert v0.adjacent_edges == []
+        assert v1.neighbors == []
+        assert v1.adjacent_edges == []
         assert id(v0) != prev_id
 
         v3 = v0 + v2
-        for i, a in enumerate(v0.adjacencies):
-            assert a.vertex == [v1, v2][i]
-            assert a.edge == None
+        assert v3.neighbors == [v1, v2]
+        assert v3.adjacent_edges == []
         assert v0.name == v3.name
         assert v0.value == v3.value
 
@@ -33,17 +32,14 @@ class TestVertex(unittest.TestCase):
         prev_id = id(v0)
         v0 += v1
         assert id(v0) == prev_id
-        for a in v0.adjacencies:
-            assert a.vertex == v1
-            assert a.edge == None
+        assert v0.neighbors == [v1]
+        assert v0.adjacent_edges == []
 
         v2 += v0
         v2 += v1
         v2 += v1
-        for i, a in enumerate(v2.adjacencies):
-            print(a.vertex)
-            assert a.vertex == [v0, v1][i]
-            assert a.edge == None
+        assert v2.neighbors == [v0, v1]
+        assert v2.adjacent_edges == []
 
     def test___item__(self):
         v0 = Vertex(0)
@@ -52,13 +48,12 @@ class TestVertex(unittest.TestCase):
 
         v0 += v1
         v0 += v2
-        assert v0[0].vertex == v1
-        assert v0[1].vertex == v2
+        assert v0[0] == v1
+        assert v0[1] == v2
 
         del v0[0]
         v0[0] = v1
-        assert v0[0].vertex == v1
-        assert v0[0].edge == None
+        assert v0[0] == v1
 
     def test___str__(self):
         v = Vertex("name")
@@ -97,10 +92,10 @@ class TestVertex(unittest.TestCase):
         g = Graph()
         g += v0
         for n in v0:
-            g += n.vertex
+            g += n
 
         for i, e in enumerate(g.edges):
-            assert e.predecessor is v0 and e.successor is v0.adjacencies[i].vertex
+            assert e.predecessor is v0 and e.successor is v0[i]
             assert not e.successor.isConnected(e.predecessor)
             # a -> v2, a -> v3, ...
 
@@ -180,13 +175,13 @@ class TestVertex(unittest.TestCase):
         for v in vertices:
             v0 += Vertex(v)
 
-        pre_adjacencies = [* v0.adjacencies]
+        pre_neighbors = [* v0.neighbors]
 
         g = Graph()
         g += v0
-        f = g + v0.adjacencies[0].vertex
-        for i in range(1, len(v0.adjacencies)):
-            f = f + v0.adjacencies[i].vertex
+        f = g + v0[0]
+        for i in range(1, len(v0.neighbors)):
+            f = f + v0[i]
 
         # only a -> v2 because with each "+" operation graph is deepcopied
         assert len(f.edges) == 1
@@ -201,11 +196,12 @@ class TestVertex(unittest.TestCase):
         assert e.graph is f
 
         # Should not change original vertices
-        assert v0.adjacencies == pre_adjacencies
+        assert v0.neighbors == pre_neighbors
+        assert v0.adjacent_edges == [] # should not add any edge
         for i, n in enumerate(v0):
-            assert n.vertex.name == pre_adjacencies[i].vertex.name
-            assert n.vertex.value == pre_adjacencies[i].vertex.value
-            assert n.vertex.graph is None
+            assert n.name == pre_neighbors[i].name
+            assert n.value == pre_neighbors[i].value
+            assert n.graph is None
 
         # ***** reverse order *****
 
@@ -216,7 +212,7 @@ class TestVertex(unittest.TestCase):
             v += v0
             v += v1
 
-        pre_adjacencies = [* v0.adjacencies]
+        pre_neighbors = [* v0.neighbors]
 
         g = Graph()
         for v in vertices:
@@ -229,6 +225,7 @@ class TestVertex(unittest.TestCase):
         for i, e in enumerate(f.edges):
             p = e.predecessor
             s = e.successor
+            assert p.adjacent_edges == [] # should not add any edge
             assert p in f.vertices and s in f.vertices
             assert p.name == vertices[i].name and s.name == v0.name
             assert p.isConnected(s) and not s.isConnected(p)
@@ -236,7 +233,7 @@ class TestVertex(unittest.TestCase):
             assert e.graph is f
 
         # Should not change original vertices
-        assert v0.adjacencies == pre_adjacencies
+        assert v0.neighbors == pre_neighbors
 
     def test__graph__add__neighbors_double(self):
         v0 = Vertex("a")
