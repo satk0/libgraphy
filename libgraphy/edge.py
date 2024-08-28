@@ -66,22 +66,28 @@ class Edge:
 
     def _graph__add__(self, graph: Graph) -> Graph:
         vertices_len = len(graph.vertices)
+        p_graph = self.predecessor.graph
+        s_graph = self.predecessor.graph
+        p_neighbors_len = len(self.predecessor.neighbors)
 
         graph += self
         g: Graph = deepcopy(graph)
 
         vertices_added = len(g.vertices) - vertices_len
 
-        # Bringing self back
+        # Bringing graph back
         del graph.edges[-1]
         for _ in range(vertices_added):
             del graph.vertices[-1]
+
+        # Bringing self back
+        del self.predecessor.adjacent_edges[-1]
         self.graph = None
+        self.predecessor.graph = p_graph
+        self.successor.graph = s_graph
+        if p_neighbors_len != len(self.predecessor.neighbors):
+            del self.predecessor.neighbors[-1]
         # **********
-        # XXX:
-        # Check if self.predecessor.graph got changed
-        # etc...
-        # Check if self.predecessor.adjacent_edges got changed
         return g
 
     # ***************************

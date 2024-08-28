@@ -134,9 +134,14 @@ class TestEdge(unittest.TestCase):
 
         # ensure nothing has been changed
         assert g.edges == []
-        assert e1.graph is None and e2.graph is None
         assert g.vertices == [v1, v2]
+
+        assert e1.graph is None and e2.graph is None
+
+        assert v1.neighbors == v3.neighbors == []
+        assert v1.adjacent_edges == v3.adjacent_edges == []
         assert v1.graph is g and v2.graph is g
+        assert v3.graph is None and v4.graph is None
 
     def test__graph__add__exceptions(self):
         v0 = Vertex(1)
