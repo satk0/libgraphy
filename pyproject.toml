@@ -1,31 +1,27 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
+[tool.poetry]
 name = "libgraphy"
-version = "0.0.1.post1"
-authors = [
-  { name="satk0", email="satko_a@op.pl" },
-]
+version = "0.0.2alpha"
 description = "Directed Graph Library"
+authors = ["satk0 <satko_a@op.pl>"]
+license = "Apache-2.0"
 readme = "README.md"
-requires-python = ">=3.12"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-]
 
-[tool.hatch.build.targets.wheel]
-packages = ["libgraphy"]
+[tool.poetry.dependencies]
+python = "^3.12"
+graphviz = {version = "^0.20.3", optional = true}
+ipython = {version = "^8.27.0", optional = true}
 
-[tool.pytest.ini_options]
-addopts = [
-    "--import-mode=importlib",
-]
+# https://python-poetry.org/docs/pyproject/#extras
+[tool.poetry.extras]
+vizualization = ["graphviz", "IPython"]
 
-[project.urls]
-Homepage = "https://github.com/satk0/libgraphy"
-Issues = "https://github.com/satk0/libgraphy/issues"
+[tool.poetry.group.test]
+optional = true
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+pytest-cov = "^5.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

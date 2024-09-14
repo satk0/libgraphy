@@ -96,7 +96,7 @@ class TestGraph(unittest.TestCase):
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
 
-        from .. import Vertex, Edge, Graph
+        from libgraphy import Vertex, Edge, Graph
 
         v1 = Vertex(1)
         v2 = Vertex(2)
@@ -124,7 +124,7 @@ class TestGraph(unittest.TestCase):
         self.monkeypatch.delitem(sys.modules, 'libgraphy')
         self.monkeypatch.delitem(sys.modules, 'libgraphy.graph')
 
-        from .. import Vertex, Edge, Graph
+        from libgraphy import Vertex, Edge, Graph
 
         v1 = Vertex(1)
         v2 = Vertex(2)
