@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "libgraphy"
-version = "0.0.1"
+version = "0.0.1.post1"
 authors = [
   { name="satk0", email="satko_a@op.pl" },
 ]
