@@ -29,13 +29,13 @@ pip install --index-url https://test.pypi.org/simple/ libgraphy
 
 Run test via:
 
-    python -m pytest
+    poetry run pytest
 
 Check test coverage with:
 
-    python -m pytest --cov=libgraphy
+    poetry run pytest --cov=libgraphy
 
 to HTML (in `htmlcov` directory):
 
-    python -m pytest --cov=libgraphy --cov-report=html
+    poetry run pytest --cov=libgraphy --cov-report=html
 
