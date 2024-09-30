@@ -17,3 +17,7 @@ to HTML (in `htmlcov` directory):
 
     poetry run pytest --cov=libgraphy --cov-report=html
 
+## Debug libgraphy inside Jupyter:
+
+All the notebooks are inside `/notebook` directory, you can read [notebook/README.md](notebook/README.md) to find out more about setting it up.
+
