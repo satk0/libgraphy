@@ -10,32 +10,25 @@ Directed Graph Library Project
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
 
-# Debugging
+# Setup
 
-## Using Python:
+Vizualization in libgraphy is optable.
+## Default (no graph vizualization, pure algorithms):
 
-1. Create a new virtual environment in a new directory.
-2. install libgraphy with:
-```bash
-pip install --index-url https://test.pypi.org/simple/ libgraphy
-```
+    pip install --index-url https://test.pypi.org/simple/ libgraphy
+
+## To work with jupyter (includes graphs vizualization):
+
+    pip install --index-url https://test.pypi.org/simple/ libgraphy[extras]
+
 ## Using Jupyter:
 
 1. Create a new virtual environment (kernel).
-2. Make any change to the codebase.
-3. Reinstall libgraphy (as for Python) and **restart the kernel**.
+2. Install libgraphy 
+3. **Restart the kernel**.
 
-# Tests
+# Contributions
 
-Run test via:
+Any contribution is more than welcome. If you find out that something is not working, missing or needs to be improved - feel free to make an issue about it.
 
-    poetry run pytest
-
-Check test coverage with:
-
-    poetry run pytest --cov=libgraphy
-
-to HTML (in `htmlcov` directory):
-
-    poetry run pytest --cov=libgraphy --cov-report=html
-
+Any commits to the repo would also help a lot, check [DEVELOPERS.md](DEVELOPERS.md) :)
