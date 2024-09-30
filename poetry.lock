@@ -2233,4 +2233,4 @@ vizualization = ["graphviz", "ipython"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "5290ba3c0086572511735116687da22dde4c42b147993cd2c2c6a1e08241fd5c"
+content-hash = "8763205cfb7bc8adc318c4b4b64a99edba5570c893b4cfc94884cf8de8c85519"
