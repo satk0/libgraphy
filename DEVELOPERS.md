@@ -1,4 +1,6 @@
 ## Setup
+**NOTE**: Make sure you have [graphviz package](https://www.graphviz.org/download/) installed on your system!
+
 To make sure that everything will work properly install the project via:
 
     poetry install --all-extras --with=dev

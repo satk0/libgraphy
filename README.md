@@ -19,6 +19,8 @@ Vizualization in libgraphy is optable.
 
 ## To work with jupyter (includes graphs vizualization):
 
+**NOTE**: Make sure you have [graphviz package](https://www.graphviz.org/download/) installed on your system!
+
     pip install --index-url https://test.pypi.org/simple/ libgraphy[extras]
 
 ## Using Jupyter:
