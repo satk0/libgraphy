@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Graph", "AlgorithmEnum"]
 
-from typing import TYPE_CHECKING, Self, Dict
+from typing import TYPE_CHECKING, Self, Dict, Optional
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .edge import Edge
@@ -10,6 +10,8 @@ if TYPE_CHECKING: # pragma: no cover
 
 from enum import Enum
 from .algorithm import _Algorithm, _AlgorithmFunction
+
+from .exception import LibgraphyError
 
 try:
     import graphviz as gv
@@ -90,46 +92,43 @@ class Graph:
     class _DebugGraphviz():
         source: str = ""
 
+    class __GraphImgFormat(Enum): 
+        PNG = 1
+        SVG = 2
+
+    def __draw_graph(self, format: __GraphImgFormat, dbg: Optional[_DebugGraphviz] = None):
+        if not ipds:
+            raise ImportError("No IPython installed")
+
+        if not gv:
+            raise ImportError("No GraphViz installed")
+
+        g = gv.Digraph('G')
+
+        nodes: Dict[Vertex, int] = {}
+        for i, v in enumerate(self.vertices):
+            g.node(f"v{i}", label=str(v))
+            nodes[v] = i
+
+        for e in self.edges:
+            p = nodes[e.predecessor]
+            s = nodes[e.successor]
+            g.edge(f"v{p}", f"v{s}", label=str(e.value))
+
+        if dbg:
+            dbg.source = g.source
+
+        if format == self.__GraphImgFormat.PNG:
+            ipds.display_png(g)
+        elif format == self.__GraphImgFormat.SVG:
+            ipds.display_svg(g)
+
     # dbg is passed as a object reference
     def _repr_svg_(self, dbg: _DebugGraphviz | None = None):
-        if not ipds:
-            raise ImportError("No IPython installed")
-
-        if not gv:
-            raise ImportError("No GraphViz installed")
-
-        g = gv.Digraph('G')
-
-        for v in self.vertices:
-            g.node(str(v))
-
-        for e in self.edges:
-            g.edge(str(e.predecessor), str(e.successor), label=str(e.value))
-
-        if dbg:
-            dbg.source = g.source
-
-        ipds.display_svg(g)
+        self.__draw_graph(self.__GraphImgFormat.SVG, dbg)
 
     def _repr_png_(self, dbg: _DebugGraphviz | None = None):
-        if not ipds:
-            raise ImportError("No IPython installed")
-
-        if not gv:
-            raise ImportError("No GraphViz installed")
-
-        g = gv.Digraph('G')
-
-        for v in self.vertices:
-            g.node(str(v))
-
-        for e in self.edges:
-            g.edge(str(e.predecessor), str(e.successor), label=str(e.value))
-
-        if dbg:
-            dbg.source = g.source
-
-        ipds.display_png(g)
+        self.__draw_graph(self.__GraphImgFormat.PNG, dbg)
 
     def _repr_latex_(self) -> str:
         latex_txt = r"$$\begin{gathered}" + '\n'

@@ -73,7 +73,7 @@ class TestGraph(unittest.TestCase):
     def test_graph_png_repr(self):
         g = self.repr_init_graph()
 
-        GRAPHVIZ_SOURCE = "digraph G {\n\t1\n\t2\n\tc\n\t1 -> 2 [label=2]\n\tc -> 2 [label=-3]\n\t1 -> c [label=3]\n\tc -> 1 [label=aa]\n}\n"
+        GRAPHVIZ_SOURCE = "digraph G {\n\tv0 [label=1]\n\tv1 [label=2]\n\tv2 [label=c]\n\tv0 -> v1 [label=2]\n\tv2 -> v1 [label=-3]\n\tv0 -> v2 [label=3]\n\tv2 -> v0 [label=aa]\n}\n"
 
         dbg = Graph._DebugGraphviz()
         g._repr_png_(dbg = dbg)
@@ -83,7 +83,7 @@ class TestGraph(unittest.TestCase):
     def test_graph_svg_repr(self):
         g = self.repr_init_graph()
 
-        GRAPHVIZ_SOURCE = "digraph G {\n\t1\n\t2\n\tc\n\t1 -> 2 [label=2]\n\tc -> 2 [label=-3]\n\t1 -> c [label=3]\n\tc -> 1 [label=aa]\n}\n"
+        GRAPHVIZ_SOURCE = "digraph G {\n\tv0 [label=1]\n\tv1 [label=2]\n\tv2 [label=c]\n\tv0 -> v1 [label=2]\n\tv2 -> v1 [label=-3]\n\tv0 -> v2 [label=3]\n\tv2 -> v0 [label=aa]\n}\n"
 
         dbg = Graph._DebugGraphviz()
         g._repr_svg_(dbg = dbg)

@@ -10,6 +10,7 @@ if TYPE_CHECKING: # pragma: no cover
 #    from .route import Route
 
 from .route import Route
+from .exception import LibgraphyError
 
 from collections import deque 
 
