@@ -30,22 +30,34 @@ class Vertex:
     def __iter__(self) -> Generator[Vertex]:
         yield from self.neighbors
 
+    # XXX: what to do when adding a vertex to the graph when it has neighbors? Make them all belong to the graph?
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Vertex) -> Self:
-        if not self.isConnected(vertex):
-            self.neighbors.append(vertex)
+        if self.isConnected(vertex):
+            raise LibgraphyError("Vertices already connected!")
+        if vertex.graph is not None and vertex.graph is not self.graph:
+            raise LibgraphyError("Vertex to be added belongs to a different graph!")
+
+        g = None
+        if not self.graph and vertex.graph:
+            vertex.graph._plain_iadd_(self)
+            g = vertex.graph
+        if not vertex.graph and self.graph:
+            self.graph._plain_iadd_(vertex)
+            g = self.graph
+
+        if g:
+            # XXX: Make a method inside a graph to avoid imports
+            g += Edge(self, vertex, self.graph)
+
+        self.neighbors.append(vertex)
         return self
 
     # add a neighbor to the current vertex (+ sign)
     def __add__(self, vertex: Vertex) -> Vertex:
-        v: Vertex = self.copy()
-        v.neighbors = [* self.neighbors]
-        v.adjacent_edges = [* self.adjacent_edges]
+        v: Vertex = deepcopy(self)
         v += vertex
         return v
-
-    def copy(self) -> Vertex:
-        return Vertex(self.name, self.value, self.graph)
 
     # get i-th adjacency of the current vertex
     def __getitem__(self, key: int) -> Vertex:
@@ -62,12 +74,7 @@ class Vertex:
     # ********** Graph **********
 
     def _graph__iadd__(self, graph: Graph) -> Graph:
-        if self.graph is graph:
-            raise LibgraphyError("Vertex already belongs to this graph")
-        if self.graph is not None:
-            raise LibgraphyError("Vertex already belongs to another graph")
-
-        self.graph = graph
+        graph._plain_iadd_(self)
 
         for v in graph.vertices:
             if v.isConnected(self):
@@ -75,11 +82,6 @@ class Vertex:
             if self.isConnected(v):
                 graph += Edge(self, v, graph)
 
-        if graph.vertices and graph.vertices[-1] is self:
-            # Vertex already added by Edge class
-            return graph
-
-        graph.vertices.append(self)
         return graph
 
     def _graph__add__(self, graph: Graph) -> Graph:

@@ -56,8 +56,9 @@ class Edge:
         self.predecessor.graph = graph
         self.successor.graph = graph
 
-        # defines "self.successor" as neighbor
-        self.predecessor += self.successor
+        if self.successor not in self.predecessor.neighbors:
+            self.predecessor.neighbors.append(self.successor)
+
         self.predecessor.adjacent_edges.append(self)
 
         self.graph = graph

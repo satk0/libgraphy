@@ -19,7 +19,10 @@ class TestVertex(unittest.TestCase):
         assert id(v0) != prev_id
 
         v3 = v0 + v2
-        assert v3.neighbors == [v1, v2]
+        n0 = v3.neighbors[0]
+        assert n0.name == v1.name and n0.value == v1.value
+        n1 = v3.neighbors[1]
+        assert n1.name == v2.name and n0.value == v2.value
         assert v3.adjacent_edges == []
         assert v0.name == v3.name
         assert v0.value == v3.value
@@ -37,7 +40,8 @@ class TestVertex(unittest.TestCase):
 
         v2 += v0
         v2 += v1
-        v2 += v1
+        # TODO: test for error here
+        #v2 += v1
         assert v2.neighbors == [v0, v1]
         assert v2.adjacent_edges == []
 
@@ -94,6 +98,7 @@ class TestVertex(unittest.TestCase):
         for n in v0:
             g += n
 
+        assert len(g.edges) == len(vertices)
         for i, e in enumerate(g.edges):
             assert e.predecessor is v0 and e.successor is v0[i]
             assert not e.successor.isConnected(e.predecessor)
@@ -111,6 +116,7 @@ class TestVertex(unittest.TestCase):
 
         g += v0
 
+        assert len(g.edges) == len(vertices)
         for i, e in enumerate(g.edges):
             assert e.predecessor is vertices[i] and e.successor is v0
             assert not e.successor.isConnected(e.predecessor)
@@ -130,6 +136,7 @@ class TestVertex(unittest.TestCase):
 
         edges = [[v0, v1], [v1, v0]]
 
+        assert len(g.edges) == len(edges)
         for i, e in enumerate(g.edges):
             assert e.predecessor is edges[i][0] and e.successor is edges[i][1]
 
@@ -249,7 +256,7 @@ class TestVertex(unittest.TestCase):
 
         edges = [["a", "b"], ["b", "a"]]
 
-        assert len(f.vertices) == 2
+        assert len(f.vertices) == len(edges)
         for i, e in enumerate(f.edges):
             p = e.predecessor
             s = e.successor

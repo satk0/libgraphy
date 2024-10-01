@@ -52,6 +52,17 @@ class Graph:
     def __delitem__(self, key: int) -> None:
         del self.vertices[key]
 
+    def _plain_iadd_(self, vertex: Vertex) -> Self:
+        if vertex.graph is self:
+            raise LibgraphyError("Vertex already belongs to this graph")
+        if vertex.graph is not None:
+            raise LibgraphyError("Vertex already belongs to another graph")
+
+        self.vertices.append(vertex)
+        vertex.graph = self
+
+        return self
+
     def __iadd__(self, element: Vertex | Edge) -> Graph:
         return element._graph__iadd__(self)
 
@@ -152,6 +163,11 @@ class Graph:
 
         return latex_txt
 
+    def edge_exists(self, edge: Edge) -> bool:
+        for e in self.edges:
+            if e.predecessor == edge.predecessor and e.successor == edge.successor:
+                return True
+        return False
 
     def copy(self) -> Graph:
         g = Graph()
