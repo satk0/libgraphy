@@ -40,10 +40,66 @@ class TestVertex(unittest.TestCase):
 
         v2 += v0
         v2 += v1
-        # TODO: test for error here
-        #v2 += v1
+
         assert v2.neighbors == [v0, v1]
         assert v2.adjacent_edges == []
+
+    def test___iadd__errors(self):
+        v0 = Vertex(1)
+        v1 = Vertex('2')
+
+        v0 += v1
+
+        with pytest.raises(LibgraphyError) as e:
+            v0 += v1
+        assert str(e.value) == "Vertices already connected"
+
+        v2 = Vertex(3)
+        g1 = Graph()
+        g2 = Graph()
+
+        g1 += v1
+        g2 += v2
+
+        with pytest.raises(LibgraphyError) as e:
+            v1 += v2
+        assert str(e.value) == "Vertex to be added belongs to a different graph"
+
+    def test___iadd__graph_edges_1(self):
+        v1 = Vertex("a")
+        vertices_names = ["v2", "v3", "v4", "v5"]
+        vertices = [Vertex(name) for name in vertices_names]
+        v2, v3, v4, v5 = vertices
+        expected_edges = ((v1, v2), (v1, v3), (v1, v4), (v1, v5))
+
+        g = Graph()
+        g += v1
+        for v in vertices:
+            v1 += v
+
+        for i, e in enumerate(expected_edges):
+            p = g.edges[i].predecessor
+            s = g.edges[i].successor
+            assert e[0] == p and e[1] == s
+
+    def test___iadd__graph_edges_2(self):
+        v1 = Vertex("a")
+        vertices_names = ["v2", "v3", "v4", "v5"]
+        vertices = [Vertex(name) for name in vertices_names]
+        v2, v3, v4, v5 = vertices
+        expected_edges = ((v1, v2), (v1, v3), (v1, v4), (v1, v5))
+
+        g = Graph()
+        g += v1
+        for v in vertices:
+            g += v
+        for v in vertices:
+            v1 += v
+
+        for i, e in enumerate(expected_edges):
+            p = g.edges[i].predecessor
+            s = g.edges[i].successor
+            assert e[0] == p and e[1] == s
 
     def test___item__(self):
         v0 = Vertex(0)

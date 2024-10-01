@@ -34,21 +34,23 @@ class Vertex:
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Vertex) -> Self:
         if self.isConnected(vertex):
-            raise LibgraphyError("Vertices already connected!")
+            raise LibgraphyError("Vertices already connected")
         if vertex.graph is not None and vertex.graph is not self.graph:
-            raise LibgraphyError("Vertex to be added belongs to a different graph!")
+            raise LibgraphyError("Vertex to be added belongs to a different graph")
 
         g = None
         if not self.graph and vertex.graph:
             vertex.graph._plain_iadd_(self)
             g = vertex.graph
-        if not vertex.graph and self.graph:
+        elif not vertex.graph and self.graph:
             self.graph._plain_iadd_(vertex)
+            g = self.graph
+        elif vertex.graph and self.graph:
             g = self.graph
 
         if g:
-            # XXX: Make a method inside a graph to avoid imports
             g += Edge(self, vertex, self.graph)
+            print("tmp")
 
         self.neighbors.append(vertex)
         return self
