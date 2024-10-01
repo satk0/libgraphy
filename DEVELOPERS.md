@@ -23,3 +23,12 @@ to HTML (in `htmlcov` directory):
 
 All the notebooks are inside `/notebook` directory, you can read [notebook/README.md](notebook/README.md) to find out more about setting it up.
 
+## Publishing
+
+To publish a package you ought to update the version:
+
+    poetry version patch
+
+And then publish it (make sure you have TestPyPI set up):
+
+    poetry publish -r testpypi --build
