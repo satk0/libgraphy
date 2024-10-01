@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libgraphy"
-version = "0.0.3"
+version = "0.0.4a0"
 description = "Directed Graph Library"
 authors = ["satk0 <satko_a@op.pl>"]
 license = "Apache-2.0"

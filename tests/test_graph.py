@@ -146,3 +146,14 @@ class TestGraph(unittest.TestCase):
 
         self.monkeypatch.setitem(sys.modules, 'IPython', ipd)
 
+    def test_graph__iadd__vertex_repr(self):
+        v1 = Vertex(1)
+        v2 = Vertex(2)
+
+        g = Graph()
+
+        g += v1
+        v1 += v2
+
+        assert g.__repr__() == ''
+

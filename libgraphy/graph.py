@@ -157,6 +157,7 @@ class Graph:
         latex_txt += " \\\\ \n"
 
         for e in self.edges:
+            print("hmm")
             latex_txt += r"w_{%s%s} = %s \\" % (str(e.predecessor), str(e.successor), e.value) + '\n'
 
         latex_txt += r"\end{gathered}$$"
