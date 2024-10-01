@@ -81,6 +81,7 @@ class TestVertex(unittest.TestCase):
             p = g.edges[i].predecessor
             s = g.edges[i].successor
             assert e[0] == p and e[1] == s
+            assert g.edges[i].value == 1
 
     def test___iadd__graph_edges_2(self):
         v1 = Vertex("a")

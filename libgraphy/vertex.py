@@ -49,7 +49,7 @@ class Vertex:
             g = self.graph
 
         if g:
-            g += Edge(self, vertex, self.graph)
+            g += Edge(self, vertex)
 
         self.neighbors.append(vertex)
         return self

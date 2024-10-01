@@ -85,6 +85,7 @@ class Graph:
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
+        print("lol")
 
         repr_txt += '{'
         for v in self.vertices:
