@@ -5,8 +5,7 @@ __all__ = ["Vertex"]
 from typing import Optional, Self, Any, Generator, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
-
-from .edge import Edge
+    from .edge import Edge
 from .exception import LibgraphyError
 
 from copy import deepcopy
@@ -30,7 +29,6 @@ class Vertex:
     def __iter__(self) -> Generator[Vertex]:
         yield from self.neighbors
 
-    # XXX: what to do when adding a vertex to the graph when it has neighbors? Make them all belong to the graph?
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Vertex) -> Self:
         if self.isConnected(vertex):
@@ -49,7 +47,7 @@ class Vertex:
             g = self.graph
 
         if g:
-            g += Edge(self, vertex)
+            g._create_edge(self, vertex)
 
         self.neighbors.append(vertex)
         return self
@@ -79,9 +77,9 @@ class Vertex:
 
         for v in graph.vertices:
             if v.isConnected(self):
-                graph += Edge(v, self, graph)
+                graph._create_edge(v, self)
             if self.isConnected(v):
-                graph += Edge(self, v, graph)
+                graph._create_edge(self, v)
 
         return graph
 

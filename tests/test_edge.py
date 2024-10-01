@@ -5,6 +5,14 @@ from libgraphy import Vertex, Edge, Graph
 from libgraphy.exception import LibgraphyError
 
 class TestEdge(unittest.TestCase):
+    def test___init__str(self):
+        e = Edge("v1", "v2")
+        g = Graph()
+        g += e
+
+        assert e.predecessor.name == "v1" \
+            and e.successor.name == "v2" and e.value == 1
+
     def test___mult__(self):
         e = Edge(Vertex(), Vertex())
 

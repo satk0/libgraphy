@@ -4,17 +4,23 @@ __all__ = ["Edge"]
 
 from typing import Optional, Self, Any, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
-    from .vertex import Vertex
     from .graph import Graph
 
+from .vertex import Vertex
 from copy import deepcopy
 
 from .exception import LibgraphyError
 
 class Edge:
-    def __init__(self, precedessor: Vertex, successor: Vertex, value: Any = 1, graph: Optional[Graph] = None) -> None:
-        self.predecessor: Vertex = precedessor
-        self.successor: Vertex = successor
+    def __init__(self, precedessor: Vertex | str, successor: Vertex | str, value: Any = 1, graph: Optional[Graph] = None) -> None:
+        if isinstance(precedessor, Vertex) and isinstance(successor, Vertex):
+            self.predecessor: Vertex = precedessor
+            self.successor: Vertex = successor
+        elif isinstance(precedessor, str) and isinstance(successor, str):
+            self.predecessor: Vertex = Vertex(precedessor)
+            self.successor: Vertex = Vertex(successor)
+        else:
+            raise TypeError("Precedessor or successor is not of type Vertex | str")
         self.value: Any = value
         self.graph: Optional[Graph] = graph
 

@@ -5,8 +5,9 @@ __all__ = ["Graph", "AlgorithmEnum"]
 from typing import TYPE_CHECKING, Self, Dict, Optional
 if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
-    from .edge import Edge
     from .route import Route
+
+from .edge import Edge
 
 from enum import Enum
 from .algorithm import _Algorithm, _AlgorithmFunction
@@ -52,16 +53,6 @@ class Graph:
     def __delitem__(self, key: int) -> None:
         del self.vertices[key]
 
-    def _plain_iadd_(self, vertex: Vertex) -> Self:
-        if vertex.graph is self:
-            raise LibgraphyError("Vertex already belongs to this graph")
-        if vertex.graph is not None:
-            raise LibgraphyError("Vertex already belongs to another graph")
-
-        self.vertices.append(vertex)
-        vertex.graph = self
-
-        return self
 
     def __iadd__(self, element: Vertex | Edge) -> Graph:
         return element._graph__iadd__(self)
@@ -85,7 +76,6 @@ class Graph:
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
-        print("lol")
 
         repr_txt += '{'
         for v in self.vertices:
@@ -99,6 +89,21 @@ class Graph:
             repr_txt += f"w_{str(e.predecessor)}{str(e.successor)} = {e.value}; "
 
         return repr_txt
+
+    def _create_edge(self, precedessor: Vertex, successor: Vertex) -> Graph:
+        self += Edge(precedessor, successor)
+        return self
+
+    def _plain_iadd_(self, vertex: Vertex) -> Self:
+        if vertex.graph is self:
+            raise LibgraphyError("Vertex already belongs to this graph")
+        if vertex.graph is not None:
+            raise LibgraphyError("Vertex already belongs to another graph")
+
+        self.vertices.append(vertex)
+        vertex.graph = self
+
+        return self
 
     # This class is used only for tests
     class _DebugGraphviz():
