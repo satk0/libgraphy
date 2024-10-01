@@ -44,7 +44,18 @@ class TestVertex(unittest.TestCase):
         assert v2.neighbors == [v0, v1]
         assert v2.adjacent_edges == []
 
-    def test___iadd__errors(self):
+    def test___iadd__errors1(self):
+        v1 = Vertex()
+        v2 = Vertex()
+
+        g = Graph()
+        g += v2
+
+        with pytest.raises(LibgraphyError) as e:
+            v1 += v2
+        assert str(e.value) == "Vertex to be added belongs to a different graph"
+
+    def test___iadd__errors2(self):
         v0 = Vertex(1)
         v1 = Vertex('2')
 
