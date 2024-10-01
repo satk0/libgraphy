@@ -9,7 +9,7 @@ Directed Graph Library Project
 * [x] - Djikstra Algorithm
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
-* [ ] - Make Edge constructor take strings as vertices names
+* [x] - Make Edge constructor take strings as vertices names
 
 # Setup
 
