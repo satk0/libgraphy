@@ -77,6 +77,7 @@ class TestVertex(unittest.TestCase):
         for v in vertices:
             v1 += v
 
+        assert g.vertices == [v1] + vertices
         for i, e in enumerate(expected_edges):
             p = g.edges[i].predecessor
             s = g.edges[i].successor

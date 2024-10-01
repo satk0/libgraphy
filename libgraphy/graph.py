@@ -94,17 +94,6 @@ class Graph:
         self += Edge(precedessor, successor)
         return self
 
-    def _plain_iadd_(self, vertex: Vertex) -> Self:
-        if vertex.graph is self:
-            raise LibgraphyError("Vertex already belongs to this graph")
-        if vertex.graph is not None:
-            raise LibgraphyError("Vertex already belongs to another graph")
-
-        self.vertices.append(vertex)
-        vertex.graph = self
-
-        return self
-
     # This class is used only for tests
     class _DebugGraphviz():
         source: str = ""
@@ -163,7 +152,6 @@ class Graph:
         latex_txt += " \\\\ \n"
 
         for e in self.edges:
-            print("hmm")
             latex_txt += r"w_{%s%s} = %s \\" % (str(e.predecessor), str(e.successor), e.value) + '\n'
 
         latex_txt += r"\end{gathered}$$"

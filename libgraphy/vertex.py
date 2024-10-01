@@ -36,16 +36,7 @@ class Vertex:
         if vertex.graph is not None and vertex.graph is not self.graph:
             raise LibgraphyError("Vertex to be added belongs to a different graph")
 
-        g = None
-        if not self.graph and vertex.graph:
-            vertex.graph._plain_iadd_(self)
-            g = vertex.graph
-        elif not vertex.graph and self.graph:
-            self.graph._plain_iadd_(vertex)
-            g = self.graph
-        elif vertex.graph and self.graph:
-            g = self.graph
-
+        g = self.graph
         if g:
             g._create_edge(self, vertex)
 
@@ -73,7 +64,13 @@ class Vertex:
     # ********** Graph **********
 
     def _graph__iadd__(self, graph: Graph) -> Graph:
-        graph._plain_iadd_(self)
+        if self.graph is graph:
+            raise LibgraphyError("Vertex already belongs to this graph")
+        if self.graph is not None:
+            raise LibgraphyError("Vertex already belongs to another graph")
+
+        graph.vertices.append(self)
+        self.graph = graph
 
         for v in graph.vertices:
             if v.isConnected(self):
