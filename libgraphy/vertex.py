@@ -50,7 +50,6 @@ class Vertex:
 
         if g:
             g += Edge(self, vertex, self.graph)
-            print("tmp")
 
         self.neighbors.append(vertex)
         return self
