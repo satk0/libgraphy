@@ -14,6 +14,20 @@ class Route:
         self.edges: list[Edge] = []
         self.value: int | float = 0
 
+
+    def __repr__(self) -> str:
+
+        repr_txt = f"Route: {self.edges[0].predecessor}"
+        s = 0
+        for e in self.edges:
+            repr_txt += f' -> {str(e.successor)}'
+            s += e.value
+
+        repr_txt += '\n'
+        repr_txt += f'Value: {s}'
+
+        return repr_txt
+
     # get i-th edge
     def __getitem__(self, key: int) -> Edge:
         return self.edges[key]
