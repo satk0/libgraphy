@@ -7,9 +7,11 @@ Directed Graph Library Project
 * [x] - Route class
 * [x] - Graph class
 * [x] - Djikstra Algorithm
+* [x] - Make Edge constructor take strings as vertices names
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
-* [x] - Make Edge constructor take strings as vertices names
+* [ ] - Read graph from csv file
+* [ ] - Write graph to csv file
 
 # Setup
 
