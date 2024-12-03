@@ -3,10 +3,15 @@ import unittest
 from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
+from csv import reader
+import tempfile
+
 from libgraphy import Vertex, Edge, Graph
 
 import sys
 
+
+#class TestGraph():
 class TestGraph(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
@@ -144,4 +149,33 @@ class TestGraph(unittest.TestCase):
             g._repr_svg_()
 
         self.monkeypatch.setitem(sys.modules, 'IPython', ipd)
+
+    def test_find_vertex_by_name(self):
+        g = Graph()
+        for i in range(10):
+            g += Vertex(str(i))
+
+        expected_vertex = g.vertices[5]
+        vertex = g.find_vertex_by_name("5")
+
+        assert vertex is expected_vertex
+
+    def test_write_to_csv(self):
+        g = self.repr_init_graph()
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            loc = tmpdirname + "/graph.csv"
+            Graph.write_to_csv(g, loc)
+            with open(loc, 'r') as csvfile:
+                csvreader = reader(csvfile)
+                i = 0
+                for row in csvreader:
+                    print(row)
+                    print([g.edges[i].predecessor.name, g.edges[i].successor.name, g.edges[i].value])
+                    assert row[0] == str(g.edges[i].predecessor.name)
+                    assert row[1] == str(g.edges[i].successor.name)
+                    assert row[2] == str(g.edges[i].value)
+                    i += 1
+
+    def test_read_from_csv(self):
 

@@ -8,11 +8,11 @@ if TYPE_CHECKING: # pragma: no cover
     from .route import Route
 
 from .edge import Edge
-
-from enum import Enum
 from .algorithm import _Algorithm, _AlgorithmFunction
-
 from .exception import LibgraphyError
+
+from csv import writer, reader
+from enum import Enum
 
 try:
     import graphviz as gv
@@ -175,4 +175,40 @@ class Graph:
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
         r: Route = path_algorithm(self, start, end)
         return r
+
+    def find_vertex_by_name(self, name: str) -> Vertex | None:
+        for v in self.vertices:
+            if v.name == name:
+                return v
+
+
+    @staticmethod
+    def write_to_csv(graph: Graph, location: str) -> None:
+        with open(location, 'w') as csvfile:
+            csvwritter = writer(csvfile)
+            for e in graph.edges:
+                csvwritter.writerow([e.predecessor.name, e.successor.name, e.value])
+
+    @staticmethod
+    def read_from_csv(location: str):
+        graph = Graph()
+        with open(location, 'r') as csvfile:
+            csvreader = reader(csvfile)
+            for row in csvreader:
+                v1_name, v2_name, value = row
+                value = int(value)
+                v1 = graph.find_vertex_by_name(v1_name)
+                if v1 is None:
+                    v1 = Vertex(v1_name)
+                    graph += v1
+
+                v2 = graph.find_vertex_by_name(v2_name)
+                if v2 is None:
+                    v2 = Vertex(v2_name)
+                    graph += v2
+
+                graph += Edge(v1, v2, value)
+
+        return graph
+
 
