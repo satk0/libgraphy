@@ -2,12 +2,13 @@ from __future__ import annotations
 
 __all__ = ["Graph", "AlgorithmEnum"]
 
-from typing import TYPE_CHECKING, Self, Dict, Optional
+from typing import TYPE_CHECKING, Self, Dict, Optional, Any
 if TYPE_CHECKING: # pragma: no cover
-    from .vertex import Vertex
     from .route import Route
 
+from .vertex import Vertex
 from .edge import Edge
+
 from .algorithm import _Algorithm, _AlgorithmFunction
 from .exception import LibgraphyError
 
@@ -176,7 +177,7 @@ class Graph:
         r: Route = path_algorithm(self, start, end)
         return r
 
-    def find_vertex_by_name(self, name: str) -> Vertex | None:
+    def find_vertex_by_name(self, name: Any) -> Vertex | None:
         for v in self.vertices:
             if v.name == name:
                 return v
@@ -196,7 +197,25 @@ class Graph:
             csvreader = reader(csvfile)
             for row in csvreader:
                 v1_name, v2_name, value = row
-                value = int(value)
+
+                try:
+                    v1_name = int(v1_name)
+                except ValueError:
+                    pass
+
+                try:
+                    v2_name = int(v2_name)
+                except ValueError:
+                    pass
+
+                try:
+                    value = int(value)
+                except ValueError:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        pass
+
                 v1 = graph.find_vertex_by_name(v1_name)
                 if v1 is None:
                     v1 = Vertex(v1_name)

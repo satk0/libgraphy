@@ -170,12 +170,23 @@ class TestGraph(unittest.TestCase):
                 csvreader = reader(csvfile)
                 i = 0
                 for row in csvreader:
-                    print(row)
-                    print([g.edges[i].predecessor.name, g.edges[i].successor.name, g.edges[i].value])
-                    assert row[0] == str(g.edges[i].predecessor.name)
-                    assert row[1] == str(g.edges[i].successor.name)
-                    assert row[2] == str(g.edges[i].value)
+                    assert row[0] == str(g.edges[i].predecessor.name) and \
+                        row[1] == str(g.edges[i].successor.name) and \
+                        row[2] == str(g.edges[i].value)
                     i += 1
 
     def test_read_from_csv(self):
+        loc = "./tests/fixtures/graph.csv"
+        expected_graph = Graph.read_from_csv(loc)
+        g = self.repr_init_graph()
 
+        assert len(g.edges) == len(expected_graph.edges)
+        for i in range(len(g.edges)):
+            edge = g.edges[i]
+            expected_edge = expected_graph.edges[i]
+
+            assert expected_edge.predecessor.name == edge.predecessor.name and \
+                expected_edge.successor.name == edge.successor.name and \
+                expected_edge.value == edge.value
+
+# 401
