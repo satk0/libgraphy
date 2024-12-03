@@ -230,4 +230,11 @@ class Graph:
 
         return graph
 
+    @staticmethod
+    def to_networkx(graph: Graph) -> None:
+        pass
+
+    @staticmethod
+    def to_scigraph(graph: Graph) -> None:
+        pass
 
