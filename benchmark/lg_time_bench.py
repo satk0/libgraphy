@@ -1,5 +1,5 @@
 from libgraphy import *
-
+import csv
 from time import time
 
 vertices = [Vertex(l) for l in "stxyz"]
@@ -16,12 +16,19 @@ for v in vertices:
 for e in edges:
     g += e
 
-start = time()
-for i in range(100000):
-    route: Route = g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
-end = time()
+with open('lg_time.csv', 'w', newline='') as csvfile:
+    csvwriter = csv.writer(csvfile)
 
-print(end - start)
+    for n in range(100000, 1000001, 100000):
+        start = time()
+        for _ in range(n):
+            g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+        end = time()
+
+        tm = end - start
+        print(n, tm)
+        csvwriter.writerow([n, tm])
+
 
 
 

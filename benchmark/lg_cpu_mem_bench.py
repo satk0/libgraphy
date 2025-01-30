@@ -2,8 +2,17 @@ import threading
 import psutil
 from libgraphy import *
 
+import sys
+
+k = 0
+sc = 0
+sm = 0
+
 def display_cpu():
     global running
+    global sc
+    global sm
+    global k
 
     running = True
 
@@ -11,8 +20,12 @@ def display_cpu():
 
     # start loop
     while running:
-        print("cpu usage:", currentProcess.cpu_percent(interval=0.1))
-        print("virtual memory:", currentProcess.memory_info())
+        cpu_usage = currentProcess.cpu_percent(interval=0.1)
+        mem_usage = currentProcess.memory_percent()
+
+        sc += cpu_usage
+        sm += mem_usage
+        k += 1
 
 def start():
     global th
@@ -45,10 +58,16 @@ for v in vertices:
 for e in edges:
     g += e
 
+n = int(sys.argv[1])
+
 start()
 try:
-    for i in range(10000):
-        route: Route = g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+    for i in range(n):
+        g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
 finally: # stop thread even if I press Ctrl+C
     stop()
 
+avgc = sc/k
+avgm = sm/k
+
+print(f"{n},{avgc},{avgm}")
