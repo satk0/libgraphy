@@ -9,7 +9,6 @@ class TestEdge(unittest.TestCase):
         e = Edge("v1", "v2")
         g = Graph()
         g += e
-
         assert e.predecessor.name == "v1" \
             and e.successor.name == "v2" and e.value == 1
 
@@ -33,18 +32,10 @@ class TestEdge(unittest.TestCase):
         prev_id = id(e)
         prev_edge = [e.predecessor, e.successor]
         e *= 10
+
         assert id(e) == prev_id
         assert e.value == 100
         assert [e.predecessor, e.successor] == prev_edge
-
-    def test_copy(self):
-        e = Edge(Vertex(), Vertex(), 34.23)
-
-        ecp = e.copy()
-
-        assert ecp.predecessor is e.predecessor
-        assert ecp.successor is e.successor
-        assert ecp.value is e.value
 
     def test__graph__iadd__(self):
         v1 = Vertex(1)

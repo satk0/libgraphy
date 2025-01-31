@@ -4,8 +4,11 @@ __all__ = ["Route"]
 
 from typing import TYPE_CHECKING, Self
 if TYPE_CHECKING: # pragma: no cover
-    from .edge import Edge
     from .graph import Graph
+
+from .edge import Edge
+
+from copy import deepcopy
 
 class Route:
     def __init__(self, graph: Graph) -> None:
@@ -14,9 +17,7 @@ class Route:
         self.edges: list[Edge] = []
         self.value: int | float = 0
 
-
     def __repr__(self) -> str:
-
         repr_txt = f"Route: {self.edges[0].predecessor}"
         s = 0
         for e in self.edges:
@@ -37,8 +38,13 @@ class Route:
         return self
 
     def __mul__(self, scalar: int | float) -> Route:
-        r = Route(self.graph)
-        r *= scalar
+        tmp_edges = self.edges
+
+        self *= scalar
+        r = deepcopy(self)
+
+        self.edges = tmp_edges
+
         return r
 
     def __rmul__(self, scalar: int | float) -> Route:

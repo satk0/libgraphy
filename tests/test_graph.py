@@ -11,7 +11,6 @@ from libgraphy import Vertex, Edge, Graph
 import sys
 
 
-#class TestGraph():
 class TestGraph(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
@@ -150,6 +149,50 @@ class TestGraph(unittest.TestCase):
 
         self.monkeypatch.setitem(sys.modules, 'IPython', ipd)
 
+    def test__imul__(self):
+        g = self.repr_init_graph()
+        edges = g.edges
+
+        g *= 4
+
+        for i in range(len(g.edges)):
+            e = edges[i]
+            ge = g.edges[i]
+            assert ge.value == 4 * e.value
+            assert e.graph is ge.graph is g
+
+    def test_graph__iadd__(self):
+        g = Graph()
+
+        for i in range(10):
+            g += Edge("g", "g", i)
+
+        h = Graph()
+
+        for i in range(10):
+            h += Edge("h", "h", i * (-1))
+
+        combined_edges = g.edges + h.edges
+        g += h
+
+        for i in range(len(combined_edges)):
+            ce = combined_edges[i]
+            ge = g.edges[i]
+            assert ce.predecessor is ge.predecessor \
+                    and ce.successor is ge.successor \
+                    and ce.value == ge.value \
+                    and ge.graph is g
+
+    def test__mul__(self):
+        g = self.repr_init_graph()
+        h = 4 * g
+
+        for i in range(len(h.edges)):
+            ge = g.edges[i]
+            he = h.edges[i]
+            assert he.value == 4 * ge.value
+            assert he.graph is not g and ge.graph is g
+
     def test_find_vertex_by_name(self):
         g = Graph()
         for i in range(10):
@@ -160,6 +203,17 @@ class TestGraph(unittest.TestCase):
 
         assert vertex is expected_vertex
 
+    def test_grap(self):
+        g = Graph()
+        for i in range(10):
+            g += Vertex(str(i))
+
+        expected_vertex = g.vertices[5]
+        vertex = g.find_vertex_by_name("5")
+
+        assert vertex is expected_vertex
+
+    # change to JSON
     def test_write_to_csv(self):
         g = self.repr_init_graph()
 
@@ -175,6 +229,7 @@ class TestGraph(unittest.TestCase):
                         row[2] == str(g.edges[i].value)
                     i += 1
 
+    # change to JSON
     def test_read_from_csv(self):
         loc = "./tests/fixtures/graph.csv"
         expected_graph = Graph.read_from_csv(loc)

@@ -63,22 +63,22 @@ class Vertex:
 
     # ********** Graph **********
 
-    def _graph__iadd__(self, graph: Graph) -> Graph:
-        if self.graph is graph:
+    def _graph__iadd__(self, g: Graph) -> Graph:
+        if self.graph is g:
             raise LibgraphyError("Vertex already belongs to this graph")
         if self.graph is not None:
             raise LibgraphyError("Vertex already belongs to another graph")
 
-        graph.vertices.append(self)
-        self.graph = graph
+        g.vertices.append(self)
+        self.graph = g
 
-        for v in graph.vertices:
+        for v in g.vertices:
             if v.isConnected(self):
-                graph._create_edge(v, self)
+                g._create_edge(v, self)
             if self.isConnected(v):
-                graph._create_edge(self, v)
+                g._create_edge(self, v)
 
-        return graph
+        return g
 
     def _graph__add__(self, graph: Graph) -> Graph:
         edges_len: int = len(graph.edges)

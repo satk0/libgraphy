@@ -19,8 +19,7 @@ class Edge:
         elif isinstance(precedessor, str) and isinstance(successor, str):
             self.predecessor: Vertex = Vertex(precedessor)
             self.successor: Vertex = Vertex(successor)
-        else:
-            raise TypeError("Precedessor or successor is not of type Vertex | str")
+
         self.value: Any = value
         self.graph: Optional[Graph] = graph
 
@@ -33,9 +32,6 @@ class Edge:
 
     def __rmul__(self, scalar: int | float) -> Edge:
         return self * scalar
-
-    def copy(self) -> Edge:
-        return Edge(self.predecessor, self.successor, self.value, self.graph)
 
     # ********** Graph **********
 

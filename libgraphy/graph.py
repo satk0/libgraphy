@@ -38,7 +38,7 @@ class Graph:
             AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
     }
 
-    def __init__(self, incidence_matrix = None) -> None:
+    def __init__(self) -> None:
         self.vertices: list[Vertex] = []
         self.edges: list[Edge] = []
 
@@ -54,8 +54,21 @@ class Graph:
     def __delitem__(self, key: int) -> None:
         del self.vertices[key]
 
+    def _graph__iadd__(self, g: Graph) -> Graph:
+        if self is g:
+            raise LibgraphyError("Can't add the same graph")
 
-    def __iadd__(self, element: Vertex | Edge) -> Graph:
+        for v in self.vertices:
+            v.graph = g
+        for e in self.edges:
+            e.graph = g
+
+        g.vertices += self.vertices
+        g.edges += self.edges
+
+        return g
+
+    def __iadd__(self, element: Vertex | Edge | Graph) -> Graph:
         return element._graph__iadd__(self)
 
     def __add__(self, element: Vertex | Edge) -> Graph:
@@ -74,6 +87,9 @@ class Graph:
         self.edges = tmp_edges
 
         return g
+
+    def __rmul__(self, scalar: int | float) -> Graph:
+        return self * scalar
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
@@ -159,29 +175,23 @@ class Graph:
 
         return latex_txt
 
-    def edge_exists(self, edge: Edge) -> bool:
-        for e in self.edges:
-            if e.predecessor == edge.predecessor and e.successor == edge.successor:
-                return True
-        return False
-
-    def copy(self) -> Graph:
-        g = Graph()
-        g.vertices = [* self.vertices]
-        g.edges = [* self.edges]
-
-        return g
-
     def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex) -> Route:
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
         r: Route = path_algorithm(self, start, end)
         return r
 
+    def incidence(self, weighted: bool):
+        # TODO
+        pass
+
+    def isGrid(self):
+        # TODO
+        pass
+
     def find_vertex_by_name(self, name: Any) -> Vertex | None:
         for v in self.vertices:
             if v.name == name:
                 return v
-
 
     @staticmethod
     def write_to_csv(graph: Graph, location: str) -> None:
