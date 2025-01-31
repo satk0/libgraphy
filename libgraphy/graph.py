@@ -54,6 +54,7 @@ class Graph:
     def __delitem__(self, key: int) -> None:
         del self.vertices[key]
 
+    # ********** Graph **********
     def _graph__iadd__(self, g: Graph) -> Graph:
         if self is g:
             raise LibgraphyError("Can't add the same graph")
@@ -68,10 +69,27 @@ class Graph:
 
         return g
 
+    def _graph__add__(self, g: Graph) -> Graph:
+        vertices_len: int = len(self.vertices)
+        edges_len: int = len(self.edges)
+
+        g += self
+        ng: Graph = deepcopy(g)
+
+        # * Bringing self back *
+        for _ in range(vertices_len):
+            del g.vertices[-1]
+        for _ in range(edges_len):
+            del g.edges[-1]
+        # **********************
+
+        return ng
+    # ***************************
+
     def __iadd__(self, element: Vertex | Edge | Graph) -> Graph:
         return element._graph__iadd__(self)
 
-    def __add__(self, element: Vertex | Edge) -> Graph:
+    def __add__(self, element: Vertex | Edge | Graph) -> Graph:
         return element._graph__add__(self)
 
     def __imul__(self, scalar: int | float) -> Self:

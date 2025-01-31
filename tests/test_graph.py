@@ -183,6 +183,30 @@ class TestGraph(unittest.TestCase):
                     and ce.value == ge.value \
                     and ge.graph is g
 
+    def test_graph__add__(self):
+        g = Graph()
+
+        for i in range(10):
+            g += Edge("g", "g", i)
+
+        h = Graph()
+
+        for i in range(10):
+            h += Edge("h", "h", i * (-1))
+
+        combined_edges = g.edges + h.edges
+        f = g + h
+
+        for i in range(len(combined_edges)):
+            ce = combined_edges[i]
+            fe = f.edges[i]
+            assert ce.predecessor is not fe.predecessor \
+                    and ce.predecessor.name == fe.predecessor.name \
+                    and ce.successor is not fe.successor \
+                    and ce.successor.name == fe.successor.name \
+                    and ce.value == fe.value \
+                    and fe.graph is f
+
     def test__mul__(self):
         g = self.repr_init_graph()
         h = 4 * g
