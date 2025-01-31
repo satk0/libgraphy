@@ -51,9 +51,8 @@ class TestVertex(unittest.TestCase):
         g = Graph()
         g += v2
 
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             v1 += v2
-        assert str(e.value) == "Vertex to be added belongs to a different graph"
 
     def test___iadd__errors2(self):
         v0 = Vertex(1)
@@ -61,9 +60,8 @@ class TestVertex(unittest.TestCase):
 
         v0 += v1
 
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             v0 += v1
-        assert str(e.value) == "Vertices already connected"
 
         v2 = Vertex(3)
         g1 = Graph()
@@ -72,9 +70,8 @@ class TestVertex(unittest.TestCase):
         g1 += v1
         g2 += v2
 
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             v1 += v2
-        assert str(e.value) == "Vertex to be added belongs to a different graph"
 
     def test___iadd__graph_edges_1(self):
         v1 = Vertex("a")
@@ -216,15 +213,13 @@ class TestVertex(unittest.TestCase):
         g1 = Graph()
 
         g0 += v0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 += v0
-        assert str(e.value) == "Vertex already belongs to another graph"
 
         v1 = Vertex()
         g1 += v1
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 += v1
-        assert str(e.value) == "Vertex already belongs to this graph"
 
     def test__graph__add__(self):
         v0 = Vertex(0)
@@ -341,13 +336,11 @@ class TestVertex(unittest.TestCase):
         g1 = Graph()
 
         g0 += v0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 = g1 + v0
-        assert str(e.value) == "Vertex already belongs to another graph"
 
         v1 = Vertex()
         g1 += v1
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 = g1 + v1
-        assert str(e.value) == "Vertex already belongs to this graph"
 

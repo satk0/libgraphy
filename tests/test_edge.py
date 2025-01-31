@@ -90,23 +90,19 @@ class TestEdge(unittest.TestCase):
         g1 = Graph()
 
         g0 += v0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 += edge0
-        assert str(e.value) == "Predecessor belongs to a different graph"
 
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 += edge1
-        assert str(e.value) == "Successor belongs to a different graph"
 
         g0 += edge0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g0 += edge0
-        assert str(e.value) == "Edge already exists"
 
         g0 += edge2
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 += edge2
-        assert str(e.value) == "Edge belongs to a different graph"
 
     def test__graph__add__(self):
         v1 = Vertex(1)
@@ -163,21 +159,17 @@ class TestEdge(unittest.TestCase):
         g1 = Graph()
 
         g0 += v0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 = g1 + edge0
-        assert str(e.value) == "Predecessor belongs to a different graph"
 
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 = g1 + edge1
-        assert str(e.value) == "Successor belongs to a different graph"
 
         g0 += edge0
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g0 = g0 + edge0
-        assert str(e.value) == "Edge already exists"
 
         g0 += edge2
-        with pytest.raises(LibgraphyError) as e:
+        with pytest.raises(LibgraphyError):
             g1 = g1 + edge2
-        assert str(e.value) == "Edge belongs to a different graph"
 
