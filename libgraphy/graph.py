@@ -38,7 +38,8 @@ class Graph:
             AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
     }
 
-    def __init__(self) -> None:
+    # TODO: implement incidence matrix
+    def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
         self.edges: list[Edge] = []
 
