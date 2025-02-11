@@ -32,3 +32,9 @@ To publish a package you ought to update the version:
 And then publish it (make sure you have TestPyPI set up):
 
     poetry publish -r testpypi --build
+
+## Benchmark
+
+To run benchmarks issue the following installation:
+
+    poetry install --with=bench

@@ -1,97 +1,112 @@
+import os
+from enum import Enum
+
 import matplotlib.pyplot as plt
-import numpy as np
-import csv
 
-ns = []
-lg_ts = []
+# Number of repetitive runs of the benchmark
+RUNS = 10
 
-with open('benches/lg_time.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        n, t = row
-        ns.append(int(n))
-        lg_ts.append(float(t))
+num_of_vertices = [i for i in range(5, 101, 5)]
 
-nx_ts = []
-
-with open('benches/nx_time.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        _, t = row
-        nx_ts.append(float(t))
-
-scg_ts = []
-
-with open('benches/scg_time.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        _, t = row
-        scg_ts.append(float(t))
-
-plt.title("Algorytm dijkstry - Czas wykonania")
-
-plt.ylabel("Czas[s]", rotation=0, loc="top")
-plt.xlabel("Ilość wykonań", loc="right", labelpad=15)
-
-plt.plot(ns, lg_ts, label="libgraphy")
-plt.plot(ns, nx_ts, label="NetworkX")
-plt.plot(ns, scg_ts, label="SciPy CSGraph")
-plt.legend()
-
-plt.show()
-
-# ********* cpu usage *********
-lg_cpus = []
-lg_mems = []
-
-with open('benches/lg_cpu_mem.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        _, cpu, mem = row
-        lg_cpus.append(float(cpu))
-        lg_mems.append(float(mem))
-
-nx_cpus = []
-nx_mems = []
-
-with open('benches/nx_cpu_mem.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        _, cpu, mem = row
-        nx_cpus.append(float(cpu))
-        nx_mems.append(float(mem))
-
-scg_cpus = []
-scg_mems = []
-
-with open('benches/scg_cpu_mem.csv', newline='') as csvfile:
-    csv_reader = csv.reader(csvfile)
-    for row in csv_reader:
-        _, cpu, mem = row
-        scg_cpus.append(float(cpu))
-        scg_mems.append(float(mem))
+class Library(Enum):
+    LIBGRAPHY = 'lg'
+    NETWORKX = 'nx'
+    CSGRAPH = 'scg'
 
 
-plt.title("Algorytm dijkstry - Użycie CPU")
+print(num_of_vertices)
 
-plt.ylabel("Użycie CPU [%]", rotation=0, loc="top")
-plt.xlabel("Ilość wykonań", loc="right", labelpad=15)
 
-plt.plot(ns, lg_cpus, label="libgraphy")
-plt.plot(ns, nx_cpus, label="NetworkX")
-plt.plot(ns, scg_cpus, label="SciPy CSGraph")
-plt.legend()
+# calculate time in miliseconds
+def calc_time(tm: str) -> int:
+    hm, ms = tm.split('.')
+    min, s = hm.split(':')
+    ms = int(ms) * 10
+    ms += int(s) * 1000
+    ms += int(min) * 60 * 1000
 
-plt.show()
+    return ms
 
-plt.title("Algorytm dijkstry - Zużycie pamięci RAM")
 
-plt.ylabel("Zużycie RAM [%]", rotation=0, loc="top")
-plt.xlabel("Ilość wykonań", loc="right", labelpad=15)
+def calc_cpu(cpu: str) -> float:
+    return float(cpu) / os.cpu_count()
 
-plt.plot(ns, lg_mems, label="libgraphy")
-plt.plot(ns, nx_mems, label="NetworkX")
-plt.plot(ns, scg_mems, label="SciPy CSGraph")
+def create_lists(lib: Library) -> list:
+    times_list = []
+    cpus_list = []
+    mems_list = []
+    fname = f'res/vertices/{lib.value}_vertices_0.txt'
+
+    with open(fname) as f:
+        for l in f:
+            mem, cpu, tm = l.split(',')
+            cpu = calc_cpu(cpu)
+            tm = calc_time(tm)
+            mem = int(mem)
+
+            times_list.append(tm)
+            cpus_list.append(mem)
+            mems_list.append(cpu)
+
+    return [times_list, cpus_list, mems_list]
+
+def average_all_runs(lib: Library, times_list: list, mems_list: list, cpus_list: list):
+    # summarize
+    for i in range(1, RUNS):
+        with open(f'res/vertices/{lib.value}_vertices_{i}.txt') as f:
+            k = 0
+            for l in f:
+                mem, cpu, tm = l.split(',')
+                cpu = calc_cpu(cpu)
+                tm = calc_time(tm)
+                mem = int(mem)
+
+                times_list[k] += tm
+                mems_list[k] += mem
+                cpus_list[k] += cpu
+                k += 1
+
+    # average
+    for i in range(len(num_of_vertices)):
+        times_list[i] /= RUNS
+        mems_list[i] /= RUNS
+        cpus_list[i] /= RUNS
+
+
+lg_times, lg_mems, lg_cpus = create_lists(Library.LIBGRAPHY)
+average_all_runs(Library.LIBGRAPHY, lg_times, lg_mems, lg_cpus)
+
+nx_times, nx_mems, nx_cpus = create_lists(Library.NETWORKX)
+average_all_runs(Library.NETWORKX, nx_times, nx_mems, nx_cpus)
+
+scg_times, scg_mems, scg_cpus = create_lists(Library.CSGRAPH)
+average_all_runs(Library.CSGRAPH, scg_times, scg_mems, scg_cpus)
+
+print(num_of_vertices)
+
+print('****** LIBGRAPHY ******')
+print(lg_times)
+print(lg_mems)
+print(lg_cpus)
+
+print('****** NETWORKX ******')
+print(nx_times)
+print(nx_mems)
+print(nx_cpus)
+
+print('****** CSGraph ******')
+print(scg_times)
+print(scg_mems)
+print(scg_cpus)
+
+plt.title("Tworzenie grafu z wierzchołków - Czas")
+
+plt.ylabel("Czas [ms]", rotation=0, loc="top")
+plt.xlabel("Liczba wierzchołków", loc="right", labelpad=15)
+
+plt.plot(num_of_vertices, lg_times, label="libgraphy")
+plt.plot(num_of_vertices, nx_times, label="NetworkX")
+plt.plot(num_of_vertices, scg_times, label="SciPy CSGraph")
 plt.legend()
 
 plt.show()

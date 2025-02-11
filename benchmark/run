@@ -1,0 +1,7 @@
+command time -v poetry run python cpu_test.py 5000
+
+# RAM: Maximum resident set size (kbytes): 55968
+# Percent of CPU this job got: 250% (need to divide it over num of cores)
+no_of_cores=$(nproc --all)
+
+perf stat -e task-clock,instructions,cycles

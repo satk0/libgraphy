@@ -20,6 +20,7 @@ def display_cpu():
 
     # start loop
     while running:
+        # https://stackoverflow.com/questions/51571585/psutil-process-cpu-percent-greater-than-100
         cpu_usage = currentProcess.cpu_percent(interval=0.1)
         mem_usage = currentProcess.memory_percent()
 
