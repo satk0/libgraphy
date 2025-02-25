@@ -95,6 +95,8 @@ in
       patchedpython
       patchedpoetry
 
+      graphviz
+
       pyright
     ];
 
