@@ -1,32 +1,6 @@
-# import argparse
 import random
 
-
-'''
-CLI=argparse.ArgumentParser(prog='Edges generator',
-                            description='Generates e distinct edges\
-                            with n vertices')
-CLI.add_argument(
-  "-e",
-  type=int,
-  help='Number of edges'
-)
-
-CLI.add_argument(
-  "-n",
-  type=int,
-  help='Number of vertices'
-)
-
-args = CLI.parse_args()
-
-e = args.e
-n = args.n
-'''
 n = 50
-
-# if n * (n-1) < e:
-#     raise Exception("Not enough vertices")
 
 vertices = [v for v in range(n)]
 list_of_edges = []
@@ -49,7 +23,6 @@ for no_edges in range(50, n*(n-1) + 1, 50):
             v2 = random.choice(vertices)
             value = random.randint(-100, 100)
 
-            #if v1 != v2 and [v1, v2, value] not in edges:
             if v1 != v2 and not in_edges(v1, v2, edges):
                 edges.append([v1, v2, value])
                 appended = True

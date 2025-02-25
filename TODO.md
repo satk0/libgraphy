@@ -3,3 +3,5 @@
 - vertex with None graph to vertex with none graph - create new graph
 - add graphs together
 - show path route
+
+- ADD instructions and cycles benchmark for graph creation

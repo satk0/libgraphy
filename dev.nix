@@ -3,6 +3,10 @@
     ...
 }:
 let
+  tex = pkgs.texlive.combine
+    { inherit (pkgs.texlive) scheme-basic type1cm cm-super underscore
+    babel-polish;
+    };
   python = pkgs.python312;
   # https://github.com/NixOS/nixpkgs/blob/c339c066b893e5683830ba870b1ccd3bbea88ece/nixos/modules/programs/nix-ld.nix#L44
   # > We currently take all libraries from systemd and nix as the default.
@@ -21,6 +25,22 @@ let
     util-linux
     xz
     systemd
+
+# PyQT:
+# https://stackoverflow.com/a/79242721
+    glib
+    libGL
+    fontconfig
+    xorg.libX11
+    libxkbcommon
+    freetype
+    dbus
+    xorg.libxcb
+    xorg.xcbutilwm
+    xorg.xcbutilimage
+    xorg.xcbutilkeysyms
+    xorg.xcbutilrenderutil
+    xcb-util-cursor
   ]);
 
   patchedpython = (python.overrideAttrs (
@@ -71,21 +91,15 @@ in
     NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
 
     buildInputs = with pkgs; [
+      tex
       patchedpython
       patchedpoetry
 
       pyright
     ];
-    #buildInputs = with pkgs; [
-    #  gnumake
-    #  ccls
-    #  bear
-    #  jq
-    #];
 
     sourceRoot = ".";
 
-    # https://github.com/NixOS/nixpkgs/issues/18995
     shellHook = ''
       echo "Hello from shell!"
     '';
