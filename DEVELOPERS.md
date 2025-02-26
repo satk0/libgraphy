@@ -37,4 +37,4 @@ And then publish it (make sure you have TestPyPI set up):
 
 To run benchmarks issue the following installation:
 
-    poetry install --with=bench
+     poetry install --all-extras --with=dev,bench 

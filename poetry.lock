@@ -399,6 +399,20 @@ files = [
 ]
 
 [[package]]
+name = "click"
+version = "8.1.8"
+description = "Composable command line interface toolkit"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2"},
+    {file = "click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1041,6 +1055,19 @@ files = [
 
 [package.dependencies]
 referencing = ">=0.31.0"
+
+[[package]]
+name = "junix"
+version = "0.1.5"
+description = "Utils to export images from Jupyter notebook"
+optional = false
+python-versions = "*"
+files = [
+    {file = "junix-0.1.5.tar.gz", hash = "sha256:0835e974ba1604ff2bb103dce4ab477057918c0cd2134476a3861f339a7e6378"},
+]
+
+[package.dependencies]
+click = "*"
 
 [[package]]
 name = "jupyter-client"
@@ -2864,4 +2891,4 @@ vizualization = ["graphviz", "ipython"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e342db113c50f0579861108927e090b0c634dc5e885c4639c9871ff987e3e344"
+content-hash = "c42b41a3d4cfb62f6562d2446b2632842630c9be207fa3b40df6365836ca4dd4"

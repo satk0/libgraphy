@@ -1,6 +1,7 @@
 import random
-
 import networkx as nx
+
+NUM_OF_GRAPHS = 20
 
 def in_edges(v1, v2, edges) -> bool:
     for e in edges:
@@ -37,21 +38,20 @@ def max_hops_dijkstra(n: int, edges: list) -> list:
                 path = nx.dijkstra_path(G, s, t)
             except:
                 continue
-            hops = len(path)
+            hops = len(path) - 1
             if hops > max_hops:
                 max_s, max_t, max_hops = s, t, hops
 
     return [max_s, max_t, max_hops]
 
-
 list_of_edges = []
-for n in range(10, 20 * 10 + 1, 10):
+for n in range(10, NUM_OF_GRAPHS * 10 + 1, 10):
     vertices = [v for v in range(n)]
 
     print("1. Generating edges...")
     print(f"n = {n}")
 
-    max_edges = n * (n-1) + 1 # digraph so x2
+    max_edges = n * (n-1) # digraph so x2
 
     no_edges = random.randrange(max_edges // 3, max_edges)
     print(no_edges)
@@ -59,9 +59,7 @@ for n in range(10, 20 * 10 + 1, 10):
     edges = generate_edges(no_edges)
     s, t, hops = max_hops_dijkstra(n, edges)
 
-    print("MAX_HOPS -", hops)
-    print(f"s = {s} | t = {t}")
-    print("number of edges:", len(edges))
+    print(len(edges), [s, t], hops)
     list_of_edges.append([edges, [s, t], hops])
 
 fname = "generated/dijkstra_edges.txt"
