@@ -29,7 +29,7 @@ with open("generated/dijkstra_edges.txt") as f:
         total, _ = nx.single_source_dijkstra(nx_g, s, t)
 
         print(len(edges), total)
-        data.append([len(edges), hops, total])
+        data.append([n, len(edges), hops, total])
 
         n += 10
 
