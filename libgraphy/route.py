@@ -7,7 +7,7 @@ if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
     from .vertex import Vertex
 
-from enum import Enum
+from .utils import _ImgFormat, _DebugGraphviz
 
 try:
     import graphviz as gv
@@ -48,15 +48,8 @@ class Route:
                 return True
         return False
 
-    # TODO: Put it somewhere
-    class _DebugGraphviz():
-        source: str = ""
 
-    class __GraphImgFormat(Enum): 
-        PNG = 1
-        SVG = 2
-
-    def __draw_graph(self, format: __GraphImgFormat, dbg: Optional[_DebugGraphviz] = None):
+    def __draw_graph(self, format: _ImgFormat, dbg: Optional[_DebugGraphviz] = None):
         if not ipds:
             raise ImportError("No IPython installed")
 
@@ -84,17 +77,17 @@ class Route:
         if dbg:
             dbg.source = g.source
 
-        if format == self.__GraphImgFormat.PNG:
+        if format == _ImgFormat.PNG:
             ipds.display_png(g)
-        elif format == self.__GraphImgFormat.SVG:
+        elif format == _ImgFormat.SVG:
             ipds.display_svg(g)
 
     # dbg is passed as a object reference
     def _repr_svg_(self, dbg: _DebugGraphviz | None = None):
-        self.__draw_graph(self.__GraphImgFormat.SVG, dbg)
+        self.__draw_graph(_ImgFormat.SVG, dbg)
 
     def _repr_png_(self, dbg: _DebugGraphviz | None = None):
-        self.__draw_graph(self.__GraphImgFormat.PNG, dbg)
+        self.__draw_graph(_ImgFormat.PNG, dbg)
 
     # get i-th edge
     def __getitem__(self, key: int) -> Edge:

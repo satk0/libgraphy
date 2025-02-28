@@ -14,6 +14,7 @@ from .exception import LibgraphyError
 
 from csv import writer, reader
 from enum import Enum
+import jsonpickle
 
 try:
     import graphviz as gv
@@ -207,63 +208,43 @@ class Graph:
         # TODO
         pass
 
-    def find_vertex_by_name(self, name: Any) -> Vertex | None:
-        for v in self.vertices:
-            if v.name == name:
-                return v
+    @staticmethod
+    def to_json(graph: Graph) -> str:
+        # https://stackoverflow.com/a/42611918
+        s = jsonpickle.encode(graph)
+        return s
 
     @staticmethod
-    def write_to_csv(graph: Graph, location: str) -> None:
-        with open(location, 'w') as csvfile:
-            csvwritter = writer(csvfile)
-            for e in graph.edges:
-                csvwritter.writerow([e.predecessor.name, e.successor.name, e.value])
+    def write_to_json_file(graph: Graph, filename: str):
+        s = jsonpickle.encode(graph)
+        with open(filename, 'w+') as f:
+            f.write(s)
 
     @staticmethod
-    def read_from_csv(location: str):
-        graph = Graph()
-        with open(location, 'r') as csvfile:
-            csvreader = reader(csvfile)
-            for row in csvreader:
-                v1_name, v2_name, value = row
+    def from_json(json: str) -> Graph:
+        g = jsonpickle.decode(json)
+        return g
 
-                try:
-                    v1_name = int(v1_name)
-                except ValueError:
-                    pass
-
-                try:
-                    v2_name = int(v2_name)
-                except ValueError:
-                    pass
-
-                try:
-                    value = int(value)
-                except ValueError:
-                    try:
-                        value = float(value)
-                    except ValueError:
-                        pass
-
-                v1 = graph.find_vertex_by_name(v1_name)
-                if v1 is None:
-                    v1 = Vertex(v1_name)
-                    graph += v1
-
-                v2 = graph.find_vertex_by_name(v2_name)
-                if v2 is None:
-                    v2 = Vertex(v2_name)
-                    graph += v2
-
-                graph += Edge(v1, v2, value)
-
-        return graph
+    @staticmethod
+    def read_from_json_file(filename: str):
+        json = ''
+        with open(filename) as f:
+            json = f.read()
+        return jsonpickle.decode(json)
 
     @staticmethod
     def to_networkx(graph: Graph) -> None:
         pass
 
     @staticmethod
+    def from_networkx(graph) -> None:
+        pass
+
+    @staticmethod
     def to_scigraph(graph: Graph) -> None:
+        pass
+
+    @staticmethod
+    def from_scigraph(graph) -> None:
         pass
 

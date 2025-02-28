@@ -5,10 +5,13 @@ import pytest
 
 from csv import reader
 import tempfile
+import json
 
 from libgraphy import Vertex, Edge, Graph
+from libgraphy.utils import _DebugGraphviz
 
 import sys
+import jsonpickle
 
 
 class TestGraph(unittest.TestCase):
@@ -79,8 +82,10 @@ class TestGraph(unittest.TestCase):
 
         GRAPHVIZ_SOURCE = "digraph G {\n\tv0 [label=1]\n\tv1 [label=2]\n\tv2 [label=c]\n\tv0 -> v1 [label=2]\n\tv2 -> v1 [label=-3]\n\tv0 -> v2 [label=3]\n\tv2 -> v0 [label=aa]\n}\n"
 
-        dbg = Graph._DebugGraphviz()
+        dbg = _DebugGraphviz()
         g._repr_png_(dbg = dbg)
+        # To fix GRAPHVIZ_SOURCE:
+        # print(repr(dbg.source))
 
         assert dbg.source == GRAPHVIZ_SOURCE
 
@@ -89,7 +94,7 @@ class TestGraph(unittest.TestCase):
 
         GRAPHVIZ_SOURCE = "digraph G {\n\tv0 [label=1]\n\tv1 [label=2]\n\tv2 [label=c]\n\tv0 -> v1 [label=2]\n\tv2 -> v1 [label=-3]\n\tv0 -> v2 [label=3]\n\tv2 -> v0 [label=aa]\n}\n"
 
-        dbg = Graph._DebugGraphviz()
+        dbg = _DebugGraphviz()
         g._repr_svg_(dbg = dbg)
 
         assert dbg.source == GRAPHVIZ_SOURCE
@@ -217,55 +222,42 @@ class TestGraph(unittest.TestCase):
             assert he.value == 4 * ge.value
             assert he.graph is not g and ge.graph is g
 
-    def test_find_vertex_by_name(self):
+    def test_to_json(self):
+        g = TestGraph.repr_init_graph()
+
+        expected = jsonpickle.encode(g)
+        s = Graph.to_json(g)
+
+        assert s == expected
+
+    def test_from_json(self):
+        g = TestGraph.repr_init_graph()
+
+        s = Graph.to_json(g)
+        ng = Graph.from_json(s)
+
+        assert len(ng.vertices) == len(g.vertices) and \
+            len(ng.edges) == len(g.edges)
+
+        for i in range(len(ng.vertices)):
+            ev, nv = g.vertices[i], ng.vertices[i]
+            assert ev.name == nv.name and \
+                len(ev.neighbors) == len(nv.neighbors) and \
+                len(ev.adjacent_edges) == len(nv.adjacent_edges)
+
+        for i in range(len(ng.edges)):
+            ee, ne = g.edges[i], ng.edges[i]
+            assert ee.predecessor.name == ne.predecessor.name and \
+                ee.successor.name == ne.successor.name and \
+                ee.value == ne.value
+
+    def test_from_json_dupped(self):
         g = Graph()
         for i in range(10):
-            g += Vertex(str(i))
+            g += Edge("g", "g", i)
 
-        expected_vertex = g.vertices[5]
-        vertex = g.find_vertex_by_name("5")
+        s = Graph.to_json(g)
+        ng = Graph.from_json(s)
 
-        assert vertex is expected_vertex
-
-    def test_grap(self):
-        g = Graph()
-        for i in range(10):
-            g += Vertex(str(i))
-
-        expected_vertex = g.vertices[5]
-        vertex = g.find_vertex_by_name("5")
-
-        assert vertex is expected_vertex
-
-    # change to JSON
-    def test_write_to_csv(self):
-        g = self.repr_init_graph()
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            loc = tmpdirname + "/graph.csv"
-            Graph.write_to_csv(g, loc)
-            with open(loc, 'r') as csvfile:
-                csvreader = reader(csvfile)
-                i = 0
-                for row in csvreader:
-                    assert row[0] == str(g.edges[i].predecessor.name) and \
-                        row[1] == str(g.edges[i].successor.name) and \
-                        row[2] == str(g.edges[i].value)
-                    i += 1
-
-    # change to JSON
-    def test_read_from_csv(self):
-        loc = "./tests/fixtures/graph.csv"
-        expected_graph = Graph.read_from_csv(loc)
-        g = self.repr_init_graph()
-
-        assert len(g.edges) == len(expected_graph.edges)
-        for i in range(len(g.edges)):
-            edge = g.edges[i]
-            expected_edge = expected_graph.edges[i]
-
-            assert expected_edge.predecessor.name == edge.predecessor.name and \
-                expected_edge.successor.name == edge.successor.name and \
-                expected_edge.value == edge.value
-
-# 401
+        assert len(ng.vertices) == len(g.vertices) and \
+            len(ng.edges) == len(g.edges)

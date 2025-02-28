@@ -1,6 +1,7 @@
 import unittest
 import pytest
-from libgraphy import Route, Edge, Graph
+from libgraphy import *
+from libgraphy.utils import _DebugGraphviz
 #from libgraphy.exception import LibgraphyError
 
 class TestRoute(unittest.TestCase):
@@ -57,3 +58,36 @@ class TestRoute(unittest.TestCase):
 
         assert r.graph is g
         assert nr.graph is not g
+
+    @staticmethod
+    def create_graph():
+        # same graph as for algorithm
+        vertices = [Vertex(l) for l in "stxyz"]
+        s, t, x, y, z = vertices
+
+        edges = [Edge(s, y, 5), Edge(y, t, 3), Edge(t, x),
+                Edge(s, t, 10), Edge(t, y, 2), Edge(y, x, 9),
+                 Edge(x, z, 4), Edge(z, x, 6), Edge(z, s, 7),
+                 Edge(y, z, 2)]
+
+        g = Graph()
+        for v in vertices:
+            g += v
+
+        for e in edges:
+            g += e
+
+        return g
+
+    def test__draw_graph(self):
+        g = TestRoute.create_graph()
+
+        s, x = g.vertices[0], g.vertices[2]
+
+        route: Route = g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+        EXPECTED_GRAPHVIZ_SOURCE = "digraph G {\n\tv0 [label=s color=green fontcolor=darkgreen]\n\tv1 [label=t color=green fontcolor=darkgreen]\n\tv2 [label=x color=green fontcolor=darkgreen]\n\tv3 [label=y color=green fontcolor=darkgreen]\n\tv4 [label=z]\n\tv0 -> v3 [label=5 color=green fontcolor=darkgreen]\n\tv3 -> v1 [label=3 color=green fontcolor=darkgreen]\n\tv1 -> v2 [label=1 color=green fontcolor=darkgreen]\n\tv0 -> v1 [label=10]\n\tv1 -> v3 [label=2]\n\tv3 -> v2 [label=9]\n\tv2 -> v4 [label=4]\n\tv4 -> v2 [label=6]\n\tv4 -> v0 [label=7]\n\tv3 -> v4 [label=2]\n}\n"
+
+        dbg = _DebugGraphviz()
+        route._repr_svg_(dbg = dbg)
+
+        assert dbg.source == EXPECTED_GRAPHVIZ_SOURCE

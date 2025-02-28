@@ -10,8 +10,9 @@ Directed Graph Library Project
 * [x] - Make Edge constructor take strings as vertices names
 * [ ] - Graph to CSGraph/NetworkX (static method)
 * [ ] - CSGraph/NetworkX to Graph (static method)
-* [ ] - Read graph from csv file
-* [ ] - Write graph to csv file
+* [ ] - Read graph from JSON file
+* [ ] - Write graph to JSON file
+* [ ] - Check if graph is grid
 
 # Setup
 
