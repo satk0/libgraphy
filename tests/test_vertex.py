@@ -21,6 +21,7 @@ class TestVertex(unittest.TestCase):
         v3 = v0 + v2
         n0 = v3.neighbors[0]
         assert n0.name == v1.name and n0.value == v1.value
+
         n1 = v3.neighbors[1]
         assert n1.name == v2.name and n0.value == v2.value
         assert v3.adjacent_edges == []
@@ -89,7 +90,7 @@ class TestVertex(unittest.TestCase):
         for i, e in enumerate(expected_edges):
             p = g.edges[i].predecessor
             s = g.edges[i].successor
-            assert e[0] == p and e[1] == s
+            assert e[0] is p and e[1] is s
             assert g.edges[i].value == 1
 
     def test___iadd__graph_edges_2(self):
@@ -231,6 +232,7 @@ class TestVertex(unittest.TestCase):
         g += v0
         f = g + v1
         f = f + v2
+        # TODO: add function to compare graphs
         assert f.vertices != [v0, v1, v2]
         for i, v in enumerate(f.vertices):
             assert v.name == i

@@ -1,0 +1,117 @@
+{
+ "py/object": "libgraphy.graph.Graph",
+ "vertices": [
+  {
+   "py/object": "libgraphy.vertex.Vertex",
+   "name": 1,
+   "neighbors": [
+    {
+     "py/object": "libgraphy.vertex.Vertex",
+     "name": 2,
+     "neighbors": [],
+     "adjacent_edges": [],
+     "value": 0,
+     "graph": {
+      "py/id": 0
+     }
+    },
+    {
+     "py/object": "libgraphy.vertex.Vertex",
+     "name": "c",
+     "neighbors": [
+      {
+       "py/id": 4
+      },
+      {
+       "py/id": 2
+      }
+     ],
+     "adjacent_edges": [
+      {
+       "py/object": "libgraphy.edge.Edge",
+       "predecessor": {
+        "py/id": 7
+       },
+       "successor": {
+        "py/id": 4
+       },
+       "value": -3,
+       "graph": {
+        "py/id": 0
+       }
+      },
+      {
+       "py/object": "libgraphy.edge.Edge",
+       "predecessor": {
+        "py/id": 7
+       },
+       "successor": {
+        "py/id": 2
+       },
+       "value": "aa",
+       "graph": {
+        "py/id": 0
+       }
+      }
+     ],
+     "value": 0,
+     "graph": {
+      "py/id": 0
+     }
+    }
+   ],
+   "adjacent_edges": [
+    {
+     "py/object": "libgraphy.edge.Edge",
+     "predecessor": {
+      "py/id": 2
+     },
+     "successor": {
+      "py/id": 4
+     },
+     "value": 2,
+     "graph": {
+      "py/id": 0
+     }
+    },
+    {
+     "py/object": "libgraphy.edge.Edge",
+     "predecessor": {
+      "py/id": 2
+     },
+     "successor": {
+      "py/id": 7
+     },
+     "value": 3,
+     "graph": {
+      "py/id": 0
+     }
+    }
+   ],
+   "value": 0,
+   "graph": {
+    "py/id": 0
+   }
+  },
+  {
+   "py/id": 4
+  },
+  {
+   "py/id": 7
+  }
+ ],
+ "edges": [
+  {
+   "py/id": 13
+  },
+  {
+   "py/id": 10
+  },
+  {
+   "py/id": 14
+  },
+  {
+   "py/id": 11
+  }
+ ]
+}

@@ -5,14 +5,15 @@ import pytest
 
 from csv import reader
 import tempfile
-import json
 
 from libgraphy import Vertex, Edge, Graph
 from libgraphy.utils import _DebugGraphviz
+from .utils import assert_compare_graph_values, create_test_graph
 
 import sys
 import jsonpickle
 
+import filecmp
 
 class TestGraph(unittest.TestCase):
     def setUp(self):
@@ -168,12 +169,10 @@ class TestGraph(unittest.TestCase):
 
     def test_graph__iadd__(self):
         g = Graph()
-
         for i in range(10):
             g += Edge("g", "g", i)
 
         h = Graph()
-
         for i in range(10):
             h += Edge("h", "h", i * (-1))
 
@@ -225,7 +224,7 @@ class TestGraph(unittest.TestCase):
     def test_to_json(self):
         g = TestGraph.repr_init_graph()
 
-        expected = jsonpickle.encode(g)
+        expected = jsonpickle.encode(g, indent=1)
         s = Graph.to_json(g)
 
         assert s == expected
@@ -236,20 +235,7 @@ class TestGraph(unittest.TestCase):
         s = Graph.to_json(g)
         ng = Graph.from_json(s)
 
-        assert len(ng.vertices) == len(g.vertices) and \
-            len(ng.edges) == len(g.edges)
-
-        for i in range(len(ng.vertices)):
-            ev, nv = g.vertices[i], ng.vertices[i]
-            assert ev.name == nv.name and \
-                len(ev.neighbors) == len(nv.neighbors) and \
-                len(ev.adjacent_edges) == len(nv.adjacent_edges)
-
-        for i in range(len(ng.edges)):
-            ee, ne = g.edges[i], ng.edges[i]
-            assert ee.predecessor.name == ne.predecessor.name and \
-                ee.successor.name == ne.successor.name and \
-                ee.value == ne.value
+        assert_compare_graph_values(g, ng)
 
     def test_from_json_dupped(self):
         g = Graph()
@@ -259,5 +245,18 @@ class TestGraph(unittest.TestCase):
         s = Graph.to_json(g)
         ng = Graph.from_json(s)
 
-        assert len(ng.vertices) == len(g.vertices) and \
-            len(ng.edges) == len(g.edges)
+        assert_compare_graph_values(g, ng)
+
+    def test_write_to_json(self):
+        g = self.repr_init_graph()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            loc = tmpdirname + "/graph.json"
+            Graph.write_to_json_file(g, loc)
+            assert filecmp.cmp('./tests/fixtures/expected_graph.json', loc)
+
+    def test_read_from_json(self):
+        expected_graph = create_test_graph()
+        graph = Graph.read_from_json_file('./tests/fixtures/graph_to_read_from.json')
+
+        assert_compare_graph_values(graph, expected_graph)
+

@@ -14,7 +14,9 @@ from .exception import LibgraphyError
 
 from csv import writer, reader
 from enum import Enum
+
 import jsonpickle
+import json
 
 try:
     import graphviz as gv
@@ -211,26 +213,26 @@ class Graph:
     @staticmethod
     def to_json(graph: Graph) -> str:
         # https://stackoverflow.com/a/42611918
-        s = jsonpickle.encode(graph)
+        s = jsonpickle.encode(graph, indent=1)
         return s
 
     @staticmethod
     def write_to_json_file(graph: Graph, filename: str):
-        s = jsonpickle.encode(graph)
+        json_str = Graph.to_json(graph)
         with open(filename, 'w+') as f:
-            f.write(s)
+            f.write(json_str)
 
     @staticmethod
-    def from_json(json: str) -> Graph:
-        g = jsonpickle.decode(json)
+    def from_json(json_str: str) -> Graph:
+        g = jsonpickle.decode(json_str)
         return g
 
     @staticmethod
     def read_from_json_file(filename: str):
-        json = ''
+        json_str = ''
         with open(filename) as f:
-            json = f.read()
-        return jsonpickle.decode(json)
+            json_str = f.read()
+        return Graph.from_json(json_str)
 
     @staticmethod
     def to_networkx(graph: Graph) -> None:
