@@ -18,6 +18,8 @@ from enum import Enum
 import jsonpickle
 import json
 
+from .utils import _ImgFormat, _DebugGraphviz
+
 try:
     import graphviz as gv
 except ImportError:
@@ -133,15 +135,7 @@ class Graph:
         self += Edge(precedessor, successor)
         return self
 
-    # This class is used only for tests
-    class _DebugGraphviz():
-        source: str = ""
-
-    class __GraphImgFormat(Enum): 
-        PNG = 1
-        SVG = 2
-
-    def __draw_graph(self, format: __GraphImgFormat, dbg: Optional[_DebugGraphviz] = None):
+    def __draw_graph(self, format: ImgFormat, dbg: Optional[_DebugGraphviz] = None):
         if not ipds:
             raise ImportError("No IPython installed")
 
@@ -163,17 +157,17 @@ class Graph:
         if dbg:
             dbg.source = g.source
 
-        if format == self.__GraphImgFormat.PNG:
+        if format == _ImgFormat.PNG:
             ipds.display_png(g)
-        elif format == self.__GraphImgFormat.SVG:
+        elif format == _ImgFormat.SVG:
             ipds.display_svg(g)
 
     # dbg is passed as a object reference
     def _repr_svg_(self, dbg: _DebugGraphviz | None = None):
-        self.__draw_graph(self.__GraphImgFormat.SVG, dbg)
+        self.__draw_graph(_ImgFormat.SVG, dbg)
 
     def _repr_png_(self, dbg: _DebugGraphviz | None = None):
-        self.__draw_graph(self.__GraphImgFormat.PNG, dbg)
+        self.__draw_graph(_ImgFormat.PNG, dbg)
 
     def _repr_latex_(self) -> str:
         latex_txt = r"$$\begin{gathered}" + '\n'

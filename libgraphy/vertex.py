@@ -16,7 +16,7 @@ class Vertex:
         self.name: Any = name
         self.neighbors: list[Vertex] = []
         self.adjacent_edges: list[Edge] = [] # Distances to the neighbors
-        self.value: int = value
+        self.value: Any = value
         self.graph: Optional[Graph] = graph
 
     def isConnected(self, vertex: Vertex) -> bool:
