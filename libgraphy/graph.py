@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Graph", "AlgorithmEnum"]
+__all__ = ["Graph"]
 
 from typing import TYPE_CHECKING, Self, Dict, Optional, Any
 if TYPE_CHECKING: # pragma: no cover
@@ -9,14 +9,10 @@ if TYPE_CHECKING: # pragma: no cover
 from .vertex import Vertex
 from .edge import Edge
 
-from .algorithm import _Algorithm, _AlgorithmFunction
+from .algorithm import _Algorithm, _AlgorithmFunction, AlgorithmEnum
 from .exception import LibgraphyError
 
-from csv import writer, reader
-from enum import Enum
-
 import jsonpickle
-import json
 
 from .utils import _ImgFormat, _DebugGraphviz
 
@@ -32,14 +28,10 @@ except ImportError:
 
 from copy import deepcopy
 
-class AlgorithmEnum(Enum): 
-    DJIKSTRA = 1
-    BELLMANFORD = 2
-
 class Graph:
 
     __algorithms: Dict[AlgorithmEnum, _AlgorithmFunction] = {
-            AlgorithmEnum.DJIKSTRA: _Algorithm.djikstra,
+            AlgorithmEnum.DIJKSTRA: _Algorithm.dijkstra,
             AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
     }
 

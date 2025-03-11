@@ -64,7 +64,7 @@ n = int(sys.argv[1])
 start()
 try:
     for i in range(n):
-        g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+        g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
 finally: # stop thread even if I press Ctrl+C
     stop()
 

@@ -22,7 +22,7 @@ with open('lg_time.csv', 'w', newline='') as csvfile:
     for n in range(100000, 1000001, 100000):
         start = time()
         for _ in range(n):
-            g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+            g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
         end = time()
 
         tm = end - start

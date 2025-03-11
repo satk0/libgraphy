@@ -64,7 +64,7 @@ class TestRoute(unittest.TestCase):
 
         g = create_test_graph()
         s, x = g.vertices[0], g.vertices[2]
-        route: Route = g.findPath(AlgorithmEnum.DJIKSTRA, s, x)
+        route: Route = g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
 
         dbg = _DebugGraphviz()
         route._repr_svg_(dbg = dbg)

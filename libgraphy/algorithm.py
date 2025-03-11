@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["_Algorithm", "_AlgorithmFunction"]
+__all__ = ["_Algorithm", "_AlgorithmFunction", "AlgorithmEnum"]
 
 from typing import TYPE_CHECKING, Deque, Optional, Callable, Dict, cast
 if TYPE_CHECKING: # pragma: no cover
@@ -8,6 +8,8 @@ if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
     from .edge import Edge
 #    from .route import Route
+
+from enum import Enum
 
 from .route import Route
 from .exception import LibgraphyError
@@ -18,9 +20,13 @@ type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], Route]
 
 INFINITY = float("inf")
 
+class AlgorithmEnum(Enum):
+    DIJKSTRA = 1
+    BELLMANFORD = 2
+
 class _Algorithm:
     @staticmethod
-    def djikstra(graph: Graph, start: Vertex, end: Vertex) -> Route:
+    def dijkstra(graph: Graph, start: Vertex, end: Vertex) -> Route:
         # Taken and tweaked form of the following code:
         # https://github.com/dmahugh/dijkstra-algorithm/blob/master/dijkstra_algorithm.py
         unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited
@@ -70,5 +76,5 @@ class _Algorithm:
 
     @staticmethod
     def bellmanFord(graph: Graph, start: Vertex, end: Vertex) -> Route:
-        print("Bellman-Ford algorithm")
+        print("TODO: implement")
         return Route(Graph())
