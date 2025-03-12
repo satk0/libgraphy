@@ -29,6 +29,8 @@ class TestRoute(unittest.TestCase):
           Edge("3", "4", 34), Edge("4", "5", 1.4),
         ]
         r.edges = edges 
+        prev_val = r.value
+
         r *= 9.7
 
         for i in range(len(r.edges)):
@@ -37,6 +39,7 @@ class TestRoute(unittest.TestCase):
             assert re.predecessor.name == e.predecessor.name
             assert re.successor.name == e.successor.name
             assert re.value == 9.7 * e.value
+        assert r.value == 9.7 * prev_val
         assert r.graph is g
 
     def test__mul__(self):
@@ -56,6 +59,7 @@ class TestRoute(unittest.TestCase):
             assert nre.successor.name == re.successor.name
             assert nre.value == 3.24 * re.value
 
+        assert nr.value == 9.7 * r.value
         assert r.graph is g
         assert nr.graph is not g
 

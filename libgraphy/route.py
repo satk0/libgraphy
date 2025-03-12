@@ -95,6 +95,7 @@ class Route:
 
     def __imul__(self, scalar: int | float) -> Self:
         self.edges = [Edge(e.predecessor, e.successor, e.value * scalar, e.graph) for e in self.edges]
+        self.value *= scalar
         return self
 
     def __mul__(self, scalar: int | float) -> Route:
