@@ -50,6 +50,9 @@ class TestRoute(unittest.TestCase):
           Edge("3", "4", 34), Edge("4", "5", 1.4),
         ]
 
+        for e in r.edges:
+            r.value += e.value
+
         nr = 3.24 * r
 
         for i in range(len(nr.edges)):
@@ -59,7 +62,7 @@ class TestRoute(unittest.TestCase):
             assert nre.successor.name == re.successor.name
             assert nre.value == 3.24 * re.value
 
-        assert nr.value == 9.7 * r.value
+        assert nr.value == 3.24 * r.value
         assert r.graph is g
         assert nr.graph is not g
 
