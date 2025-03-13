@@ -9,6 +9,6 @@ for i in range(0, len(g.vertices)-1):
     g += Edge(p, s, i+1)
 
 route = g.findPath(AlgorithmEnum.DIJKSTRA, g.vertices[0], g.vertices[-1])
-new_route = route * 3
-print(route.value) # 45
-print(new_route.value) # 135
+new_route = route * 3.14
+
+print(route.value, new_route.value) # 45, 141.3
