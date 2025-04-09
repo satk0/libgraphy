@@ -25,11 +25,16 @@ All the notebooks are inside `/notebook` directory, you can read [notebook/READM
 
 ## Publishing
 
-To publish a package you ought to update the version:
+Set configs:
+
+    poetry config repositories.testpypi https://test.pypi.org/legacy/
+    poetry config pypi-token.testpypi  pypi-YYYYYYYY
+
+Update the version:
 
     poetry version patch
 
-And then publish it (make sure you have TestPyPI set up):
+Publish:
 
     poetry publish -r testpypi --build
 
