@@ -8,6 +8,6 @@ for i in range(0, len(g.vertices)-1):
     p, s = g.vertices[i], g.vertices[i+1]
     g += Edge(p, s, i+1)
 
-route = g.findPath(AlgorithmEnum.DIJKSTRA, g.vertices[0], g.vertices[-1])
-print(route)
-# Route: 1 -> 2 -> 3 -> ... -> 8 -> 9; Value: 45
+path = g.findPath(AlgorithmEnum.DIJKSTRA, g.vertices[0], g.vertices[-1])
+path *= 3
+print(path.value) # 135

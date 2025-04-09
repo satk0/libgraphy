@@ -4,7 +4,7 @@ __all__ = ["Graph"]
 
 from typing import TYPE_CHECKING, Self, Dict, Optional, Any
 if TYPE_CHECKING: # pragma: no cover
-    from .route import Route
+    from .path import Path
 
 from .vertex import Vertex
 from .edge import Edge
@@ -183,10 +183,10 @@ class Graph:
 
         return latex_txt
 
-    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex) -> Route:
+    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex) -> Path:
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
-        r: Route = path_algorithm(self, start, end)
-        return r
+        p: Path = path_algorithm(self, start, end)
+        return p
 
     def incidence(self, weighted: bool):
         # TODO

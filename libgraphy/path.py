@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Route"]
+__all__ = ["Path"]
 
 from typing import TYPE_CHECKING, Self, Dict
 if TYPE_CHECKING: # pragma: no cover
@@ -23,14 +23,14 @@ from .edge import Edge
 
 from copy import deepcopy
 
-class Route:
+class Path:
     def __init__(self, graph: Graph) -> None:
         self.graph: Graph = graph
         self.edges: list[Edge] = []
         self.value: int | float = 0
 
     def __repr__(self) -> str:
-        repr_txt = f"Route: {self.edges[0].predecessor}"
+        repr_txt = f"Path: {self.edges[0].predecessor}"
         s = 0
         for e in self.edges:
             repr_txt += f' -> {str(e.successor)}'
@@ -97,18 +97,18 @@ class Route:
         self.value *= scalar
         return self
 
-    def __mul__(self, scalar: int | float) -> Route:
+    def __mul__(self, scalar: int | float) -> Path:
         prev_edges = self.edges
         prev_value = self.value
 
         self *= scalar
-        r = deepcopy(self)
+        p = deepcopy(self)
 
         self.edges = prev_edges
         self.value = prev_value
 
-        return r
+        return p
 
-    def __rmul__(self, scalar: int | float) -> Route:
+    def __rmul__(self, scalar: int | float) -> Path:
         return self * scalar
 

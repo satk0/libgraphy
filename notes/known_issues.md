@@ -4,6 +4,6 @@
 * [ ] e = Edge(v1(g: G), v2(g: None)) -> e(g: G) & v2(g:G)
 * [ ] e = Edge(v1(g: None), v2(g: None)) -> e(g: nG) & v2(g: nG)
 * [ ] make - e = Edge(v1: Vertex, v2: str) (and other way around) - work
-* [ ] make e.precedessor|successor, route.edges, graph.edges, vertices etc. **read only**
+* [ ] make e.precedessor|successor, path.edges, graph.edges, vertices etc. **read only**
 * [ ] cascade delete graph edges when del vertex
 * [ ] cascade delete graph edges and vertices when del graph (deleting edge does not change anything)

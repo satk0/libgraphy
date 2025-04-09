@@ -4,7 +4,7 @@ Directed Graph Library Project
 ## TODO:
 * [x] - Vertex class
 * [x] - Edge class
-* [x] - Route class
+* [x] - Path class
 * [x] - Graph class
 * [x] - Djikstra Algorithm
 * [x] - Make Edge constructor take strings as vertices names

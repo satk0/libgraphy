@@ -7,16 +7,16 @@ if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
     from .edge import Edge
-#    from .route import Route
+#    from .path import Path
 
 from enum import Enum
 
-from .route import Route
+from .path import Path
 from .exception import LibgraphyError
 
 from collections import deque 
 
-type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], Route]
+type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], Path]
 
 INFINITY = float("inf")
 
@@ -26,7 +26,7 @@ class AlgorithmEnum(Enum):
 
 class _Algorithm:
     @staticmethod
-    def dijkstra(graph: Graph, start: Vertex, end: Vertex) -> Route:
+    def dijkstra(graph: Graph, start: Vertex, end: Vertex) -> Path:
         # Taken and tweaked form of the following code:
         # https://github.com/dmahugh/dijkstra-algorithm/blob/master/dijkstra_algorithm.py
         unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited
@@ -59,22 +59,22 @@ class _Algorithm:
             if current_vertex == end:
                 break # Visited the destination vertex, finish
 
-        route: Route = Route(graph)
-        path: Deque = deque()
+        path: Path = Path(graph)
+        queue: Deque = deque()
         current_vertex: Vertex = end
 
         pe: Optional[Edge] = previous_edge[current_vertex]
         while pe is not None:
-            path.appendleft(pe)
+            queue.appendleft(pe)
             current_vertex = pe.predecessor
             pe = previous_edge[current_vertex]
 
-        route.edges = list(path)
-        route.value = distance_from_start[end]
+        path.edges = list(queue)
+        path.value = distance_from_start[end]
 
-        return route
+        return path
 
     @staticmethod
-    def bellmanFord(graph: Graph, start: Vertex, end: Vertex) -> Route:
+    def bellmanFord(graph: Graph, start: Vertex, end: Vertex) -> Path:
         print("TODO: implement")
-        return Route(Graph())
+        return Path(Graph())

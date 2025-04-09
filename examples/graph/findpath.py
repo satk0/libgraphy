@@ -14,5 +14,5 @@ for v in vertices:
 for e in edges:
     g += e
 
-r = g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
-print(r) # Route: s -> y -> t -> x; Value: 9
+p = g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
+print(p) # Path: s -> y -> t -> x; Value: 9
