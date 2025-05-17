@@ -1,4 +1,4 @@
-# LibGraphy
+# Libgraphy
 Directed Graph Library Project
 
 ## TODO:
