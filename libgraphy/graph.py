@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Graph"]
 
-from typing import TYPE_CHECKING, Self, Dict, Optional, Any
+from typing import TYPE_CHECKING, Self, Dict, Optional, Any, cast
 if TYPE_CHECKING: # pragma: no cover
     from .path import Path
 
@@ -18,13 +18,21 @@ from .utils import _ImgFormat, _DebugGraphviz
 
 try:
     import graphviz as gv
+    gv_found = True
 except ImportError:
-    gv = None
+    gv_found = False
+
+try:
+    import networkx as nx
+    nx_found = True
+except ImportError:
+    nx_found = False
 
 try:
     import IPython.display as ipds
+    ipds_found = True
 except ImportError:
-    ipds = None
+    ipds_found = False
 
 from copy import deepcopy
 
@@ -127,11 +135,11 @@ class Graph:
         self += Edge(precedessor, successor)
         return self
 
-    def __draw_graph(self, format: ImgFormat, dbg: Optional[_DebugGraphviz] = None):
-        if not ipds:
+    def __draw_graph(self, format: _ImgFormat, dbg: Optional[_DebugGraphviz] = None):
+        if not ipds_found:
             raise ImportError("No IPython installed")
 
-        if not gv:
+        if not gv_found:
             raise ImportError("No GraphViz installed")
 
         g = gv.Digraph('G')
@@ -199,18 +207,18 @@ class Graph:
     @staticmethod
     def to_json(graph: Graph) -> str:
         # https://stackoverflow.com/a/42611918
-        s = jsonpickle.encode(graph, indent=1)
+        s = str(jsonpickle.encode(graph, indent=1))
         return s
 
     @staticmethod
-    def write_to_json_file(graph: Graph, filename: str):
+    def write_to_json_file(graph: Graph, filename: str) -> None:
         json_str = Graph.to_json(graph)
         with open(filename, 'w+') as f:
             f.write(json_str)
 
     @staticmethod
     def from_json(json_str: str) -> Graph:
-        g = jsonpickle.decode(json_str)
+        g: Graph = cast(Graph, jsonpickle.decode(json_str))
         return g
 
     @staticmethod
@@ -220,15 +228,56 @@ class Graph:
             json_str = f.read()
         return Graph.from_json(json_str)
 
+    # TODO: Test
     @staticmethod
-    def to_networkx(graph: Graph) -> None:
-        # TODO
-        pass
+    def to_networkx(graph: Graph) -> nx.DiGraph:
+        if not nx_found:
+            raise ImportError("No NetworkX installed")
 
+        G = nx.DiGraph()
+
+        names: dict[str, int] = dict()
+        vertices: dict[Vertex, Any] = dict()
+
+        for v in graph.vertices:
+            if v.name in names.keys:
+                names[v.name] += 1
+                name = "{}_{}".format(v.name, names[v.name])
+            else:
+                names[v.name] = 0
+                name = v.name
+
+            G.add_node(name)
+            vertices[v] = name
+
+        for e in graph.edges:
+            p = vertices[e.predecessor]
+            s = vertices[e.successor]
+            G.add_edge(p, s, weight=e.value)
+
+        return G
+
+    # TODO: Test
     @staticmethod
-    def from_networkx(graph) -> None:
-        # TODO
-        pass
+    def from_networkx(graph: nx.DiGraph) -> Graph:
+        if not nx_found:
+            raise ImportError("No NetworkX installed")
+
+        g: Graph = Graph()
+        vertices: dict[Any, Vertex] = {}
+
+        for node in graph:
+            v = Vertex(node)
+            g += v
+
+            vertices[node] = v
+
+        for edge in graph.edges(data=True):
+            p = vertices[edge[0]]
+            s = vertices[edge[1]]
+            g += Edge(p, s, edge[2]["weight"])
+
+        return g
 
     @staticmethod
     def to_scigraph(graph: Graph) -> None:
