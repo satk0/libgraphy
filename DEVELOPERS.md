@@ -42,4 +42,4 @@ Publish:
 
 To run benchmarks issue the following installation:
 
-     poetry install --all-extras --with=dev,bench 
+     poetry install --all-extras --with=dev,bench --sync

@@ -3,3 +3,4 @@ from libgraphy.edge import *
 from libgraphy.graph import *
 from libgraphy.algorithm import *
 from libgraphy.path import *
+from libgraphy.graph_traits import *
