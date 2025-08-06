@@ -1,6 +1,7 @@
 import unittest
 import pytest
 from libgraphy import *
+from .utils import grid_level4_graph, grid_level6_graph, grid_level8_graph
 
 class TestGraphTraits(unittest.TestCase):
 
@@ -93,3 +94,160 @@ class TestGraphTraits(unittest.TestCase):
 
         gt.check_if_grid()
         assert gt.is_grid is False
+
+    def test_get_grid_level4(self):
+        g: Graph = grid_level4_graph()
+        gt: GraphTraits = GraphTraits(g)
+
+        gt.check_if_grid()
+        gt.get_grid_level()
+        assert gt.is_grid is True and gt.grid_level is 4
+
+    def test_get_grid_level6(self):
+        g: Graph = grid_level6_graph()
+        gt: GraphTraits = GraphTraits(g)
+
+        gt.check_if_grid()
+        gt.get_grid_level()
+        assert gt.is_grid is True and gt.grid_level is 6
+
+    def test_get_grid_level_error(self):
+        g: Graph = grid_level4_graph()
+        gt: GraphTraits = GraphTraits(g)
+
+        with pytest.raises(LibgraphyError):
+            gt.get_grid_level() # Error: gridness should be checked first
+
+    def test_get_grid_level_not_grid(self):
+        g: Graph = Graph()
+        g += Edge("0", "1")
+        gt: GraphTraits = GraphTraits(g)
+
+        gt.check_if_grid()
+        gt.get_grid_level()
+        assert gt.is_grid is False and gt.grid_level is None
+
+    def test_get_grid_level8(self):
+        g: Graph = grid_level8_graph()
+        gt: GraphTraits = GraphTraits(g)
+
+        gt.check_if_grid()
+        gt.get_grid_level()
+        assert gt.is_grid is True and gt.grid_level is 8
+
+    def test_check_if_has_cycles_false(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        for i in range(5):
+            g += Edge(g.vertices[i], g.vertices[i+1])
+
+        gt.check_if_has_cycles()
+        assert gt.has_cycles is False
+
+    def test_check_if_has_cycles_true(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        for i in range(5):
+            g += Edge(g.vertices[i], g.vertices[i+1])
+        g += Edge(g.vertices[-1], g.vertices[3])
+
+        gt.check_if_has_cycles()
+        assert gt.has_cycles is True
+
+    def test_check_if_full_true(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(4):
+            g += Vertex(i)
+
+        visited = set()
+        for v in g.vertices:
+            for nv in g.vertices:
+                if nv in visited or nv is v:
+                    continue
+                g += Edge(v, nv)
+                g += Edge(nv, v)
+            visited.add(v)
+
+        gt.check_if_full()
+        assert gt.is_full is True
+
+    def test_check_if_full_false(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        for i in range(5):
+            g += Edge(g.vertices[i], g.vertices[i+1])
+            g += Edge(g.vertices[i+1], g.vertices[i])
+
+        gt.check_if_full()
+        assert gt.is_full is False
+
+    def test_check_if_empty_true(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        gt.check_if_empty()
+        assert gt.is_empty is True
+
+    def test_check_if_empty_false(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        g += Edge(g.vertices[0], g.vertices[3])
+
+        gt.check_if_empty()
+        assert gt.is_empty is False
+
+    def test_check_if_negative_false(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        for i in range(5):
+            g += Edge(g.vertices[i], g.vertices[i+1], i)
+
+        gt.check_if_negative()
+        assert gt.is_negative is False
+
+    def test_check_if_negative_true(self):
+        g: Graph = Graph()
+        gt: GraphTraits = GraphTraits(g)
+        for i in range(6):
+            g += Vertex(i)
+
+        for i in range(5):
+            g += Edge(g.vertices[i], g.vertices[i+1], i)
+
+        g += Edge(g.vertices[3], g.vertices[0], -3)
+
+        gt.check_if_negative()
+        assert gt.is_negative is True
+
+    def test_get_traits(self):
+        g: Graph = grid_level6_graph()
+        g += Edge(g.vertices[0], g.vertices[-1], -4)
+        gt: GraphTraits = GraphTraits.get_traits(g)
+
+        assert gt.is_weighted is True
+        assert gt.is_negative is True
+        assert gt.is_directional is True
+        assert gt.is_grid is False
+        assert gt.grid_level is None
+        assert gt.has_cycles is True
+        assert gt.is_full is False
+        assert gt.is_empty is False
+

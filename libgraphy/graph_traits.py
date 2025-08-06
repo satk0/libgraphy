@@ -7,13 +7,14 @@ class GraphTraits:
 
     def __init__(self, g: Graph) -> None:
         self.graph: Graph = g
-        self.is_weighted: bool = False
-        self.is_directional: bool = False
-        self.is_grid: bool = False
-        self.grid_level: int = 0
-        self.has_cycles: bool = False
-        self.is_full: bool = False
-        self.is_empty: bool = False
+        self.is_weighted: bool|None = None
+        self.is_negative: bool|None = None
+        self.is_directional: bool|None = None
+        self.is_grid: bool|None = None
+        self.grid_level: int|None = None
+        self.has_cycles: bool|None = None
+        self.is_full: bool|None = None
+        self.is_empty: bool|None = None
 
     def check_if_weighted(self) -> None:
         for e in self.graph.edges:
@@ -21,6 +22,14 @@ class GraphTraits:
                 self.is_weighted = True
                 return
         self.is_weighted = False
+
+    # TODO: test
+    def check_if_negative(self) -> None:
+        for e in self.graph.edges:
+            if e.value < 0:
+                self.is_negative = True
+                return
+        self.is_negative = False
 
     def check_if_directional(self) -> None:
         visited: set[Vertex] = set()
@@ -51,12 +60,15 @@ class GraphTraits:
                 self.is_directional is False)
 
     def get_grid_level(self) -> None:
+        if self.is_grid is None:
+            raise LibgraphyError("Check first if graph is a grid!")
         if self.is_grid is False:
-            raise LibgraphyError("Graph is not a grid!")
+            return
+        self.grid_level = 0
         for v in self.graph.vertices:
             self.grid_level = max(self.grid_level, len(v.neighbors))
 
-    def cycles_util(self, v: Vertex, visited: dict[Vertex, bool], rec_stack: dict[Vertex, bool]):
+    def _cycles_util(self, v: Vertex, visited: dict[Vertex, bool], rec_stack: dict[Vertex, bool]):
 
       if rec_stack[v]:
         return True # Vertex already in a stack -> Cycle detected
@@ -68,7 +80,7 @@ class GraphTraits:
       rec_stack[v] = True
 
       for n in v:
-        if self.cycles_util(n, visited, rec_stack):
+        if self._cycles_util(n, visited, rec_stack):
             return True
 
       rec_stack[v] = False
@@ -85,7 +97,7 @@ class GraphTraits:
           rec_stack[v] = False
 
         for v in self.graph.vertices:
-          if not visited[v] and self.cycles_util(v, visited, rec_stack):
+          if not visited[v] and self._cycles_util(v, visited, rec_stack):
             self.has_cycles = True # Cycle found
             return
 
@@ -94,10 +106,23 @@ class GraphTraits:
 
     def check_if_full(self) -> None:
         n = len(self.graph.vertices)
-        self.is_full = (len(self.graph.edges) == n*(n-1)/2)
+        self.is_full = (len(self.graph.edges) == n*(n-1))
 
     def check_if_empty(self) -> None:
-        if self.graph.edges is []:
+        if self.graph.edges == []:
            self.is_empty = True
+           return
         self.is_empty = False
+
+    @staticmethod
+    def get_traits(g: Graph) -> "GraphTraits":
+        gt: GraphTraits = GraphTraits(g)
+        gt.check_if_grid()
+        gt.get_grid_level()
+        gt.check_if_negative()
+        gt.check_if_has_cycles()
+        gt.check_if_full()
+        gt.check_if_empty()
+
+        return gt
 
