@@ -97,12 +97,16 @@ class _Algorithm:
                     distance_from_start[s] = new_path
                     previous_edge[s] = e
 
+        print("Distance:")
+        for k, v in distance_from_start.items():
+            print(k.name, v)
+
         for e in graph.edges:
             p: Vertex = e.predecessor
             s: Vertex = e.successor
 
             new_path: float = distance_from_start[p] + e.value
-            if new_path < distance_from_start[s] + e.value:
+            if new_path < distance_from_start[s]:
                 raise LibgraphyError("Negative cycle found!")
 
         path: Path = Path(graph)
