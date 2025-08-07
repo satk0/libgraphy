@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Path"]
 
-from typing import TYPE_CHECKING, Self, Dict
+from typing import TYPE_CHECKING, Self, Dict, Optional
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
     from .vertex import Vertex

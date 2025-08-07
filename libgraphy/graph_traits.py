@@ -2,7 +2,6 @@ from .graph import Graph
 from .vertex import Vertex
 from .exception import LibgraphyError
 
-# TODO: Test
 class GraphTraits:
 
     def __init__(self, g: Graph) -> None:

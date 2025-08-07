@@ -8,11 +8,14 @@ Directed Graph Library Project
 * [x] - Graph class
 * [x] - Djikstra Algorithm
 * [x] - Make Edge constructor take strings as vertices names
-* [ ] - Graph to CSGraph/NetworkX (static method)
-* [ ] - CSGraph/NetworkX to Graph (static method)
-* [ ] - Read graph from JSON file
-* [ ] - Write graph to JSON file
-* [ ] - Check if graph is grid
+* [x] - Graph to CSGraph/NetworkX (static method)
+* [x] - CSGraph/NetworkX to Graph (static method)
+* [x] - Read graph from JSON file
+* [x] - Write graph to JSON file
+* [x] - Check if graph is a grid
+* [x] - GraphTraits class
+* [ ] - A* algorithm
+* [ ] - JPS algorithm
 
 # Setup
 

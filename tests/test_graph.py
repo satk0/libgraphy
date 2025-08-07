@@ -1,12 +1,22 @@
 import unittest
 
-# from _pytest.monkeypatch import MonkeyPatch
 import pytest
 
-from csv import reader
 import tempfile
 
-from libgraphy import Vertex, Edge, Graph
+try:
+    import networkx as nx
+    nx_found = True
+except ImportError:
+    nx_found = False
+
+try:
+    from scipy.sparse import csr_matrix
+    scipy_found = True
+except ImportError:
+    scipy_found = False
+
+from libgraphy import Vertex, Edge, Graph, LibgraphyError
 from libgraphy.utils import _DebugGraphviz
 from .utils import assert_compare_graph_values, create_test_graph
 
@@ -204,6 +214,89 @@ class TestGraph(unittest.TestCase):
         graph = Graph.read_from_json_file('./tests/fixtures/graph_to_read_from.json')
 
         assert_compare_graph_values(graph, expected_graph)
+
+    def test_to_networkx_repeated(self):
+        if not nx_found:
+            return
+
+        g: Graph = Graph()
+
+        for _ in range(5):
+            g += Vertex(1)
+
+        for i in range(len(g.vertices) - 1):
+            g += Edge(g.vertices[i], g.vertices[i+1], i)
+
+        nxg: nx.DiGraph = Graph.to_networkx(g)
+        assert "{}".format(nxg.edges.data()) == "[(1, '1_0', {'weight': 0}), ('1_0', '1_1', {'weight': 1}), ('1_1', '1_2', {'weight': 2}), ('1_2', '1_3', {'weight': 3})]"
+
+    def test_to_networkx_normal(self):
+        if not nx_found:
+            return
+
+        g: Graph = self.repr_init_graph()
+        nxg: nx.DiGraph = Graph.to_networkx(g)
+
+        assert "{}".format(nxg.edges.data()) == "[(1, 2, {'weight': 2}), (1, 'c', {'weight': 3}), ('c', 2, {'weight': -3}), ('c', 1, {'weight': 'aa'})]"
+
+    def test_from_networkx(self):
+        if not nx_found:
+            return
+
+        nxg: nx.DiGraph = nx.DiGraph()
+
+        for i in range(10):
+            nxg.add_edge(i, i+1, weight = i)
+
+        g: Graph = Graph.from_networkx(nxg)
+
+        # To check run: print(repr(str(g)))
+        assert str(g) == 'Vertices:\n{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}\nEdges:\nw_01 = 0; w_12 = 1; w_23 = 2; w_34 = 3; w_45 = 4; w_56 = 5; w_67 = 6; w_78 = 7; w_89 = 8; w_910 = 9; '
+
+    def test_to_csgraph(self):
+        if not scipy_found:
+            return
+
+        g: Graph = Graph()
+        for i in range(5):
+            g += Vertex(str(i))
+
+        for i in range(4):
+            g += Edge(g.vertices[i], g.vertices[i+1], i+1)
+        g += Edge(g.vertices[-1], g.vertices[0], 0.64)
+
+        csg: csr_matrix = Graph.to_csgraph(g)
+        print(repr(str(csg.toarray())))
+
+        assert str(csg.toarray()) == "[[0.   1.   0.   0.   0.  ]\n [0.   0.   2.   0.   0.  ]\n [0.   0.   0.   3.   0.  ]\n [0.   0.   0.   0.   4.  ]\n [0.64 0.   0.   0.   0.  ]]"
+
+    def test_to_csgraph_error(self):
+        if not scipy_found:
+            return
+
+        g: Graph = Graph()
+        for i in range(5):
+            g += Vertex(str(i))
+
+        for i in range(4):
+            g += Edge(g.vertices[i], g.vertices[i+1], str(i+1))
+
+        with pytest.raises(LibgraphyError):
+            csg: csr_matrix = Graph.to_csgraph(g) # Error: not using int or float
+
+    def test_from_csgraph(self):
+        adjacency_matrix = [
+            [0, 1, 2, 0],
+            [0, 0, 0, 1],
+            [2, 0, 0, 3],
+            [0, 0, 0, 0]]
+
+        csg: csr_matrix = csr_matrix(adjacency_matrix)
+
+        g: Graph = Graph.from_csgraph(csg)
+
+        assert str(g) == "Vertices:\n{0, 1, 2, 3}\nEdges:\nw_01 = 1; w_02 = 2; w_13 = 1; w_20 = 2; w_23 = 3; "
+
 
 
 # TODO: FIX THIS SOMEDAY:

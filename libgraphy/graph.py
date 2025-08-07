@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Graph"]
 
-from typing import TYPE_CHECKING, Self, Dict, Optional, Any, cast
+from typing import TYPE_CHECKING, Self, Dict, Optional, Any, cast, Literal
 if TYPE_CHECKING: # pragma: no cover
     from .path import Path
 
@@ -29,6 +29,12 @@ except ImportError:
     nx_found = False
 
 try:
+    from scipy.sparse import csr_matrix
+    scipy_found = True
+except ImportError:
+    scipy_found = False
+
+try:
     import IPython.display as ipds
     ipds_found = True
 except ImportError:
@@ -40,7 +46,7 @@ class Graph:
 
     __algorithms: Dict[AlgorithmEnum, _AlgorithmFunction] = {
             AlgorithmEnum.DIJKSTRA: _Algorithm.dijkstra,
-            AlgorithmEnum.BELLMANFORD: _Algorithm.bellmanFord
+            AlgorithmEnum.BELLMANFORD: _Algorithm.bellman_ford
     }
 
     # TODO: implement incidence matrix
@@ -240,9 +246,9 @@ class Graph:
         vertices: dict[Vertex, Any] = dict()
 
         for v in graph.vertices:
-            if v.name in names.keys:
-                names[v.name] += 1
+            if v.name in names.keys():
                 name = "{}_{}".format(v.name, names[v.name])
+                names[v.name] += 1
             else:
                 names[v.name] = 0
                 name = v.name
@@ -261,7 +267,7 @@ class Graph:
     @staticmethod
     def from_networkx(graph: nx.DiGraph) -> Graph:
         if not nx_found:
-            raise ImportError("No NetworkX installed")
+            raise ImportError("No NetworkX found!")
 
         g: Graph = Graph()
         vertices: dict[Any, Vertex] = {}
@@ -280,12 +286,41 @@ class Graph:
         return g
 
     @staticmethod
-    def to_scigraph(graph: Graph) -> None:
-        # TODO
-        pass
+    def to_csgraph(graph: Graph) -> csr_matrix:
+        if not scipy_found:
+            raise ImportError("No SciPy found!")
+
+        n: int = len(graph.vertices)
+        adjacency_matrix: list[list[int]] = [ [0]*n for _ in range(n) ]
+        names: Dict[Vertex, int] = {
+            vertex: i for i, vertex in enumerate(graph.vertices)
+        }
+
+        for e in graph.edges:
+            p = names[e.predecessor]
+            s = names[e.successor]
+
+            v = e.value
+            if not isinstance(v, (int, float)):
+                raise LibgraphyError("Edge value not float or integer")
+
+            adjacency_matrix[p][s] = e.value
+
+        return csr_matrix(adjacency_matrix)
 
     @staticmethod
-    def from_scigraph(graph) -> None:
-        # TODO
-        pass
+    def from_csgraph(graph: csr_matrix) -> Graph:
+        if not scipy_found:
+            raise ImportError("No SciPy found!")
+
+        cx = graph.tocoo()
+
+        g: Graph = Graph()
+        for i in range(cx.shape[0]):
+            g += Vertex(i)
+
+        for i,j,v in zip(cx.row, cx.col, cx.data):
+            g += Edge(g.vertices[i], g.vertices[j], v)
+
+        return g
 
