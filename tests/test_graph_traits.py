@@ -7,7 +7,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_weighted_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(10):
             g += Vertex(i)
 
@@ -19,7 +19,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_weighted_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -31,7 +31,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_directional_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(5):
             g += Vertex(i)
 
@@ -44,7 +44,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_directional_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(5):
             g += Vertex(i)
 
@@ -57,7 +57,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_directional_true_value(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(5):
             g += Vertex(i)
 
@@ -70,7 +70,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_grid_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(8):
             g += Vertex(i)
 
@@ -83,7 +83,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_grid_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(8):
             g += Vertex(i)
 
@@ -97,7 +97,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_get_grid_level4(self):
         g: Graph = grid_level4_graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
 
         gt.check_if_grid()
         gt.get_grid_level()
@@ -105,7 +105,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_get_grid_level6(self):
         g: Graph = grid_level6_graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
 
         gt.check_if_grid()
         gt.get_grid_level()
@@ -113,7 +113,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_get_grid_level_error(self):
         g: Graph = grid_level4_graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
 
         with pytest.raises(LibgraphyError):
             gt.get_grid_level() # Error: gridness should be checked first
@@ -121,7 +121,7 @@ class TestGraphTraits(unittest.TestCase):
     def test_get_grid_level_not_grid(self):
         g: Graph = Graph()
         g += Edge("0", "1")
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
 
         gt.check_if_grid()
         gt.get_grid_level()
@@ -129,7 +129,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_get_grid_level8(self):
         g: Graph = grid_level8_graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
 
         gt.check_if_grid()
         gt.get_grid_level()
@@ -137,7 +137,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_has_cycles_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -149,7 +149,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_has_cycles_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -162,7 +162,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_full_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(4):
             g += Vertex(i)
 
@@ -180,7 +180,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_full_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -193,7 +193,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_empty_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -202,7 +202,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_empty_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -213,7 +213,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_negative_false(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -225,7 +225,7 @@ class TestGraphTraits(unittest.TestCase):
 
     def test_check_if_negative_true(self):
         g: Graph = Graph()
-        gt: Graph.GraphTraits = Graph.GraphTraits(g)
+        gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
             g += Vertex(i)
 
@@ -240,7 +240,7 @@ class TestGraphTraits(unittest.TestCase):
     def test_get_traits(self):
         g: Graph = grid_level6_graph()
         g += Edge(g.vertices[0], g.vertices[-1], -4)
-        gt: Graph.GraphTraits = Graph.GraphTraits.get_traits(g)
+        gt: Graph.Traits = Graph.Traits.get_traits(g)
 
         assert gt.is_weighted is True
         assert gt.is_negative is True

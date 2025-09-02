@@ -207,7 +207,7 @@ class TestGraph(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdirname:
             loc = tmpdirname + "/graph.json"
             Graph.write_to_json_file(g, loc)
-            assert filecmp.cmp('./tests/fixtures/expected_graph.json', loc)
+            assert filecmp.cmp('./tests/fixtures/expected_graph.json', loc, shallow=False)
 
     def test_read_from_json(self):
         expected_graph = create_test_graph()

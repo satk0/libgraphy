@@ -13,7 +13,9 @@
      "value": 0,
      "graph": {
       "py/id": 0
-     }
+     },
+     "x": null,
+     "y": null
     },
     {
      "py/object": "libgraphy.vertex.Vertex",
@@ -57,7 +59,9 @@
      "value": 0,
      "graph": {
       "py/id": 0
-     }
+     },
+     "x": null,
+     "y": null
     }
    ],
    "adjacent_edges": [
@@ -91,7 +95,9 @@
    "value": 0,
    "graph": {
     "py/id": 0
-   }
+   },
+   "x": null,
+   "y": null
   },
   {
    "py/id": 4

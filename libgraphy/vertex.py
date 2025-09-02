@@ -12,12 +12,14 @@ from copy import deepcopy
 
 class Vertex:
 
-    def __init__(self, name: Any = "", value: Any = 0, graph: Optional[Graph] = None) -> None:
+    def __init__(self, name: Any = "", value: Any = 0, graph: Optional[Graph] = None, x: Optional[int] = None, y: Optional[int] = None) -> None:
         self.name: Any = name
         self.neighbors: list[Vertex] = []
         self.adjacent_edges: list[Edge] = [] # Distances to the neighbors
         self.value: Any = value
         self.graph: Optional[Graph] = graph
+        self.x: Optional[int] = x
+        self.y: Optional[int] = y
 
     def isConnected(self, vertex: Vertex) -> bool:
         """Checks if self is connected to vertex"""

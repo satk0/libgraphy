@@ -7,6 +7,7 @@ if TYPE_CHECKING: # pragma: no cover
     from .vertex import Vertex
     from .graph import Graph
     from .edge import Edge
+    from .heuristic import Heuristic
 
 from enum import Enum
 from .exception import LibgraphyError
@@ -97,10 +98,6 @@ class _Algorithm:
                     distance_from_start[s] = new_path
                     previous_edge[s] = e
 
-        print("Distance:")
-        for k, v in distance_from_start.items():
-            print(k.name, v)
-
         for e in graph.edges:
             p: Vertex = e.predecessor
             s: Vertex = e.successor
@@ -125,5 +122,54 @@ class _Algorithm:
         return path
 
     @staticmethod
-    def a_star(graph: Graph, start: Vertex, end: Vertex, grid_level: int) -> Path:
-        pass
+    def a_star(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
+        unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited
+
+        # Dictionary of each vertex's distance from start
+        distance_from_start: Dict[Vertex, float] = {
+            vertex: (0 if vertex == start else INFINITY) for vertex in graph.vertices
+        }
+
+        hcost: Dict[Vertex, float] = {
+            vertex: h.evaluate(vertex, end, graph) for vertex in graph.vertices
+        }
+
+        # Visited edge to reach vertex
+        previous_edge: Dict[Vertex, Optional[Edge]] = {vertex: None for vertex in graph.vertices}
+
+        while unvisited_vertices:
+            current_vertex: Vertex = min(
+                    unvisited_vertices, key=lambda vertex: hcost[vertex]
+                )
+            unvisited_vertices.remove(current_vertex)
+
+            if distance_from_start[current_vertex] == INFINITY:
+                break
+
+            for e in current_vertex.adjacent_edges:
+                s: Vertex = e.successor
+
+                new_path: float = distance_from_start[current_vertex] + e.value
+                if new_path < distance_from_start[s]:
+                    distance_from_start[s] = new_path
+                    previous_edge[s] = e
+                    hcost[s] = distance_from_start[s] + h.evaluate(s, end, graph)
+
+            if current_vertex == end:
+                break # Visited the destination vertex, finish
+
+        path: Path = Path(graph)
+        queue: Deque = deque()
+        current_vertex: Vertex = end
+
+        pe: Optional[Edge] = previous_edge[current_vertex]
+        while pe is not None:
+            queue.appendleft(pe)
+            current_vertex = pe.predecessor
+            pe = previous_edge[current_vertex]
+
+        path.edges = list(queue)
+        path.value = distance_from_start[end]
+
+        return path
+
