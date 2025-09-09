@@ -17,6 +17,6 @@ for v in vertices:
 for e in edges:
     g += e
 
-path: Path = g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
+path: Path = g.find_path(s, x, algorithm = AlgorithmEnum.DIJKSTRA)
 
 display_png(path)

@@ -44,7 +44,7 @@ def lg_bench(g: Graph, s, t) -> float:
     s, t = g.vertices[s], g.vertices[t]
 
     start = time()
-    g.findPath(AlgorithmEnum.DIJKSTRA, s, t)
+    g.find_path(s, t, algorithm = AlgorithmEnum.DIJKSTRA)
     end = time()
 
     return end - start

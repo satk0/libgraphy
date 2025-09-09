@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Self, Dict, Optional, Any, cast, Literal
 if TYPE_CHECKING: # pragma: no cover
     from .path import Path
 
+from .heuristic import Heuristic
+
 from .vertex import Vertex
 from .edge import Edge
 
@@ -170,7 +172,9 @@ class Graph:
 
     __algorithms: Dict[AlgorithmEnum, _AlgorithmFunction] = {
             AlgorithmEnum.DIJKSTRA: _Algorithm.dijkstra,
-            AlgorithmEnum.BELLMANFORD: _Algorithm.bellman_ford
+            AlgorithmEnum.BELLMAN_FORD: _Algorithm.bellman_ford,
+            AlgorithmEnum.BEST: _Algorithm.best,
+            AlgorithmEnum.A_STAR: _Algorithm.a_star
     }
 
     # TODO: implement incidence matrix
@@ -321,9 +325,11 @@ class Graph:
 
         return latex_txt
 
-    def findPath(self, algorithm: AlgorithmEnum, start: Vertex, end: Vertex) -> Path:
+    def find_path(self, start: Vertex, end: Vertex, heuristic: Heuristic = Heuristic(), algorithm: AlgorithmEnum = AlgorithmEnum.BEST) -> Path:
+        print(f"LOOL: {algorithm}")
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
-        p: Path = path_algorithm(self, start, end)
+        print(path_algorithm)
+        p: Path = path_algorithm(self, start, end, heuristic)
         return p
 
     def incidence(self, weighted: bool):

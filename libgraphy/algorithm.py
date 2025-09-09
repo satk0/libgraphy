@@ -9,25 +9,26 @@ if TYPE_CHECKING: # pragma: no cover
     from .edge import Edge
     from .heuristic import Heuristic
 
-from enum import Enum
+from enum import Enum, auto
 from .exception import LibgraphyError
 
 from .path import Path
 
 from collections import deque 
 
-type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex], Path]
+type _AlgorithmFunction = Callable[[Graph, Vertex, Vertex, Heuristic], Path]
 
 INFINITY = float("inf")
 
 class AlgorithmEnum(Enum):
-    DIJKSTRA = 1
-    BELLMANFORD = 2
-    ASTAR = 2
+    DIJKSTRA = auto()
+    BELLMAN_FORD = auto()
+    A_STAR = auto()
+    BEST = auto()
 
 class _Algorithm:
     @staticmethod
-    def dijkstra(graph: Graph, start: Vertex, end: Vertex) -> Path:
+    def dijkstra(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
         # Taken and tweaked form of the following code:
         # https://github.com/dmahugh/dijkstra-algorithm/blob/master/dijkstra_algorithm.py
         unvisited_vertices: list[Vertex] = [* graph.vertices]  # All vertices are initially unvisited
@@ -76,8 +77,9 @@ class _Algorithm:
         return path
 
     @staticmethod
-    def bellman_ford(graph: Graph, start: Vertex, end: Vertex) -> Path:
-    # https://gist.github.com/ngenator/6178728
+    def bellman_ford(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
+        print("xd?")
+        # https://gist.github.com/ngenator/6178728
         # Dictionary of each vertex's distance from start
         distance_from_start: Dict[Vertex, float] = {
             vertex: (0 if vertex == start else INFINITY) for vertex in graph.vertices
@@ -172,4 +174,18 @@ class _Algorithm:
         path.value = distance_from_start[end]
 
         return path
+
+    @staticmethod
+    def best(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
+        gt: Graph.Traits = Graph.Traits(graph)
+        gt.check_if_grid()
+        gt.check_if_negative()
+
+        if gt.is_grid is True:
+            return _Algorithm.a_star(graph, start, end, h)
+        elif gt.is_negative is True:
+            return _Algorithm.bellman_ford(graph, start, end, h)
+        else:
+            return _Algorithm.dijkstra(graph, start, end, h)
+
 

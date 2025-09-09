@@ -71,7 +71,7 @@ class TestPath(unittest.TestCase):
 
         g = create_test_graph()
         s, x = g.vertices[0], g.vertices[2]
-        path: Path = g.findPath(AlgorithmEnum.DIJKSTRA, s, x)
+        path: Path = g.find_path(s, x, algorithm = AlgorithmEnum.DIJKSTRA)
 
         dbg = _DebugGraphviz()
         path._repr_svg_(dbg = dbg)

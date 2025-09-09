@@ -124,3 +124,86 @@ def grid_level8_graph() -> Graph:
     g += Edge(g.vertices[3], g.vertices[-1])
 
     return g
+
+def create_grid_graph(m: int, n: int) -> Graph:
+    g: Graph = Graph()
+
+    for r in range(m):
+        for c in range(n):
+            g += Vertex(f"{c},{r}")
+
+            g.vertices[r * n + c].x = c
+            g.vertices[r * n + c].y = r
+
+            if c != 0:
+                g.vertices[r * n + c - 1] += g.vertices[r * n + c]
+                g.vertices[r * n + c] += g.vertices[r * n + c - 1]
+
+            if r == 0:
+                continue
+
+            g.vertices[r * n + c] += g.vertices[(r - 1) * n + c]
+            g.vertices[(r - 1) * n + c] += g.vertices[r * n + c]
+
+    return g
+
+def create_hexagonal_flat_graph(m: int, n: int) -> Graph:
+    g: Graph = Graph()
+
+    for r in range(m):
+        for c in range(n):
+            g += Vertex(f"{c},{r}")
+
+            g.vertices[r * n + c].x = c
+            g.vertices[r * n + c].y = r
+
+            if c != 0:
+                g.vertices[r * n + c - 1] += g.vertices[r * n + c]
+                g.vertices[r * n + c] += g.vertices[r * n + c - 1]
+
+            if c % 2 == 0 and r != 0:
+                if c != n - 1:
+                    g.vertices[r * n + c] += g.vertices[(r - 1) * n + c + 1]
+                    g.vertices[(r - 1) * n + c + 1] += g.vertices[r * n + c]
+                if c != 0:
+                    g.vertices[r * n + c] += g.vertices[(r - 1) * n + c - 1]
+                    g.vertices[(r - 1) * n + c - 1] += g.vertices[r * n + c]
+
+            if r != 0:
+                g.vertices[(r - 1) * n + c] += g.vertices[r * n + c]
+                g.vertices[r * n + c] += g.vertices[(r - 1) * n + c]
+
+    return g
+
+def create_octogonal_graph(m: int, n: int) -> Graph:
+    g: Graph = Graph()
+
+    for r in range(m):
+        for c in range(n):
+            g += Vertex(f"{c},{r}")
+
+            g.vertices[r * n + c].x = c
+            g.vertices[r * n + c].y = r
+
+            if c != 0:
+                g.vertices[r * n + c] += g.vertices[r * n + c - 1]
+                g.vertices[r * n + c - 1] += g.vertices[r * n + c]
+
+            if r == 0:
+                continue
+
+            if c != 0:
+                g.vertices[r * n + c] += g.vertices[(r - 1) * n + c - 1]
+                g.vertices[(r - 1) * n + c - 1] += g.vertices[r * n + c]
+
+            if c != n - 1:
+                g.vertices[r * n + c] += g.vertices[(r - 1) * n + c + 1]
+                g.vertices[(r - 1) * n + c + 1] += g.vertices[r * n + c]
+
+            g.vertices[r * n + c] += g.vertices[(r - 1) * n + c]
+            g.vertices[(r - 1) * n + c] += g.vertices[r * n + c]
+
+    return g
+
+
+

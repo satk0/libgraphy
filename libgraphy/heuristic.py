@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 __all__ = ["Heuristic", "ManhattanDistance", "HexagonalManhattanDistance", "ChebyshevDistance"]
 
 from typing import TYPE_CHECKING
-# if TYPE_CHECKING:
-from .vertex import Vertex
-from .graph import Graph
+if TYPE_CHECKING:
+    from .vertex import Vertex
+    from .graph import Graph
 
 INFINITY = float("inf")
 
