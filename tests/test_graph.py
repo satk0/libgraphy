@@ -298,7 +298,6 @@ class TestGraph(unittest.TestCase):
         assert str(g) == "Vertices:\n{0, 1, 2, 3}\nEdges:\nw_01 = 1; w_02 = 2; w_13 = 1; w_20 = 2; w_23 = 3; "
 
 
-
 # TODO: FIX THIS SOMEDAY:
 '''
 

@@ -326,9 +326,7 @@ class Graph:
         return latex_txt
 
     def find_path(self, start: Vertex, end: Vertex, heuristic: Heuristic = Heuristic(), algorithm: AlgorithmEnum = AlgorithmEnum.BEST) -> Path:
-        print(f"LOOL: {algorithm}")
         path_algorithm: _AlgorithmFunction = self.__algorithms[algorithm]
-        print(path_algorithm)
         p: Path = path_algorithm(self, start, end, heuristic)
         return p
 
@@ -453,4 +451,15 @@ class Graph:
             g += Edge(g.vertices[i], g.vertices[j], v)
 
         return g
+
+    def get_traits(self) -> Graph.Traits:
+        gt: Graph.Traits = Graph.Traits(self)
+        gt.check_if_grid()
+        gt.get_grid_level()
+        gt.check_if_negative()
+        gt.check_if_has_cycles()
+        gt.check_if_full()
+        gt.check_if_empty()
+
+        return gt
 

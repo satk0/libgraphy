@@ -78,7 +78,6 @@ class _Algorithm:
 
     @staticmethod
     def bellman_ford(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
-        print("xd?")
         # https://gist.github.com/ngenator/6178728
         # Dictionary of each vertex's distance from start
         distance_from_start: Dict[Vertex, float] = {
@@ -133,7 +132,7 @@ class _Algorithm:
         }
 
         hcost: Dict[Vertex, float] = {
-            vertex: h.evaluate(vertex, end, graph) for vertex in graph.vertices
+            vertex: distance_from_start[vertex] + h.evaluate(vertex, end, graph) for vertex in graph.vertices
         }
 
         # Visited edge to reach vertex
@@ -146,19 +145,20 @@ class _Algorithm:
             unvisited_vertices.remove(current_vertex)
 
             if distance_from_start[current_vertex] == INFINITY:
-                break
+                continue
 
             for e in current_vertex.adjacent_edges:
                 s: Vertex = e.successor
 
                 new_path: float = distance_from_start[current_vertex] + e.value
+
                 if new_path < distance_from_start[s]:
                     distance_from_start[s] = new_path
                     previous_edge[s] = e
                     hcost[s] = distance_from_start[s] + h.evaluate(s, end, graph)
 
-            if current_vertex == end:
-                break # Visited the destination vertex, finish
+            # if current_vertex == end:
+            #     break # Visited the destination vertex, finish
 
         path: Path = Path(graph)
         queue: Deque = deque()
@@ -177,9 +177,7 @@ class _Algorithm:
 
     @staticmethod
     def best(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
-        gt: Graph.Traits = Graph.Traits(graph)
-        gt.check_if_grid()
-        gt.check_if_negative()
+        gt: Graph.Traits = graph.get_traits()
 
         if gt.is_grid is True:
             return _Algorithm.a_star(graph, start, end, h)
