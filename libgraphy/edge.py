@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Edge"]
 
-from typing import Optional, Self, Any, TYPE_CHECKING
+from typing import Optional, Self, Any, TYPE_CHECKING, override
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
 
@@ -40,7 +40,7 @@ class Edge:
         # Don't change the order of errors !!
         for e in graph.edges:
             if e.successor is self.successor and e.predecessor is self.predecessor:
-                raise LibgraphyError("Edge already exists")
+                raise LibgraphyError(f"Edge already exists ({e.predecessor}->{e.successor})")
 
         if self.graph is not None:
             raise LibgraphyError("Edge belongs to a different graph")
@@ -95,3 +95,32 @@ class Edge:
 
     # ***************************
 
+class _EdgeList(list):
+    def __init__(self, graph: Optional[Graph] = None) -> None:
+        self.graph: Optional[Graph] = graph
+
+    def start_at(self, start_vertex: Vertex) -> _EdgeList:
+        startingAt = _EdgeList()
+        startingAt.graph = start_vertex.graph
+        for e in self:
+            if e.predecessor == start_vertex:
+                startingAt.append(e)
+        return startingAt
+
+    def end_at(self, end_vertex: Vertex) -> _EdgeList:
+        endingAt = _EdgeList()
+        endingAt.graph = end_vertex.graph
+        for e in self:
+            if e.successor == end_vertex:
+                endingAt.append(e)
+        return endingAt
+
+    @override
+    def __getitem__(self, key: Any) -> Edge|None:
+        if isinstance(key, tuple):
+            for e in self:
+                if e.predecessor == key[0] and e.successor == key[1]:
+                    return e
+            return None
+        else:
+            return super().__getitem__(key)

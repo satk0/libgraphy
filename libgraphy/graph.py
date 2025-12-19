@@ -9,7 +9,7 @@ if TYPE_CHECKING: # pragma: no cover
 from .heuristic import Heuristic
 
 from .vertex import Vertex
-from .edge import Edge
+from .edge import Edge, _EdgeList
 
 from .algorithm import _Algorithm, _AlgorithmFunction, AlgorithmEnum
 from .exception import LibgraphyError
@@ -180,7 +180,7 @@ class Graph:
     # TODO: implement incidence matrix
     def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
-        self.edges: list[Edge] = []
+        self.edges: _EdgeList[Edge] = _EdgeList()
 
     # get i-th vertex of the graph
     def __getitem__(self, key: int) -> Vertex:
@@ -331,10 +331,6 @@ class Graph:
         return p
 
     def incidence(self, weighted: bool):
-        # TODO
-        pass
-
-    def isGrid(self):
         # TODO
         pass
 
