@@ -2,6 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Graph"]
 
+from random import uniform, randrange
 from typing import TYPE_CHECKING, Self, Dict, Optional, Any, cast, Literal
 if TYPE_CHECKING: # pragma: no cover
     from .path import Path
@@ -459,3 +460,35 @@ class Graph:
 
         return gt
 
+    def trim_vertices(self) -> Graph:
+        # Find all destination vertices
+        used = []
+        for e in self.edges:
+            if e.predecessor not in used:
+                used.append(e.predecessor)
+            if e.successor not in used:
+                used.append(e.successor)
+
+        self.vertices = [v for v in self.vertices if v in used]
+        return self
+
+    def randomize_cost(self, lower_bound: float = 0.0, upper_bound: float = 1.0) -> Graph:
+        for e in self.edges:
+            e.value = uniform(lower_bound, upper_bound)
+        return self
+
+    def normalize_cost(self, min_value: float = 0.0, max_value: float = 1.0) -> Graph:
+        # Find min and max
+        minimum = min(self.edges, key=lambda x: x.value).value
+        maximum = max(self.edges, key=lambda x: x.value).value
+
+        # Normalize
+        for e in self.edges:
+            e.value = (e.value-minimum)/(maximum-minimum) * (max_value-min_value) + min_value
+        return self
+
+    def randomize_positions(self, min_x: int = -100, max_x: int = 100, min_y: int = -100, max_y: int = 100) -> Graph:
+        for v in self.vertices:
+            v.x = randrange(min_x, max_x)
+            v.y = randrange(min_y, max_y)
+        return self

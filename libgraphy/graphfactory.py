@@ -8,9 +8,10 @@ from random import *
 
 from enum import Enum, auto
 
-#from .graph import Graph
-#from .vertex import Vertex
-#from .edge import Edge
+from .graph import Graph
+from .vertex import Vertex
+from .edge import Edge
+from .exception import LibgraphyError
 
 class GraphFactory:
     class TypeEnum(Enum):
