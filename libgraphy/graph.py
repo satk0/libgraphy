@@ -52,7 +52,7 @@ class Graph:
         def __init__(self, g: Graph) -> None:
             self.graph: Graph = g
             self.is_weighted: bool|None = None
-            self.is_negative: bool|None = None
+            self.has_negative_edges: bool|None = None
             self.is_directional: bool|None = None
             self.is_grid: bool|None = None
             self.grid_level: int|None = None
@@ -68,12 +68,12 @@ class Graph:
             self.is_weighted = False
 
         # TODO: test
-        def check_if_negative(self) -> None:
+        def check_if_negative_edges(self) -> None:
             for e in self.graph.edges:
                 if e.value < 0:
-                    self.is_negative = True
+                    self.has_negative_edges = True
                     return
-            self.is_negative = False
+            self.has_negative_edges = False
 
         def check_if_directional(self) -> None:
             visited: set[Vertex] = set()
@@ -163,7 +163,7 @@ class Graph:
             gt: Graph.Traits = Graph.Traits(g)
             gt.check_if_grid()
             gt.get_grid_level()
-            gt.check_if_negative()
+            gt.check_if_negative_edges()
             gt.check_if_has_cycles()
             gt.check_if_full()
             gt.check_if_empty()
@@ -453,7 +453,7 @@ class Graph:
         gt: Graph.Traits = Graph.Traits(self)
         gt.check_if_grid()
         gt.get_grid_level()
-        gt.check_if_negative()
+        gt.check_if_negative_edges()
         gt.check_if_has_cycles()
         gt.check_if_full()
         gt.check_if_empty()

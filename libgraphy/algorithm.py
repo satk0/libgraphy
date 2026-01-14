@@ -181,7 +181,7 @@ class _Algorithm:
 
         if gt.is_grid is True:
             return _Algorithm.a_star(graph, start, end, h)
-        elif gt.is_negative is True:
+        elif gt.has_negative_edges is True:
             return _Algorithm.bellman_ford(graph, start, end, h)
         else:
             return _Algorithm.dijkstra(graph, start, end, h)

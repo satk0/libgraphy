@@ -211,7 +211,7 @@ class TestGraphTraits(unittest.TestCase):
         gt.check_if_empty()
         assert gt.is_empty is False
 
-    def test_check_if_negative_false(self):
+    def test_check_if_negative_edges_false(self):
         g: Graph = Graph()
         gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
@@ -220,10 +220,10 @@ class TestGraphTraits(unittest.TestCase):
         for i in range(5):
             g += Edge(g.vertices[i], g.vertices[i+1], i)
 
-        gt.check_if_negative()
-        assert gt.is_negative is False
+        gt.check_if_negative_edges()
+        assert gt.has_negative_edges is False
 
-    def test_check_if_negative_true(self):
+    def test_check_if_negative_edges_true(self):
         g: Graph = Graph()
         gt: Graph.Traits = Graph.Traits(g)
         for i in range(6):
@@ -234,8 +234,8 @@ class TestGraphTraits(unittest.TestCase):
 
         g += Edge(g.vertices[3], g.vertices[0], -3)
 
-        gt.check_if_negative()
-        assert gt.is_negative is True
+        gt.check_if_negative_edges()
+        assert gt.has_negative_edges is True
 
     def test_traits(self):
         g: Graph = grid_level6_graph()
@@ -243,7 +243,7 @@ class TestGraphTraits(unittest.TestCase):
         gt: Graph.Traits = Graph.Traits.traits(g)
 
         assert gt.is_weighted is True
-        assert gt.is_negative is True
+        assert gt.has_negative_edges is True
         assert gt.is_directional is True
         assert gt.is_grid is False
         assert gt.grid_level is None
