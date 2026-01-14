@@ -237,10 +237,10 @@ class TestGraphTraits(unittest.TestCase):
         gt.check_if_negative()
         assert gt.is_negative is True
 
-    def test_get_traits(self):
+    def test_traits(self):
         g: Graph = grid_level6_graph()
         g += Edge(g.vertices[0], g.vertices[-1], -4)
-        gt: Graph.Traits = Graph.Traits.get_traits(g)
+        gt: Graph.Traits = Graph.Traits.traits(g)
 
         assert gt.is_weighted is True
         assert gt.is_negative is True

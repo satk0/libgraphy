@@ -177,7 +177,7 @@ class _Algorithm:
 
     @staticmethod
     def best(graph: Graph, start: Vertex, end: Vertex, h: Heuristic) -> Path:
-        gt: Graph.Traits = graph.get_traits()
+        gt: Graph.Traits = graph.traits()
 
         if gt.is_grid is True:
             return _Algorithm.a_star(graph, start, end, h)

@@ -116,8 +116,8 @@ def test_grid():
         assert e.value == 1
 
     # Assert whether traits are correct
-    assert g.get_traits().is_grid == True
-    assert g.get_traits().grid_level == 5
+    assert g.traits().is_grid == True
+    assert g.traits().grid_level == 5
 
 
 def test_square_grid():
@@ -134,8 +134,8 @@ def test_square_grid():
         assert e.value == 1
 
     # Assert whether traits are correct
-    assert g.get_traits().is_grid == True
-    assert g.get_traits().grid_level == 4
+    assert g.traits().is_grid == True
+    assert g.traits().grid_level == 4
 
 
 def test_triangle_grid():
@@ -152,8 +152,8 @@ def test_triangle_grid():
         assert e.value == 1
 
     # Assert whether traits are correct
-    assert g.get_traits().is_grid == True
-    assert g.get_traits().grid_level == 6
+    assert g.traits().is_grid == True
+    assert g.traits().grid_level == 6
 
 from libgraphy.heuristic import *
 def test_maze():
@@ -170,7 +170,7 @@ def test_maze():
         assert e.value == 1
 
     # Assert whether path exists
-    assert g.get_traits().grid_level == 4
+    assert g.traits().grid_level == 4
     assert g.find_path(g.vertices[29], g.vertices[51], algorithm=AlgorithmEnum.DIJKSTRA).value == 8
 
 def test_square_grid_maze():
@@ -191,7 +191,7 @@ def test_square_grid_maze():
         assert e.value == 1
 
     # Assert whether path exists
-    assert g.get_traits().grid_level == 4
+    assert g.traits().grid_level == 4
 
     # Assert whether maze is traversable
     for v_start in range(len(g.vertices)-1):

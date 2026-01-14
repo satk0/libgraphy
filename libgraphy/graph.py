@@ -159,7 +159,7 @@ class Graph:
             self.is_empty = False
 
         @staticmethod
-        def get_traits(g: Graph) -> Graph.Traits:
+        def traits(g: Graph) -> Graph.Traits:
             gt: Graph.Traits = Graph.Traits(g)
             gt.check_if_grid()
             gt.get_grid_level()
@@ -449,7 +449,7 @@ class Graph:
 
         return g
 
-    def get_traits(self) -> Graph.Traits:
+    def traits(self) -> Graph.Traits:
         gt: Graph.Traits = Graph.Traits(self)
         gt.check_if_grid()
         gt.get_grid_level()
