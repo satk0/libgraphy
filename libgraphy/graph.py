@@ -16,6 +16,7 @@ from .algorithm import _Algorithm, _AlgorithmFunction, AlgorithmEnum
 from .exception import LibgraphyError
 
 import jsonpickle
+import json
 
 from .utils import _ImgFormat, _DebugGraphviz
 
@@ -46,6 +47,11 @@ except ImportError:
 from copy import deepcopy
 
 class Graph:
+
+    class Format(Enum):
+        JSON = auto()
+        NETWORKX = auto()
+        CSGRAPH = auto()
 
     class Traits:
 
@@ -334,6 +340,30 @@ class Graph:
     def incidence(self, weighted: bool):
         # TODO
         pass
+
+    @staticmethod
+    def read(graph: str | nx.DiGraph | csr_matrix) -> Graph:
+        if isinstance(graph, nx.DiGraph):
+            return Graph.from_networkx(graph)
+        elif isinstance(graph, csr_matrix):
+            return Graph.from_csgraph(graph)
+        else:
+            try:
+                json.loads(graph)
+            except:
+                raise LibgraphyError("Unsupported graph type!")
+            return Graph.from_json(graph)
+
+    @staticmethod
+    def write(graph: Graph, format: Graph.Format = Graph.Format.JSON) -> str | nx.DiGraph | csr_matrix:
+        if format == Graph.Format.JSON:
+            return Graph.to_json(graph)
+        elif format == Graph.Format.NETWORKX:
+            return Graph.to_networkx(graph)
+        elif format == Graph.Format.CSGRAPH:
+            return Graph.to_csgraph(graph)
+        else:
+            raise LibgraphyError('Unsupported format!')
 
     @staticmethod
     def to_json(graph: Graph) -> str:
