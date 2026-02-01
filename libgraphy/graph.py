@@ -67,6 +67,47 @@ class Graph:
             self.is_full: bool|None = None
             self.is_empty: bool|None = None
 
+        def __repr__(self) -> str:
+            repr_txt = "Graph traits:\n"
+
+            repr_txt += '  is_weighted: ' + str(self.is_weighted) + '\n'
+            repr_txt += '  has_negative_edges: ' + str(self.has_negative_edges) + '\n'
+            repr_txt += '  is_directional: ' + str(self.is_directional) + '\n'
+            repr_txt += '  is_grid: ' + str(self.is_grid) + '\n'
+            repr_txt += '  grid_level: ' + str(self.grid_level) + '\n'
+            repr_txt += '  has_cycles: ' + str(self.has_cycles) + '\n'
+            repr_txt += '  is_full: ' + str(self.is_full) + '\n'
+            repr_txt += '  is_empty: ' + str(self.is_empty)
+
+            return repr_txt
+
+        def _repr_latex_(self) -> str:
+
+            latex_txt = r"$$\begin{gathered}" + '\n'
+
+            latex_txt += r"Graph\ traits:"
+            latex_txt += r" \\\\" + ' \n'
+
+            latex_txt += r'  is\_weighted: ' + str(self.is_weighted) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  has\_negative\_edges: ' + str(self.has_negative_edges) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  is\_directional: ' + str(self.is_directional) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  is\_grid: ' + str(self.is_grid) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  grid\_level: ' + str(self.grid_level) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  has\_cycles: ' + str(self.has_cycles) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  is\_full: ' + str(self.is_full) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  is\_empty: ' + str(self.is_empty)
+
+            latex_txt += r"\end{gathered}$$"
+
+            return latex_txt
+
         def check_if_weighted(self) -> None:
             for e in self.graph.edges:
                 if e.value != 1:
