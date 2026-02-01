@@ -176,6 +176,22 @@ class TestGraph(unittest.TestCase):
             assert he.value == 4 * ge.value
             assert he.graph is not g and ge.graph is g
 
+    def test_write(self):
+        g = TestGraph.repr_init_graph()
+
+        expected = Graph.to_json(g)
+        s = Graph.write(g)
+
+        assert s == expected
+
+    def test_read(self):
+        g = TestGraph.repr_init_graph()
+
+        s = Graph.to_json(g)
+        ng = Graph.read(s)
+
+        assert_compare_graph_values(g, ng)
+
     def test_to_json(self):
         g = TestGraph.repr_init_graph()
 

@@ -15,6 +15,8 @@ from .edge import Edge, _EdgeList
 from .algorithm import _Algorithm, _AlgorithmFunction, AlgorithmEnum
 from .exception import LibgraphyError
 
+from enum import Enum, auto
+
 import jsonpickle
 import json
 
@@ -46,13 +48,12 @@ except ImportError:
 
 from copy import deepcopy
 
+class GraphFormat(Enum):
+    JSON = auto()
+    NETWORKX = auto()
+    CSGRAPH = auto()
+
 class Graph:
-
-    class Format(Enum):
-        JSON = auto()
-        NETWORKX = auto()
-        CSGRAPH = auto()
-
     class Traits:
 
         def __init__(self, g: Graph) -> None:
@@ -355,12 +356,12 @@ class Graph:
             return Graph.from_json(graph)
 
     @staticmethod
-    def write(graph: Graph, format: Graph.Format = Graph.Format.JSON) -> str | nx.DiGraph | csr_matrix:
-        if format == Graph.Format.JSON:
+    def write(graph: Graph, format: GraphFormat = GraphFormat.JSON) -> str | nx.DiGraph | csr_matrix:
+        if format == GraphFormat.JSON:
             return Graph.to_json(graph)
-        elif format == Graph.Format.NETWORKX:
+        elif format == GraphFormat.NETWORKX:
             return Graph.to_networkx(graph)
-        elif format == Graph.Format.CSGRAPH:
+        elif format == GraphFormat.CSGRAPH:
             return Graph.to_csgraph(graph)
         else:
             raise LibgraphyError('Unsupported format!')
