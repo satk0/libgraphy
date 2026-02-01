@@ -14,7 +14,7 @@ class TestHeuristic(unittest.TestCase):
         h = Heuristic()
 
         for v in g.vertices:
-            expected_val = INFINITY
+            expected_val = 0
             for e in v.adjacent_edges:
                 if e.successor == end:
                     expected_val = e.value

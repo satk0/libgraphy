@@ -14,7 +14,7 @@ class Heuristic:
         for e in g.edges:
             if e.predecessor == v1 and e.successor == v2:
                 return e.value
-        return INFINITY
+        return 0
 
 class ManhattanDistance(Heuristic):
     def evaluate(self, v1: Vertex, v2: Vertex, g: Graph):

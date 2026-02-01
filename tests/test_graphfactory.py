@@ -196,8 +196,7 @@ def test_square_grid_maze():
     # Assert whether maze is traversable
     for v_start in range(len(g.vertices)-1):
         for v_end in range(v_start+1, len(g.vertices)):
-            #TODO: change to BEST when it gets fixed
-            assert g.find_path(g.vertices[v_start], g.vertices[v_end], algorithm=AlgorithmEnum.DIJKSTRA).value != INFINITY
+            assert g.find_path(g.vertices[v_start], g.vertices[v_end]).value != INFINITY
 
 
 def test_ring():

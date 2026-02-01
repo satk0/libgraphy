@@ -180,6 +180,7 @@ class _Algorithm:
         gt: Graph.Traits = graph.traits()
 
         if gt.is_grid is True:
+            print("ASTAR")
             return _Algorithm.a_star(graph, start, end, h)
         elif gt.has_negative_edges is True:
             return _Algorithm.bellman_ford(graph, start, end, h)
