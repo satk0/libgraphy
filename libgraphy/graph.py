@@ -66,6 +66,7 @@ class Graph:
             self.has_cycles: bool|None = None
             self.is_full: bool|None = None
             self.is_empty: bool|None = None
+            self.is_connected: bool|None = None
 
         def __repr__(self) -> str:
             repr_txt = "Graph traits:\n"
@@ -77,7 +78,8 @@ class Graph:
             repr_txt += '  grid_level: ' + str(self.grid_level) + '\n'
             repr_txt += '  has_cycles: ' + str(self.has_cycles) + '\n'
             repr_txt += '  is_full: ' + str(self.is_full) + '\n'
-            repr_txt += '  is_empty: ' + str(self.is_empty)
+            repr_txt += '  is_empty: ' + str(self.is_empty) + '\n'
+            repr_txt += '  is_connected: '+ str(self.is_connected)
 
             return repr_txt
 
@@ -102,7 +104,9 @@ class Graph:
             latex_txt += " \\\\ \n"
             latex_txt += r'  is\_full: ' + str(self.is_full) + '\n'
             latex_txt += " \\\\ \n"
-            latex_txt += r'  is\_empty: ' + str(self.is_empty)
+            latex_txt += r'  is\_empty: ' + str(self.is_empty) + '\n'
+            latex_txt += " \\\\ \n"
+            latex_txt += r'  is\_connected: ' + str(self.is_connected)
 
             latex_txt += r"\end{gathered}$$"
 
@@ -206,6 +210,26 @@ class Graph:
                return
             self.is_empty = False
 
+        def check_if_connected(self) -> None:
+            if len(self.graph.vertices) < 2:
+                self.is_connected = True
+                return
+
+            explored = [self.graph.vertices[0]]
+            queue = [self.graph.vertices[0]]
+            unconnected = self.graph.vertices.copy()
+            unconnected.remove(queue[0])
+            while len(queue)>0 and len(unconnected)>0:
+                v1 = queue.pop()
+                explored.append(v1)
+                for v2 in v1.neighbors:
+                    if v2 in explored:
+                        continue
+                    queue.append(v2)
+                    if v2 in unconnected:
+                        unconnected.remove(v2)
+            self.is_connected = (len(unconnected) == 0)
+            
         @staticmethod
         def traits(g: Graph) -> Graph.Traits:
             gt: Graph.Traits = Graph.Traits(g)
@@ -215,6 +239,7 @@ class Graph:
             gt.check_if_has_cycles()
             gt.check_if_full()
             gt.check_if_empty()
+            gt.check_if_connected()
 
             return gt
 
@@ -310,7 +335,7 @@ class Graph:
 
         repr_txt += "Edges:\n"
         for e in self.edges:
-            repr_txt += f"w_{str(e.predecessor)}{str(e.successor)} = {e.value}; "
+            repr_txt += f"w_\"{str(e.predecessor)}\"->\"{str(e.successor)}\" = {e.value}; "
 
         return repr_txt
 
@@ -529,6 +554,7 @@ class Graph:
         gt.check_if_has_cycles()
         gt.check_if_full()
         gt.check_if_empty()
+        gt.check_if_connected()
 
         return gt
 
@@ -564,3 +590,21 @@ class Graph:
             v.x = randrange(min_x, max_x)
             v.y = randrange(min_y, max_y)
         return self
+    
+    def __setattr__(self, key, value):
+        if key == "edges" and (isinstance(value, float) or isinstance(value, int)):
+            for e in self.edges:
+                e.value = value
+        else:
+            super(Graph, self).__setattr__(key, value)
+            
+    def to_undirected(self) -> Graph:
+        g_copy = deepcopy(self)
+        for v1 in g_copy.vertices:
+            for v2 in v1:
+                if v1 not in v2.neighbors:
+                    g_copy += Edge(v2, v1, v1[v2])
+                else:
+                    pass
+                    # TODO: add mode for double edges (min, max, average, ignore, exception)
+        return g_copy

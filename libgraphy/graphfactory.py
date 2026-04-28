@@ -24,6 +24,8 @@ class GraphFactory:
         MAZE = auto()
         SQUARE_MAZE = auto()
         RING = auto()
+        TREE = auto()
+        BINARY_TREE = auto()
 
     @staticmethod
     def graph(vertice_number:int, edge_number:int = -1, weighted:bool = False) -> Graph:
@@ -400,6 +402,45 @@ class GraphFactory:
         return g
 
     @staticmethod
+    def tree(vertice_number:int, min_leaves:int = 1, max_leaves:int = 3, directed=False) -> Graph:
+        # Sanity checks
+        if vertice_number < 1:
+            raise LibgraphyError(f"Cannot create tree with {vertice_number} vertices")
+        if min_leaves > max_leaves:
+            raise LibgraphyError(f"min_leaves cannot be greater than max_leaves ({min_leaves} and {max_leaves} supplied)")
+        if max_leaves < 1:
+            raise LibgraphyError(f"max_leaves cannot be less than 1 ({max_leaves} supplied)")
+
+        # Create graph
+        g = Graph()
+        root = Vertex("Root")
+        g += root
+
+        # Add vertices (topologically ordered)
+        open = [root]
+        to_add = vertice_number - 1
+        while to_add > 0:
+            to_add = vertice_number - len(g.vertices)
+            parent = choice(open)
+            open.remove(parent)
+            leaf_number = min(to_add, randint(min_leaves, max_leaves))
+            for i in range(leaf_number):
+                child = Vertex(f"{parent.name}>{i+1}")
+                g += child
+                g += Edge(parent, child)
+                if not directed:
+                    g += Edge(child, parent)
+                open.append(child)
+
+        # Return graph
+        return g
+
+
+    @staticmethod
+    def binary_tree(vertice_number:int, directed=False) -> Graph:
+        return GraphFactory.tree(vertice_number, 2,2, directed)
+
+    @staticmethod
     def generic(type:TypeEnum = TypeEnum.RANDOM, params:dict = {}) -> Graph:
         # Bind params
         if params is None:
@@ -415,6 +456,8 @@ class GraphFactory:
             start_vertex = params.get("start_vertex", -1)
             end_vertex = params.get("end_vertex", -1)
             directed = params.get("directed", False)
+            min_leaves = params.get("min_leaves", 1)
+            max_leaves = params.get("max_leaves", 3)
         else:
             raise LibgraphyError(f"Argument 2 of \"GraphFactory.graph\" needs to be a dictionary.")
 
@@ -437,5 +480,9 @@ class GraphFactory:
             return GraphFactory.square_grid_maze(width, height)
         elif type == GraphFactory.TypeEnum.RING:
             return GraphFactory.ring(vertice_number, directed)
+        elif type == GraphFactory.TypeEnum.TREE:
+            return GraphFactory.tree(vertice_number, min_leaves, max_leaves, directed)
+        elif type == GraphFactory.TypeEnum.BINARY_TREE:
+            return GraphFactory.binary_tree(vertice_number, directed)
         else:
             raise LibgraphyError(f"Unknown graph type: {type}")

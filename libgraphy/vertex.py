@@ -54,13 +54,33 @@ class Vertex:
     # get i-th adjacency of the current vertex
     def __getitem__(self, key: int) -> Vertex:
         return self.neighbors[key]
+    
+    # get value of the edge towards a neighbor of the current vertex
+    def __getitem__(self, key: Vertex) -> float|list[float]|None:
+        if key not in self.neighbors:
+            return None
+        else:
+            values = [e.value for e in self.adjacent_edges if e.successor == key]
+            if len(values) > 1:
+                return values
+            return values[0]
 
     # change i-th adjacency of the current vertex
     def __setitem__(self, key: int, value: Self) -> None:
         self.neighbors[key] = value
+        
+    # change value of the edge towards a neighbor of the current vertex
+    def __setitem__(self, key: Vertex) -> None:
+        self += key
 
     # delete i-th adjacency of the current vertex
     def __delitem__(self, key: int) -> None:
+        vertice = self.neighbors[key]
+        toRemove = [e for e in self.adjacent_edges if e.successor == vertice]
+        print([f"{x.predecessor} -> {x.successor}" for x in toRemove])
+        for edge in toRemove:
+            del self.adjacent_edges[self.adjacent_edges.index(edge)]
+            del self.graph.edges[self.graph.edges.index(edge)]
         del self.neighbors[key]
 
     # ********** Graph **********

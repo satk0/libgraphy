@@ -32,6 +32,17 @@ class Edge:
 
     def __rmul__(self, scalar: int | float) -> Edge:
         return self * scalar
+    
+    def reverse(self, override: bool = False):
+        for e in self.graph.edges:
+            if e.predecessor is self.successor and e.successor is self.predecessor:
+                if override:
+                    self.graph.edges.remove(self)
+                    self.predecessor, self.successor = self.successor, self.predecessor
+                    e = self
+                    return
+                raise LibgraphyError(f"Edge cannot be reversed, as reverse edge already exists in graph")
+        self.predecessor, self.successor = self.successor, self.predecessor
 
     # ********** Graph **********
 
@@ -114,6 +125,10 @@ class _EdgeList(list):
             if e.successor == end_vertex:
                 endingAt.append(e)
         return endingAt
+    
+    def reverse(self, override: bool = False):
+        for e in self:
+            e.reverse(override)
 
     @override
     def __getitem__(self, key: Any) -> Edge|None:
@@ -124,3 +139,4 @@ class _EdgeList(list):
             return None
         else:
             return super().__getitem__(key)
+        
