@@ -13,15 +13,22 @@ from .exception import LibgraphyError
 
 class Edge:
     def __init__(self, precedessor: Vertex | str, successor: Vertex | str, value: Any = 1, graph: Optional[Graph] = None) -> None:
-        if isinstance(precedessor, Vertex) and isinstance(successor, Vertex):
+        if isinstance(precedessor, Vertex):
             self.predecessor: Vertex = precedessor
-            self.successor: Vertex = successor
-        elif isinstance(precedessor, str) and isinstance(successor, str):
+        elif isinstance(precedessor, str):
             self.predecessor: Vertex = Vertex(precedessor)
+        if isinstance(successor, Vertex):
+            self.successor: Vertex = successor
+        elif isinstance(successor, str):
             self.successor: Vertex = Vertex(successor)
 
         self.value: Any = value
         self.graph: Optional[Graph] = graph
+        
+        if self not in self.predecessor.adjacent_edges:
+            self.predecessor.adjacent_edges.append(self)
+        if self.successor not in self.predecessor.neighbors:
+            self.predecessor.neighbors.append(self.successor)
 
     def __imul__(self, scalar: int | float) -> Self:
         self.value *= scalar
@@ -137,6 +144,24 @@ class _EdgeList(list):
                 if e.predecessor == key[0] and e.successor == key[1]:
                     return e
             return None
+        elif isinstance(key, Edge):
+            for e in self:
+                if e.predecessor == key.predecessor and e.successor == key.successor:
+                    return e
+            return None
         else:
             return super().__getitem__(key)
+        
+    @override
+    def __setitem__(self, key: Any, value: Any) -> None:
+        edge = self[key]
+        if edge is not None:
+            edge.value = value
+        elif isinstance(key, tuple):
+            self.append(Edge(key[0], key[1], value))
+        elif isinstance(key, Edge):
+            key.value = value
+            self.append(key)
+        else:
+            super().__setitem__(key, value)
         

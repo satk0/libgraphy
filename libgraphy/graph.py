@@ -20,7 +20,7 @@ from enum import Enum, auto
 import jsonpickle
 import json
 
-from .utils import _ImgFormat, _DebugGraphviz
+from .utils import _ImgFormat, _DebugGraphviz, EdgeOverrideMode
 
 try:
     import graphviz as gv
@@ -263,6 +263,10 @@ class Graph:
     # change i-th vertex in the graph
     def __setitem__(self, key: int, value: Vertex) -> None:
         self.vertices[key] = value
+        
+    # change edge of the graph
+    def __setitem__(self, key: Edge|tuple, value: float|int) -> None:
+        self.edges[key] = value
 
     # delete i-th vertex of the graph
     def __delitem__(self, key: int) -> None:
@@ -598,13 +602,23 @@ class Graph:
         else:
             super(Graph, self).__setattr__(key, value)
             
-    def to_undirected(self) -> Graph:
+    def to_undirected(self, mode: EdgeOverrideMode = EdgeOverrideMode.AVERAGE) -> Graph:
         g_copy = deepcopy(self)
         for v1 in g_copy.vertices:
             for v2 in v1:
                 if v1 not in v2.neighbors:
                     g_copy += Edge(v2, v1, v1[v2])
-                else:
-                    pass
-                    # TODO: add mode for double edges (min, max, average, ignore, exception)
+                elif v1[v2] != v2[v1]:
+                    if mode == EdgeOverrideMode.EXCEPTION:
+                        raise LibgraphyError(f"Vertex {v2.name} is already connected to {v1.name}")
+                    elif mode == EdgeOverrideMode.IGNORE:
+                        continue
+                    elif mode == EdgeOverrideMode.AVERAGE:
+                        new_value = (float(v1[v2])+float(v2[v1]))/2
+                    elif mode == EdgeOverrideMode.MAXIMUM:
+                        new_value = max(v1[v2], v2[v1])
+                    elif mode == EdgeOverrideMode.MINIMUM:
+                        new_value = min(v1[v2], v2[v1])
+                    v1[v2] = new_value
+                    v2[v1] = new_value
         return g_copy
