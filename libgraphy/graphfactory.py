@@ -26,6 +26,7 @@ class GraphFactory:
         RING = auto()
         TREE = auto()
         BINARY_TREE = auto()
+        TOURNAMENT = auto()
 
     @staticmethod
     def graph(vertice_number:int, edge_number:int = -1, weighted:bool = False) -> Graph:
@@ -435,10 +436,36 @@ class GraphFactory:
         # Return graph
         return g
 
-
     @staticmethod
     def binary_tree(vertice_number:int, directed=False) -> Graph:
         return GraphFactory.tree(vertice_number, 2,2, directed)
+    
+    @staticmethod
+    def tournament(vertice_number:int, weighted:bool = False) -> Graph:
+        # Sanity checks
+        if vertice_number < 1:
+            raise LibgraphyError(f"Cannot create tournament graph with {vertice_number} vertices")
+        
+        # Create graph
+        g = Graph()
+        
+        # Add vertices and edges (transitive)
+        p1 = Vertex(f"player #1")
+        g += p1
+        for i in range(1, vertice_number):
+            p1 = Vertex(f"player #{i+1}")
+            g += p1
+            for j in range(i):
+                if weighted:
+                    weight = random()
+                else:
+                    weight = 1
+                e = Edge(p1, g[j], weight)
+                g += e
+        
+        # Return graph
+        return g
+        
 
     @staticmethod
     def generic(type:TypeEnum = TypeEnum.RANDOM, params:dict = {}) -> Graph:
@@ -484,5 +511,7 @@ class GraphFactory:
             return GraphFactory.tree(vertice_number, min_leaves, max_leaves, directed)
         elif type == GraphFactory.TypeEnum.BINARY_TREE:
             return GraphFactory.binary_tree(vertice_number, directed)
+        elif type == GraphFactory.TypeEnum.TOURNAMENT:
+            return GraphFactory.tournament(vertice_number, weighted)
         else:
             raise LibgraphyError(f"Unknown graph type: {type}")
