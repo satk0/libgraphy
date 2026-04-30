@@ -27,6 +27,7 @@ class GraphFactory:
         TREE = auto()
         BINARY_TREE = auto()
         TOURNAMENT = auto()
+        PETERSEN = auto()
 
     @staticmethod
     def graph(vertice_number:int, edge_number:int = -1, weighted:bool = False) -> Graph:
@@ -466,6 +467,48 @@ class GraphFactory:
         # Return graph
         return g
         
+    @staticmethod
+    def petersen(n:int = 5, k = 2, directed: bool = False, weighted: bool = False):
+        # Sanity checks
+        if n < 1:
+            raise LibgraphyError(f"Cannot create Petersen graph with {n} vertices")
+        if k >= n:
+            raise LibgraphyError(f"Cannot create Petersen graph with k>=n ({k}>={n})")
+        
+        # Create base graph
+        g = Graph()
+        
+        # Add vertices and edges connecting the outer and inner part
+        outer_set = []
+        inner_set = []
+        for i in range(n):
+            v = Vertex(f"v{i}")
+            outer_set.append(v)
+            g += v
+            
+            u = Vertex(f"u{i}")
+            inner_set.append(u)
+            g += u
+            
+            g += Edge(v, u, 1 if not weighted else random())
+            if not directed:
+                g += Edge(u, v, 1 if not weighted else random())
+        
+        # Add edges between subgraphs
+        for i in range(n):
+            v1 = outer_set[i]
+            v2 = outer_set[(i+1)%n]
+            g += Edge(v1, v2, 1 if not weighted else random())
+            if not directed:
+                g += Edge(v2, v1, 1 if not weighted else random())
+            u1 = inner_set[i]
+            u2 = inner_set[(i+k)%n]
+            g += Edge(u1, u2, 1 if not weighted else random())
+            if not directed:
+                g += Edge(u2, u1, 1 if not weighted else random())
+        
+        # Return graph
+        return g
 
     @staticmethod
     def generic(type:TypeEnum = TypeEnum.RANDOM, params:dict = {}) -> Graph:
@@ -485,6 +528,8 @@ class GraphFactory:
             directed = params.get("directed", False)
             min_leaves = params.get("min_leaves", 1)
             max_leaves = params.get("max_leaves", 3)
+            n = params.get("n", vertice_number)
+            k = params.get("k", 2)
         else:
             raise LibgraphyError(f"Argument 2 of \"GraphFactory.graph\" needs to be a dictionary.")
 
@@ -513,5 +558,7 @@ class GraphFactory:
             return GraphFactory.binary_tree(vertice_number, directed)
         elif type == GraphFactory.TypeEnum.TOURNAMENT:
             return GraphFactory.tournament(vertice_number, weighted)
+        elif type == GraphFactory.TypeEnum.PETERSEN:
+            return GraphFactory.petersen(n, k, directed, weighted)
         else:
             raise LibgraphyError(f"Unknown graph type: {type}")
