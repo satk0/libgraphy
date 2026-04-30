@@ -4,6 +4,7 @@ __all__ = ["GraphFactory"]
 
 import random
 import sys
+from copy import deepcopy
 from random import *
 
 from enum import Enum, auto
@@ -28,6 +29,8 @@ class GraphFactory:
         BINARY_TREE = auto()
         TOURNAMENT = auto()
         PETERSEN = auto()
+        BARABASI_ALBERT = auto()
+        SOCIAL_NETWORK = BARABASI_ALBERT
 
     @staticmethod
     def graph(vertice_number:int, edge_number:int = -1, weighted:bool = False) -> Graph:
@@ -468,7 +471,7 @@ class GraphFactory:
         return g
         
     @staticmethod
-    def petersen(n:int = 5, k = 2, directed: bool = False, weighted: bool = False):
+    def petersen(n:int = 5, k:int = 2, directed: bool = False, weighted: bool = False):
         # Sanity checks
         if n < 1:
             raise LibgraphyError(f"Cannot create Petersen graph with {n} vertices")
@@ -503,15 +506,60 @@ class GraphFactory:
                 g += Edge(v2, v1, 1 if not weighted else random())
             u1 = inner_set[i]
             u2 = inner_set[(i+k)%n]
-            g += Edge(u1, u2, 1 if not weighted else random())
-            if not directed:
-                g += Edge(u2, u1, 1 if not weighted else random())
+            if v2 not in v1.neighbors:
+                g += Edge(u1, u2, 1 if not weighted else random())
+                if not directed and v2 not in v1.neighbors:
+                    g += Edge(u2, u1, 1 if not weighted else random())
         
+        # Return graph
+        return g
+    
+    @staticmethod
+    def barabasi_albert(vertice_number:int, k:int, directed: bool = False, weighted: bool = False, base_graph: Graph = None):
+        # Sanity checks
+        if vertice_number < 1:
+            raise LibgraphyError(f"Cannot create Barabasi-Albert graph with {vertice_number} vertices")
+        if k < 1:
+            raise LibgraphyError(f"Cannot create Barabasi-Albert graph with {k} neighbors per vertex")
+        if k > vertice_number:
+            raise LibgraphyError(f"Cannot create Barabasi-Albert graph with {k} neighbors and {vertice_number} vertices")
+        
+        # Create base graph
+        if base_graph is None:
+            g = Graph()
+        else:
+            g = deepcopy(base_graph)
+        while len(g.vertices) < k+1:
+            v = Vertex(f"v{len(g.vertices)}")
+            g += v
+            for v2 in g.vertices:
+                if v != v2:
+                    g += Edge(v,v2, 1 if not weighted else random())
+                    g += Edge(v2,v, 1 if not weighted else random())
+        
+        # Create probability list
+        probability = []
+        for v in g.vertices:
+            probability.extend(v.neighbors)
+            probability.append(v)
+        
+        # Add new vertices with probability
+        while len(g.vertices) < vertice_number:
+            v = Vertex(f"v{len(g.vertices)}")
+            g += v
+            while len(v.neighbors) < k:
+                v2 = choice(probability)
+                if v != v2 and v2 not in v.neighbors:
+                    g += Edge(v,v2, 1 if not weighted else random())
+                    g += Edge(v2,v, 1 if not weighted else random())
+            probability.extend(v.neighbors)
+            probability.append(v)
+                
         # Return graph
         return g
 
     @staticmethod
-    def generic(type:TypeEnum = TypeEnum.RANDOM, params:dict = {}) -> Graph:
+    def generic(type: TypeEnum = TypeEnum.RANDOM, **params) -> Graph:
         # Bind params
         if params is None:
             params = {}
@@ -530,6 +578,7 @@ class GraphFactory:
             max_leaves = params.get("max_leaves", 3)
             n = params.get("n", vertice_number)
             k = params.get("k", 2)
+            base_graph = params.get("base_graph", None)
         else:
             raise LibgraphyError(f"Argument 2 of \"GraphFactory.graph\" needs to be a dictionary.")
 
@@ -560,5 +609,7 @@ class GraphFactory:
             return GraphFactory.tournament(vertice_number, weighted)
         elif type == GraphFactory.TypeEnum.PETERSEN:
             return GraphFactory.petersen(n, k, directed, weighted)
+        elif type == GraphFactory.TypeEnum.BARABASI_ALBERT:
+            return GraphFactory.barabasi_albert(n, k, directed, weighted, base_graph)
         else:
             raise LibgraphyError(f"Unknown graph type: {type}")
