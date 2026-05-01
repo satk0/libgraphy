@@ -304,10 +304,10 @@ class Graph:
         return ng
     # ***************************
 
-    def __iadd__(self, element: Vertex | Edge | Graph) -> Graph:
+    def __iadd__(self, element: Vertex | Edge | _EdgeList | Graph) -> Graph:
         return element._graph__iadd__(self)
 
-    def __add__(self, element: Vertex | Edge | Graph) -> Graph:
+    def __add__(self, element: Vertex | Edge | _EdgeList | Graph) -> Graph:
         return element._graph__add__(self)
 
     def __imul__(self, scalar: int | float) -> Self:

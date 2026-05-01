@@ -164,4 +164,19 @@ class _EdgeList(list):
             self.append(key)
         else:
             super().__setitem__(key, value)
-        
+            
+
+    # ********** Graph **********
+
+    # don't move this !!
+    def _graph__iadd__(self, graph: Graph) -> Graph:
+        for e in self:
+            graph += e
+        return graph
+
+    def _graph__add__(self, graph: Graph) -> Graph:
+        g: Graph = deepcopy(graph)
+        g += self
+        return g
+
+    # ***************************
