@@ -10,6 +10,7 @@ from .vertex import Vertex
 from copy import deepcopy
 
 from .exception import LibgraphyError
+from random import randint
 
 class Edge:
     def __init__(self, precedessor: Vertex | str, successor: Vertex | str, value: Any = 1, graph: Optional[Graph] = None) -> None:
@@ -40,16 +41,41 @@ class Edge:
     def __rmul__(self, scalar: int | float) -> Edge:
         return self * scalar
     
-    def reverse(self, override: bool = False):
-        for e in self.graph.edges:
-            if e.predecessor is self.successor and e.successor is self.predecessor:
-                if override:
-                    self.graph.edges.remove(self)
-                    self.predecessor, self.successor = self.successor, self.predecessor
-                    e = self
-                    return
+    def reverse(self, override: bool = False) -> Edge:
+        # If reverse edge already in graph
+        if self.graph is not None and self.graph.edges[(self.successor, self.predecessor)] is not None:
+            if override:
+                self.graph.edges.remove(self)
+            else:
                 raise LibgraphyError(f"Edge cannot be reversed, as reverse edge already exists in graph")
+            
+        # Remove from current predecessor
+        self.predecessor.neighbors.remove(self.successor)
+        self.predecessor.adjacent_edges.remove(self)
+        
+        # If successor already is connected to predecessor
+        if self.predecessor in self.successor.neighbors:
+            # Remove old edges
+            all = self.successor.adjacent_edges
+            endingAt = all.end_at(self.predecessor)
+            all -= endingAt
+        else:
+            self.successor.neighbors.append(self.predecessor)
+            
+        # Add self to edges and swap direction
+        self.successor.adjacent_edges.append(self)
         self.predecessor, self.successor = self.successor, self.predecessor
+        
+        # Return edge for chaining
+        return self
+        
+    def randomize_direction(self) -> Edge:
+        if randint(0, 1):
+            if self.successor.isConnected(self.predecessor):
+                self.value, self.successor[self.predecessor].value = self.successor[self.predecessor].value, self.value
+            else:
+                self.reverse()
+        return self
 
     # ********** Graph **********
 
@@ -164,7 +190,15 @@ class _EdgeList(list):
             self.append(key)
         else:
             super().__setitem__(key, value)
-            
+    def __isub__(self, edges: _EdgeList) -> _EdgeList:
+        for e in edges:
+            self.remove(e)
+        return self
+
+    def __sub__(self, edges: _EdgeList) -> _EdgeList:
+        newList = deepcopy(self)
+        newList -= edges
+        return newList
 
     # ********** Graph **********
 

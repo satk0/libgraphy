@@ -5,7 +5,7 @@ __all__ = ["Vertex"]
 from typing import Optional, Self, Any, Generator, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
-    from .edge import Edge
+    from .edge import Edge, _EdgeList
 from .exception import LibgraphyError
 
 from copy import deepcopy
@@ -15,7 +15,7 @@ class Vertex:
     def __init__(self, name: Any = "", value: Any = 0, graph: Optional[Graph] = None, x: Optional[int] = None, y: Optional[int] = None) -> None:
         self.name: Any = name
         self.neighbors: list[Vertex] = []
-        self.adjacent_edges: list[Edge] = [] # Distances to the neighbors
+        self.adjacent_edges: _EdgeList = [] # Distances to the neighbors
         self.value: Any = value
         self.graph: Optional[Graph] = graph
         self.x: Optional[int] = x
