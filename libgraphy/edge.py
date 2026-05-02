@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Edge"]
+__all__ = ["Edge", "_EdgeList"]
 
 from typing import Optional, Self, Any, TYPE_CHECKING, override
 if TYPE_CHECKING: # pragma: no cover
@@ -10,6 +10,7 @@ from .vertex import Vertex
 from copy import deepcopy
 
 from .exception import LibgraphyError
+from .utils import EdgeOverrideMode
 from random import randint
 
 class Edge:
@@ -76,6 +77,35 @@ class Edge:
             else:
                 self.reverse()
         return self
+    
+    def make_undirected(self, mode: EdgeOverrideMode = EdgeOverrideMode.AVERAGE) -> _EdgeList:
+        both_edges = _EdgeList()
+        both_edges.append(self)
+        
+        # If reverse edge does not exist - create it
+        if not self.successor.isConnected(self.predecessor):
+            other_direction = Edge(self.successor, self.predecessor, self.value)
+            if self.graph is not None:
+                self.graph += other_direction
+            both_edges.append(other_direction)
+    
+        # If reverse edge already exists - perform unification
+        else:
+            if mode == EdgeOverrideMode.EXCEPTION:
+                raise LibgraphyError(f"Edge ({self.successor.name}->{self.predecessor.name}) already exists in graph")
+            both_edges.append([e for e in self.successor.adjacent_edges if e.successor == self.predecessor][0])
+            if mode != EdgeOverrideMode.IGNORE:
+                if mode == EdgeOverrideMode.AVERAGE:
+                    new_value = (float(self.predecessor[self.successor]) + float(self.successor[self.predecessor])) / 2
+                elif mode == EdgeOverrideMode.MAXIMUM:
+                    new_value = max(self.predecessor[self.successor], self.successor[self.predecessor])
+                elif mode == EdgeOverrideMode.MINIMUM:
+                    new_value = min(self.predecessor[self.successor], self.successor[self.predecessor])
+                self.predecessor[self.successor] = new_value
+                self.successor[self.predecessor] = new_value
+    
+        # Return the set of both edges
+        return both_edges
 
     # ********** Graph **********
 
@@ -190,6 +220,7 @@ class _EdgeList(list):
             self.append(key)
         else:
             super().__setitem__(key, value)
+            
     def __isub__(self, edges: _EdgeList) -> _EdgeList:
         for e in edges:
             self.remove(e)
