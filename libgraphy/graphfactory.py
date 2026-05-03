@@ -31,6 +31,7 @@ class GraphFactory:
         PETERSEN = auto()
         BARABASI_ALBERT = auto()
         SOCIAL_NETWORK = BARABASI_ALBERT
+        HYPERCUBE = auto()
 
     @staticmethod
     def graph(vertice_number:int, edge_number:int = -1, weighted:bool = False) -> Graph:
@@ -557,6 +558,35 @@ class GraphFactory:
                 
         # Return graph
         return g
+    
+    @staticmethod
+    def hypercube(dimension: int = 4):
+        # Sanity checks
+        if dimension < 0:
+            raise LibgraphyError(f"Cannot create a hypercube with {dimension} dimensions")
+        
+        # Create cube
+        cube = Graph()
+        cube += Vertex("v")
+        
+        # Increase dimensions
+        for n in range(dimension):
+            half_size = len(cube.vertices)
+            newCube = deepcopy(cube)
+            
+            # Rename vertices
+            for i in range(half_size):
+                cube.vertices[i].name += "0"
+                newCube.vertices[i].name += "1"
+            
+            # Combine cubes
+            cube += newCube
+            for index in range(half_size):
+                cube.vertices[index] += cube.vertices[index + half_size]
+                cube.vertices[index + half_size] += cube.vertices[index]
+        
+        # Return cube
+        return cube
 
     @staticmethod
     def generic(type: TypeEnum = TypeEnum.RANDOM, **params) -> Graph:
@@ -579,6 +609,7 @@ class GraphFactory:
             n = params.get("n", vertice_number)
             k = params.get("k", 2)
             base_graph = params.get("base_graph", None)
+            dimension = params.get("dimension", 4)
         else:
             raise LibgraphyError(f"Argument 2 of \"GraphFactory.graph\" needs to be a dictionary.")
 
@@ -611,5 +642,7 @@ class GraphFactory:
             return GraphFactory.petersen(n, k, directed, weighted)
         elif type == GraphFactory.TypeEnum.BARABASI_ALBERT:
             return GraphFactory.barabasi_albert(n, k, directed, weighted, base_graph)
+        elif type == GraphFactory.TypeEnum.HYPERCUBE:
+            return GraphFactory.hypercube(dimension)
         else:
             raise LibgraphyError(f"Unknown graph type: {type}")
