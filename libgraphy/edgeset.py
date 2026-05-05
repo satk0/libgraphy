@@ -326,6 +326,32 @@ class EdgeSet():
 				         f" = {edge.value} ({starting_vertex.__repr__()})")
 		return desc
 	
+	def vertices(self) -> list[Vertex]:
+		vertice_list = []
+		for starting_vertex, subset in self.__container.items():
+			if starting_vertex not in vertice_list:
+				vertice_list.append(starting_vertex)
+			for ending_vertex in subset.keys():
+				if ending_vertex not in vertice_list:
+					vertice_list.append(ending_vertex)
+		return vertice_list
+	
+	def incidence_matrix(self) -> list[int][int]:
+		# TODO: retrieve a numpy matrix if numpy available
+		matrix = dict()
+		vertices = self.vertices()
+		
+		for edge in self:
+			matrix[edge] = dict()
+			for v in vertices:
+				if edge.predecessor == v:
+					matrix[edge][v] = 1
+				elif edge.successor == v:
+					matrix[edge][v] = -1
+				else:
+					matrix[edge][v] = 0
+		return matrix
+	
 class EdgeSubSet(EdgeSet):
 	@override
 	def __init__(self, reference: Optional[EdgeSet | list[Edge]] = None, graph: Optional[Graph] = None, origin: Vertex = None) -> None:
