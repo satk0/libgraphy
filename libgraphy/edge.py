@@ -14,15 +14,19 @@ from .utils import EdgeOverrideMode
 from random import randint
 
 class Edge:
-    def __init__(self, precedessor: Vertex | str, successor: Vertex | str, value: Any = 1, graph: Optional[Graph] = None) -> None:
-        if isinstance(precedessor, Vertex):
-            self.predecessor: Vertex = precedessor
-        elif isinstance(precedessor, str):
-            self.predecessor: Vertex = Vertex(precedessor)
+    def __init__(self, predecessor: Vertex | str, successor: Vertex | str, value: Any = 1, graph: Optional[Graph] = None) -> None:
+        if isinstance(predecessor, Vertex):
+            self.predecessor: Vertex = predecessor
+        elif isinstance(predecessor, str):
+            self.predecessor: Vertex = Vertex(predecessor)
+        else:
+            raise LibgraphyError(f"predecessor needs to be either Vertex or str, {type(predecessor)} supplied")
         if isinstance(successor, Vertex):
             self.successor: Vertex = successor
         elif isinstance(successor, str):
             self.successor: Vertex = Vertex(successor)
+        else:
+            raise LibgraphyError(f"successor needs to be either Vertex or str, {type(successor)} supplied")
 
         self.value: Any = value
         self.graph: Optional[Graph] = graph
@@ -41,6 +45,9 @@ class Edge:
 
     def __rmul__(self, scalar: int | float) -> Edge:
         return self * scalar
+    
+    def __str__(self) -> str:
+        return f"'{self.predecessor.name}' -> '{self.successor.name}' = {self.value}"
     
     def reverse(self, override: bool = False) -> Edge:
         # If reverse edge already in graph
