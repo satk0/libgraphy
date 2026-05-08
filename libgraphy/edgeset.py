@@ -4,7 +4,7 @@ from .edge import Edge
 from .exception import LibgraphyError
 from .utils import EdgeOverrideMode, MatrixType
 
-from typing import Optional, Self, Any, TYPE_CHECKING, override
+from typing import Optional, Self, Any, TYPE_CHECKING, override, Callable
 
 if TYPE_CHECKING:  # pragma: no cover
 	from .graph import Graph
@@ -18,7 +18,7 @@ __all__ = ["EdgeSet", "EdgeSubSet", "EdgeMatrix"]
 
 EdgeMatrix = dict[Vertex, dict[Edge, int]]
 
-class EdgeSet():
+class EdgeSet(object):
 	def __init__(self, reference: Optional[EdgeSet|list[Edge]] = None, graph: Optional[Graph] = None) -> None:
 		# Basic initialization
 		self.graph: Optional[Graph] = graph
@@ -331,7 +331,7 @@ class EdgeSet():
 				         f" = {edge.value} ({starting_vertex.__repr__()})")
 		return desc
 	
-	def vertices(self) -> list[Vertex]:
+	def __vertices(self) -> list[Vertex]:
 		vertice_list = []
 		for starting_vertex, subset in self.__container.items():
 			if starting_vertex not in vertice_list:
@@ -340,6 +340,19 @@ class EdgeSet():
 				if ending_vertex not in vertice_list:
 					vertice_list.append(ending_vertex)
 		return vertice_list
+	
+	def __getattr__(self, item):
+		if item == "vertices":
+			return self.__vertices()
+		else:
+			return None
+	
+	def __setattr__(self, item, value):
+		if item == "vertices":
+			raise LibgraphyError("Attribute EdgeSet.vertices cannot be set directly. The vertix list is generated"
+			                     " automatically, based on the edge list")
+		else:
+			return super().__setattr__(item, value)
 	
 	def incidence_matrix(self, matrix_type: MatrixType = MatrixType.AUTOMATIC) -> EdgeMatrix|coo_array:
 		if matrix_type == MatrixType.AUTOMATIC:
@@ -357,7 +370,7 @@ class EdgeSet():
 			rows = []
 			columns = []
 			values = []
-			vertices = self.vertices()
+			vertices = self.__vertices()
 			
 			for row, v in enumerate(vertices):
 				for col, edge in enumerate(self):
@@ -379,7 +392,7 @@ class EdgeSet():
 		# Create the incidence matrix the pure Python way
 		else:
 			matrix = dict()
-			vertices = self.vertices()
+			vertices = self.__vertices()
 			
 			for v in vertices:
 				matrix[v] = dict()
@@ -412,7 +425,7 @@ class EdgeSet():
 			rows = []
 			columns = []
 			values = []
-			vertices = self.vertices()
+			vertices = self.__vertices()
 
 			for v1, subset in self.__container.items():
 				for v2, edge in subset.items():
@@ -425,7 +438,7 @@ class EdgeSet():
 		
 		# Create the adjacency matrix the pure Python way
 		else:
-			vertices = self.vertices()
+			vertices = self.__vertices()
 			matrix = dict.fromkeys(vertices, None)
 			
 			for v1, subset in self.__container.items():
@@ -433,6 +446,81 @@ class EdgeSet():
 				for v2, edge in subset.items():
 					matrix[v1][v2] = edge.value
 			return matrix
+		
+	def __gt__(self, value: Any) -> EdgeSet:
+		result = EdgeSet()
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				if self.__container[starting_vertex][ending_vertex].value > value:
+					if starting_vertex not in result.__container:
+						result.__container[starting_vertex] = dict()
+					result.__container[starting_vertex][ending_vertex] = edge
+		return result
+
+	def __lt__(self, value: Any) -> EdgeSet:
+		result = EdgeSet()
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				if self.__container[starting_vertex][ending_vertex].value < value:
+					if starting_vertex not in result.__container:
+						result.__container[starting_vertex] = dict()
+					result.__container[starting_vertex][ending_vertex] = edge
+		return result
+	
+	def __eq__(self, value: Any) -> EdgeSet:
+		result = EdgeSet()
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				if self.__container[starting_vertex][ending_vertex].value == value:
+					if starting_vertex not in result.__container:
+						result.__container[starting_vertex] = dict()
+					result.__container[starting_vertex][ending_vertex] = edge
+		return result
+
+	def __ge__(self, value: Any) -> EdgeSet:
+		result = EdgeSet()
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				if self.__container[starting_vertex][ending_vertex].value >= value:
+					if starting_vertex not in result.__container:
+						result.__container[starting_vertex] = dict()
+					result.__container[starting_vertex][ending_vertex] = edge
+		return result
+
+	def __le__(self, value: Any) -> EdgeSet:
+		result = EdgeSet()
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				if self.__container[starting_vertex][ending_vertex].value <= value:
+					if starting_vertex not in result.__container:
+						result.__container[starting_vertex] = dict()
+					result.__container[starting_vertex][ending_vertex] = edge
+		return result
+		
+	def transform(self, func: Callable[[Edge], Edge]):
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				self.__container[starting_vertex][ending_vertex] = func(self.__container[starting_vertex][ending_vertex])
+		return self
+
+	# ********** Graph **********
+	def _graph__iadd__(self, graph: Graph) -> Graph:
+		graph.edges += self
+		return graph
+	
+	def _graph__add__(self, graph: Graph) -> Graph:
+		g: Graph = deepcopy(graph)
+		g += self
+		return g
+	
+	def _graph__isub__(self, graph: Graph) -> Graph:
+		graph.edges -= self
+		return graph
+	
+	def _graph__sub__(self, graph: Graph) -> Graph:
+		g: Graph = deepcopy(graph)
+		g -= self
+		return g
 	
 class EdgeSubSet(EdgeSet):
 	@override
@@ -449,17 +537,3 @@ class EdgeSubSet(EdgeSet):
 				return None
 		else:
 			return super().__getitem__(key)
-		
-	# ********** Graph **********
-	# TODO
-	#def _graph__iadd__(self, graph: Graph) -> Graph:
-	#	for e in self:
-	#		graph += e
-	#	return graph
-	
-	#def _graph__add__(self, graph: Graph) -> Graph:
-	#	g: Graph = deepcopy(graph)
-	#	g += self
-	#	return g
-
-# ***************************

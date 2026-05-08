@@ -10,7 +10,8 @@ if TYPE_CHECKING: # pragma: no cover
 from .heuristic import Heuristic
 
 from .vertex import Vertex
-from .edge import Edge, _EdgeList
+from .edge import Edge
+from .edgeset import EdgeSet, EdgeSubSet, EdgeMatrix, EdgeOverrideMode
 
 from .algorithm import _Algorithm, _AlgorithmFunction, AlgorithmEnum
 from .exception import LibgraphyError
@@ -254,7 +255,7 @@ class Graph:
     # TODO: implement incidence matrix
     def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
-        self.edges: _EdgeList[Edge] = _EdgeList()
+        self.edges: EdgeSet() = EdgeSet()
 
     # get i-th vertex of the graph
     def __getitem__(self, key: int) -> Vertex:
@@ -304,10 +305,10 @@ class Graph:
         return ng
     # ***************************
 
-    def __iadd__(self, element: Vertex | Edge | _EdgeList | Graph) -> Graph:
+    def __iadd__(self, element: Vertex | Edge | EdgeSet | Graph) -> Graph:
         return element._graph__iadd__(self)
 
-    def __add__(self, element: Vertex | Edge | _EdgeList | Graph) -> Graph:
+    def __add__(self, element: Vertex | Edge | EdgeSet | Graph) -> Graph:
         return element._graph__add__(self)
 
     def __imul__(self, scalar: int | float) -> Self:
