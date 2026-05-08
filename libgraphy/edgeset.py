@@ -497,10 +497,18 @@ class EdgeSet(object):
 					result.__container[starting_vertex][ending_vertex] = edge
 		return result
 		
-	def transform(self, func: Callable[[Edge], Edge]):
+	def select(self, func: Callable[[Edge, ...], bool], *args, **kwargs) -> EdgeSet:
+		newSet = EdgeSet()
 		for starting_vertex, subset in self.__container.items():
 			for ending_vertex, edge in subset.items():
-				self.__container[starting_vertex][ending_vertex] = func(self.__container[starting_vertex][ending_vertex])
+				if func(edge, *args, **kwargs):
+					newSet.append(edge)
+		return newSet
+		
+	def transform(self, func: Callable[[Edge, ...], Edge], *args, **kwargs) -> EdgeSet:
+		for starting_vertex, subset in self.__container.items():
+			for ending_vertex, edge in subset.items():
+				edge = func(edge, *args, **kwargs)
 		return self
 
 	# ********** Graph **********

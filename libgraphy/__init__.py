@@ -9,4 +9,5 @@ from .graphfactory import *
 from .edgeset import *
 from .utils import *
 
-__all__ = ["Vertex", "Edge", "EdgeSet", "Graph", "Path", "LibgraphyException", "LibgraphyError", "GraphFactory", "AlgorithmEnum", "MatrixType", "Heuristic"]
+__all__ = ["Vertex", "Edge", "EdgeSet", "Graph", "Path", "LibgraphyException", "LibgraphyError", "GraphFactory",
+           "AlgorithmEnum", "MatrixType", "Heuristic"]

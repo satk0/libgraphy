@@ -30,8 +30,31 @@ adjacency_matrix = my_graph.edges.adjacency_matrix()
 # Get incidence matrix
 incidence_matrix = my_graph.edges.incidence_matrix()
 
-# Perform a transformation of each edge in a set
+# Select edges by custom criterions
+def is_loop(e: Edge) -> bool:
+	return e.predecessor == e.successor
+
+subset4 = my_graph.edges.select(is_loop)
+
+# Perform a simple transformation of each edge in a set
 def f(e: Edge) -> Edge:
-	result = Edge(e.predecessor, e.successor, e.value * 2)
-	return result
+	e.value *= 2.5
+	return e
 my_graph.edges.transform(f)
+
+# Perform a complex transformation, using additional arguments
+class Counter:
+    def __init__(self, start=0):
+        self.value = start
+	    
+    def increment(self):
+        current = self.value
+        self.value += 3
+        return current
+
+def f2(e: Edge, counter: Counter) -> Edge:
+	e.value = counter.increment()
+	return e
+
+counter = Counter(5)
+my_graph.edges.transform(f2, counter)
