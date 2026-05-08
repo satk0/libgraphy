@@ -101,9 +101,10 @@ class EdgeSet():
 					combined_index += len(subset)
 				return None
 			else:
-				#TODO: handle negative keys
-				pass
-		
+				if key < -self.__size:
+					return None
+				return self[self.__size+key]
+			
 		elif isinstance(key, Vertex):
 			if key in self.__container.keys():
 				subset = EdgeSubSet(origin = key)
