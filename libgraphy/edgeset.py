@@ -394,6 +394,45 @@ class EdgeSet():
 					else:
 						matrix[v][edge] = 0
 			return matrix
+		
+	def adjacency_matrix(self, matrix_type: MatrixType = MatrixType.AUTOMATIC) -> EdgeMatrix|coo_array:
+		if matrix_type == MatrixType.AUTOMATIC:
+			if find_spec("scipy") is not None:
+				matrix_type == MatrixType.SPARSE
+			else:
+				matrix_type == MatrixType.PURE
+		
+		# Create a sparse matrix to store the incidence matrix
+		if matrix_type == MatrixType.SPARSE:
+			if find_spec("scipy") is None:
+				raise LibgraphyError(
+					"SciPy 1.8+ is required for sparse matrices. Install SciPy or use MatrixType.PURE instead")
+			from scipy.sparse import coo_array
+			
+			rows = []
+			columns = []
+			values = []
+			vertices = self.vertices()
+
+			for v1, subset in self.__container.items():
+				for v2, edge in subset.items():
+					rows.append(vertices.index(v1))
+					columns.append(vertices.index(v2))
+					values.append(edge.value)
+			
+			matrix = coo_array((values, (rows, columns)), shape=(len(rows), len(columns)))
+			return matrix
+		
+		# Create the adjacency matrix the pure Python way
+		else:
+			vertices = self.vertices()
+			matrix = dict.fromkeys(vertices, None)
+			
+			for v1, subset in self.__container.items():
+				matrix[v1] = dict.fromkeys(vertices, 0)
+				for v2, edge in subset.items():
+					matrix[v1][v2] = edge.value
+			return matrix
 	
 class EdgeSubSet(EdgeSet):
 	@override
