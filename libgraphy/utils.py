@@ -16,3 +16,9 @@ class EdgeOverrideMode(Enum):
     AVERAGE = auto()
     IGNORE = auto()
     EXCEPTION = auto()
+    
+class MatrixType(Enum):
+    PURE = auto()
+    SPARSE = auto()
+    AUTOMATIC = auto()
+    

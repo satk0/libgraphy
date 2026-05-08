@@ -2,17 +2,21 @@ from __future__ import annotations
 from .vertex import Vertex
 from .edge import Edge
 from .exception import LibgraphyError
-from .utils import EdgeOverrideMode
+from .utils import EdgeOverrideMode, MatrixType
 
 from typing import Optional, Self, Any, TYPE_CHECKING, override
 
 if TYPE_CHECKING:  # pragma: no cover
 	from .graph import Graph
+	from scipy.sparse import coo_array
 
 from copy import deepcopy
 from random import randint
+from importlib.util import find_spec
 
-__all__ = ["EdgeSet"]
+__all__ = ["EdgeSet", "EdgeSubSet", "EdgeMatrix"]
+
+EdgeMatrix = dict[Vertex, dict[Edge, int]]
 
 class EdgeSet():
 	def __init__(self, reference: Optional[EdgeSet|list[Edge]] = None, graph: Optional[Graph] = None) -> None:
@@ -336,21 +340,59 @@ class EdgeSet():
 					vertice_list.append(ending_vertex)
 		return vertice_list
 	
-	def incidence_matrix(self) -> list[int][int]:
-		# TODO: retrieve a numpy matrix if numpy available
-		matrix = dict()
-		vertices = self.vertices()
+	def incidence_matrix(self, matrix_type: MatrixType = MatrixType.AUTOMATIC) -> EdgeMatrix|coo_array:
+		if matrix_type == MatrixType.AUTOMATIC:
+			if find_spec("scipy") is not None:
+				matrix_type == MatrixType.SPARSE
+			else:
+				matrix_type == MatrixType.PURE
+				
+		# Create a sparse matrix to store the incidence matrix
+		if matrix_type == MatrixType.SPARSE:
+			if find_spec("scipy") is None:
+				raise LibgraphyError("SciPy 1.8+ is required for sparse matrices. Install SciPy or use MatrixType.PURE instead")
+			from scipy.sparse import coo_array
+			
+			rows = []
+			columns = []
+			values = []
+			vertices = self.vertices()
+			
+			for row, v in enumerate(vertices):
+				for col, edge in enumerate(self):
+					if edge.predecessor == v:
+						rows.append(row)
+						columns.append(col)
+						if edge.predecessor == edge.successor:
+							values.append(2)
+						else:
+							values.append(1)
+					elif edge.successor == v:
+						rows.append(row)
+						columns.append(col)
+						values.append(-1)
+			
+			matrix = coo_array((values, (rows, columns)), shape=(len(rows), len(columns)))
+			return matrix
 		
-		for edge in self:
-			matrix[edge] = dict()
+		# Create the incidence matrix the pure Python way
+		else:
+			matrix = dict()
+			vertices = self.vertices()
+			
 			for v in vertices:
-				if edge.predecessor == v:
-					matrix[edge][v] = 1
-				elif edge.successor == v:
-					matrix[edge][v] = -1
-				else:
-					matrix[edge][v] = 0
-		return matrix
+				matrix[v] = dict()
+				for edge in self:
+					if edge.predecessor == v:
+						if edge.predecessor == edge.successor:
+							matrix[v][edge] = 2
+						else:
+							matrix[v][edge] = 1
+					elif edge.successor == v:
+						matrix[v][edge] = -1
+					else:
+						matrix[v][edge] = 0
+			return matrix
 	
 class EdgeSubSet(EdgeSet):
 	@override
