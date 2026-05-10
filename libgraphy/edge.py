@@ -20,21 +20,25 @@ class Edge:
         elif isinstance(predecessor, str):
             self.predecessor: Vertex = Vertex(predecessor)
         else:
-            raise LibgraphyError(f"predecessor needs to be either Vertex or str, {type(predecessor)} supplied")
+            raise LibgraphyError(f"Predecessor needs to be either Vertex or str, {type(predecessor)} supplied")
         if isinstance(successor, Vertex):
             self.successor: Vertex = successor
         elif isinstance(successor, str):
             self.successor: Vertex = Vertex(successor)
         else:
-            raise LibgraphyError(f"successor needs to be either Vertex or str, {type(successor)} supplied")
+            raise LibgraphyError(f"Successor needs to be either Vertex or str, {type(successor)} supplied")
 
         self.value: Any = value
         self.graph: Optional[Graph] = graph
+        if self.graph is None:
+            self.graph = predecessor.graph
+        if self.graph is None:
+            raise LibgraphyError("Edge needs to belong to a graph")
         
-        if self not in self.predecessor.out_edges:
-            self.predecessor.out_edges.append(self)
-        if self.successor not in self.predecessor.out_neighbors:
-            self.predecessor.out_neighbors.append(self.successor)
+        #if not predecessor.isConnected(successor):
+        #    self.predecessor.out_edges.append(self)
+        #if self.successor not in self.predecessor.out_neighbors:
+        #    self.predecessor.out_neighbors.append(self.successor)
 
     def __imul__(self, scalar: int | float) -> Self:
         self.value *= scalar
@@ -123,7 +127,7 @@ class Edge:
             if e.successor is self.successor and e.predecessor is self.predecessor:
                 raise LibgraphyError(f"Edge already exists ({e.predecessor}->{e.successor})")
 
-        if self.graph is not None:
+        if self.graph not in [None, graph]:
             raise LibgraphyError("Edge belongs to a different graph")
         if (self.predecessor.graph not in [None, graph]):
             raise LibgraphyError("Predecessor belongs to a different graph")
@@ -139,10 +143,10 @@ class Edge:
         self.predecessor.graph = graph
         self.successor.graph = graph
 
-        if self.successor not in self.predecessor.out_neighbors:
-            self.predecessor.out_neighbors.append(self.successor)
+        #if not self.predecessor.isConnected(self.successor):
+        #    self.predecessor.out_neighbors.append(self.successor)
 
-        self.predecessor.out_edges.append(self)
+        #self.predecessor.out_edges.append(self)
 
         self.graph = graph
         graph.edges.append(self)

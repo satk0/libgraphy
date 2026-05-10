@@ -42,7 +42,7 @@ class EdgeSet(object):
 				for edge in reference:
 					if not isinstance(reference[edge], Edge):
 						raise LibgraphyError(f"Unsupported argument type for 'reference'. List contains element of"
-						                     f" type {type(reference[edge])}")
+											 f" type {type(reference[edge])}")
 					if edge.predecessor not in self.__container:
 						self.__container[edge.predecessor] = dict()
 					self.__container[edge.predecessor][edge.successor] = edge
@@ -116,7 +116,7 @@ class EdgeSet(object):
 		# Fail
 		else:
 			raise LibgraphyError(f"Unknown indexing type: {type(key)}. Edge set can be iterated only using tuples,"
-			                     f" indices, strings, Edge, and Vertex objects")
+								 f" indices, strings, Edge, and Vertex objects")
 	
 	def by_vertex_name(self, vertex_name: str) -> EdgeSet:
 		subset = EdgeSet()
@@ -166,8 +166,8 @@ class EdgeSet(object):
 				for v in list:
 					if not isinstance(v, Vertex):
 						raise LibgraphyError(f"Unsupported argument combination. When iterating over EdgeSet by"
-						                     f" vertices, value needs to be of either EdgeSet, Vertex or list(Vertex)"
-						                     f" type ({type(v)} supplied as list element)")
+											 f" vertices, value needs to be of either EdgeSet, Vertex or list(Vertex)"
+											 f" type ({type(v)} supplied as list element)")
 					if v not in self.__container[key]:
 						self.__container[key][v] = 1
 						self.__size += 1
@@ -204,7 +204,7 @@ class EdgeSet(object):
 			self.extend(other)
 		else:
 			raise LibgraphyError(f"Unsupported argument type for 'other'. Must be Edge or EdgeSet,"
-			                     f" {type(other)} supplied")
+								 f" {type(other)} supplied")
 		return self
 	
 	def __add__(self, other: Edge|EdgeSet) -> EdgeSet:
@@ -227,9 +227,10 @@ class EdgeSet(object):
 		# Add Edge
 		if value.predecessor not in self.__container:
 			self.__container[value.predecessor] = dict()
+		if value.successor not in self.__container[value.predecessor]:
+			self.__size += 1
 		self.__container[value.predecessor][value.successor] = value
-		self.__size += 1
-	
+
 	def extend(self, other: EdgeSet) -> None:
 		# Sanity checks
 		if not isinstance(other, EdgeSet):
@@ -243,13 +244,16 @@ class EdgeSet(object):
 				raise LibgraphyError(f"EdgeSet already belongs to a different graph")
 			
 		# Add edges to this set
+		added = 0
 		for starting_vertex, subset in other.__container.items():
 			if starting_vertex not in self.__container:
 				self.__container[starting_vertex] = dict()
 			for ending_vertex, edge in subset.items():
+				if ending_vertex not in self.__container[starting_vertex]:
+					added += 1
 				self.__container[starting_vertex][ending_vertex] = edge
 				
-		self.__size += other.__size
+		self.__size += added
 	
 	def __isub__(self, other: Edge | EdgeSet) -> EdgeSet:
 		self.remove(other)
@@ -291,7 +295,7 @@ class EdgeSet(object):
 		# Unsupported type
 		else:
 			raise LibgraphyError(f"Unsupported argument type for 'value'. Must be Edge or EdgeSet,"
-			                     f" {type(value)} supplied")
+								 f" {type(value)} supplied")
 		
 		# Return self
 		return self
@@ -328,7 +332,7 @@ class EdgeSet(object):
 			desc += f"\n | Vertex: {starting_vertex.name} ({starting_vertex.__repr__()})"
 			for ending_vertex, edge in subset.items():
 				desc += (f"\n |  | {starting_vertex.name} -> {ending_vertex.name}"
-				         f" = {edge.value} ({starting_vertex.__repr__()})")
+						 f" = {edge.value} ({starting_vertex.__repr__()})")
 		return desc
 	
 	def __vertices(self) -> list[Vertex]:
@@ -350,7 +354,7 @@ class EdgeSet(object):
 	def __setattr__(self, item, value):
 		if item == "vertices":
 			raise LibgraphyError("Attribute EdgeSet.vertices cannot be set directly. The vertix list is generated"
-			                     " automatically, based on the edge list")
+								 " automatically, based on the edge list")
 		else:
 			return super().__setattr__(item, value)
 	

@@ -42,7 +42,7 @@ class GraphFactory:
         # Create graph and add vertices
         g = Graph()
         for i in range(vertice_number):
-            g += Vertex(i)
+            g += Vertex(f"v{i}", graph=g)
 
         # Sanitize edge number
         max_edges = int(vertice_number * (vertice_number - 1) / 2)
@@ -59,6 +59,7 @@ class GraphFactory:
                 i = randrange(1, vertice_number)
                 j = randrange(0, i)
                 if [i,j] not in current_edges:
+                    #print(f"Adding: bidirectional {i}->{j} ({len(current_edges)} of {edge_number})") # TODO: remove
                     current_edges.append([i,j])
                     if weighted:
                         weight = random()

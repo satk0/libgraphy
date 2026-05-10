@@ -25,6 +25,8 @@ class Vertex(object):
 
     def isConnected(self, vertex: Vertex) -> bool:
         """Checks if self is connected to vertex"""
+        if self.out_neighbors is None:
+            return False
         return vertex in self.out_neighbors
     
     def distanceTo(self, vertex: Vertex) -> Any:
@@ -41,23 +43,74 @@ class Vertex(object):
         
     def __getattribute__(self, item):
         if item == "out_neighbors":
-            if self.graph == None:
+            if self.graph is None:
                 raise LibgraphyError("Vertex does not belong to a graph and has no out_neighbors")
-            return self.graph.edges[self].vertices
+            if self.graph.edges[self] is not None:
+                list = self.graph.edges[self].vertices
+                list.remove(self)
+                return list
+            else:
+                return None
         elif item == "out_edges":
-            if self.graph == None:
+            if self.graph is None:
                 raise LibgraphyError("Vertex does not belong to a graph and has no out_edges")
             return self.graph.edges[self]
         if item == "in_neighbors":
-            if self.graph == None:
+            if self.graph is None:
                 raise LibgraphyError("Vertex does not belong to a graph and has no in_neighbors")
-            return self.graph.edges.end_at(self).vertices
+            if self.graph.edges[self] is not None:
+                list = self.graph.edges.end_at(self).vertices
+                list.remove(self)
+                return list
+            else:
+                return None
         elif item == "in_edges":
-            if self.graph == None:
+            if self.graph is None:
                 raise LibgraphyError("Vertex does not belong to a graph and has no in_edges")
             return self.graph.edges.end_at(self)
         else:
             return super().__getattribute__(item)
+
+    def __getattr__(self, item):
+        if item == "neighbors":
+            return self.out_neighbors + self.in_neighbors
+
+    def __gt__(self, successor: Vertex|list[Vertex]) -> Edge|EdgeSet:
+        from .edge import Edge
+        if isinstance(successor, Vertex):
+            return Edge(self, successor)
+        elif isinstance(successor, list):
+            set = EdgeSet()
+            for v in successor:
+                set += Edge(self, v)
+            return set
+        raise LibgraphyError(f"Unsupported argument type for 'successor': {type(successor)} supplied")
+
+    def __lt__(self, predecessor: Vertex|list[Vertex]) -> Edge|EdgeSet:
+        from .edge import Edge
+        if isinstance(predecessor, Vertex):
+            return Edge(predecessor, self)
+        elif isinstance(predecessor, list):
+            set = EdgeSet()
+            for v in predecessor:
+                set += Edge(v, self)
+            return set
+        raise LibgraphyError(f"Unsupported argument type for 'predecessor': {type(predecessor)} supplied")
+
+    def __sub__(self, other: Vertex|list[Vertex]) -> EdgeSet:
+        from .edge import Edge
+        from .edgeset import EdgeSet
+        set = EdgeSet()
+        if isinstance(other, Vertex):
+            set += Edge(self, other)
+            set += Edge(other, self)
+            return set
+        elif isinstance(other, list):
+            for v in other:
+                set += Edge(self, v)
+                set += Edge(v, self)
+            return set
+        raise LibgraphyError(f"Unsupported argument type for 'other': {type(other)} supplied")
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Vertex) -> Self:
@@ -106,9 +159,7 @@ class Vertex(object):
     # ********** Graph **********
 
     def _graph__iadd__(self, g: Graph) -> Graph:
-        if self.graph is g:
-            raise LibgraphyError("Vertex already belongs to this graph")
-        if self.graph is not None:
+        if self.graph is not None and self.graph is not g:
             raise LibgraphyError("Vertex already belongs to another graph")
 
         g.vertices.append(self)
