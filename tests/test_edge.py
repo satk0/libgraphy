@@ -133,8 +133,8 @@ class TestEdge(unittest.TestCase):
 
         assert e1.graph is None and e2.graph is None
 
-        assert v1.neighbors == v3.neighbors == []
-        assert v1.adjacent_edges == v3.adjacent_edges == []
+        assert v1.out_neighbors == v3.out_neighbors == []
+        assert v1.out_edges == v3.out_edges == []
         assert v1.graph is g and v2.graph is g
         assert v3.graph is None and v4.graph is None
 

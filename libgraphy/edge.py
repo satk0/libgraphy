@@ -31,10 +31,10 @@ class Edge:
         self.value: Any = value
         self.graph: Optional[Graph] = graph
         
-        if self not in self.predecessor.adjacent_edges:
-            self.predecessor.adjacent_edges.append(self)
-        if self.successor not in self.predecessor.neighbors:
-            self.predecessor.neighbors.append(self.successor)
+        if self not in self.predecessor.out_edges:
+            self.predecessor.out_edges.append(self)
+        if self.successor not in self.predecessor.out_neighbors:
+            self.predecessor.out_neighbors.append(self.successor)
 
     def __imul__(self, scalar: int | float) -> Self:
         self.value *= scalar
@@ -58,20 +58,20 @@ class Edge:
                 raise LibgraphyError(f"Edge cannot be reversed, as reverse edge already exists in graph")
             
         # Remove from current predecessor
-        self.predecessor.neighbors.remove(self.successor)
-        self.predecessor.adjacent_edges.remove(self)
+        self.predecessor.out_neighbors.remove(self.successor)
+        self.predecessor.out_edges.remove(self)
         
         # If successor already is connected to predecessor
-        if self.predecessor in self.successor.neighbors:
+        if self.predecessor in self.successor.out_neighbors:
             # Remove old edges
-            all = self.successor.adjacent_edges
+            all = self.successor.out_edges
             endingAt = all.end_at(self.predecessor)
             all -= endingAt
         else:
-            self.successor.neighbors.append(self.predecessor)
+            self.successor.out_neighbors.append(self.predecessor)
             
         # Add self to edges and swap direction
-        self.successor.adjacent_edges.append(self)
+        self.successor.out_edges.append(self)
         self.predecessor, self.successor = self.successor, self.predecessor
         
         # Return edge for chaining
@@ -100,7 +100,7 @@ class Edge:
         else:
             if mode == EdgeOverrideMode.EXCEPTION:
                 raise LibgraphyError(f"Edge ({self.successor.name}->{self.predecessor.name}) already exists in graph")
-            both_edges.append([e for e in self.successor.adjacent_edges if e.successor == self.predecessor][0])
+            both_edges.append([e for e in self.successor.out_edges if e.successor == self.predecessor][0])
             if mode != EdgeOverrideMode.IGNORE:
                 if mode == EdgeOverrideMode.AVERAGE:
                     new_value = (float(self.predecessor[self.successor]) + float(self.successor[self.predecessor])) / 2
@@ -139,10 +139,10 @@ class Edge:
         self.predecessor.graph = graph
         self.successor.graph = graph
 
-        if self.successor not in self.predecessor.neighbors:
-            self.predecessor.neighbors.append(self.successor)
+        if self.successor not in self.predecessor.out_neighbors:
+            self.predecessor.out_neighbors.append(self.successor)
 
-        self.predecessor.adjacent_edges.append(self)
+        self.predecessor.out_edges.append(self)
 
         self.graph = graph
         graph.edges.append(self)
@@ -152,7 +152,7 @@ class Edge:
         vertices_len = len(graph.vertices)
         p_graph = self.predecessor.graph
         s_graph = self.predecessor.graph
-        p_neighbors_len = len(self.predecessor.neighbors)
+        p_neighbors_len = len(self.predecessor.out_neighbors)
 
         graph += self
         g: Graph = deepcopy(graph)
@@ -165,12 +165,12 @@ class Edge:
             del graph.vertices[-1]
 
         # Bringing self back
-        del self.predecessor.adjacent_edges[-1]
+        del self.predecessor.out_edges[-1]
         self.graph = None
         self.predecessor.graph = p_graph
         self.successor.graph = s_graph
-        if p_neighbors_len != len(self.predecessor.neighbors):
-            del self.predecessor.neighbors[-1]
+        if p_neighbors_len != len(self.predecessor.out_neighbors):
+            del self.predecessor.out_neighbors[-1]
         # **********
         return g
 

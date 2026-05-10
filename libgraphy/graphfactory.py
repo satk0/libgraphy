@@ -156,12 +156,12 @@ class GraphFactory:
         for i in range(vertice_number-1):
             v1 = g.vertices[i]
             offset -= 1
-            while len(v1.neighbors) < degree:
+            while len(v1.out_neighbors) < degree:
                 offset+=1
                 if i+offset >= vertice_number:
                     offset = 1
                 v2 = g.vertices[i+offset]
-                if (v1.isConnected(v2)==False) and (len(v2.neighbors) < degree):
+                if (v1.isConnected(v2)==False) and (len(v2.out_neighbors) < degree):
                     g += Edge(v1, v2, 1)
                     g += Edge(v2, v1, 1)
 
@@ -218,9 +218,9 @@ class GraphFactory:
                     neighbors.append(g.vertices[y2*width+x2])
                 for v2 in neighbors:
                     if [v1, v2] not in excluded_edges and [v2, v1] not in excluded_edges:
-                        if v2 not in v1.neighbors:
+                        if v2 not in v1.out_neighbors:
                             g += Edge(v1, v2, 1)
-                        if v1 not in v2.neighbors:
+                        if v1 not in v2.out_neighbors:
                             g += Edge(v2, v1, 1)
 
         # return graph
@@ -507,9 +507,9 @@ class GraphFactory:
                 g += Edge(v2, v1, 1 if not weighted else random())
             u1 = inner_set[i]
             u2 = inner_set[(i+k)%n]
-            if v2 not in v1.neighbors:
+            if v2 not in v1.out_neighbors:
                 g += Edge(u1, u2, 1 if not weighted else random())
-                if not directed and v2 not in v1.neighbors:
+                if not directed and v2 not in v1.out_neighbors:
                     g += Edge(u2, u1, 1 if not weighted else random())
         
         # Return graph
@@ -541,19 +541,19 @@ class GraphFactory:
         # Create probability list
         probability = []
         for v in g.vertices:
-            probability.extend(v.neighbors)
+            probability.extend(v.out_neighbors)
             probability.append(v)
         
         # Add new vertices with probability
         while len(g.vertices) < vertice_number:
             v = Vertex(f"v{len(g.vertices)}")
             g += v
-            while len(v.neighbors) < k:
+            while len(v.out_neighbors) < k:
                 v2 = choice(probability)
-                if v != v2 and v2 not in v.neighbors:
+                if v != v2 and v2 not in v.out_neighbors:
                     g += Edge(v,v2, 1 if not weighted else random())
                     g += Edge(v2,v, 1 if not weighted else random())
-            probability.extend(v.neighbors)
+            probability.extend(v.out_neighbors)
             probability.append(v)
                 
         # Return graph

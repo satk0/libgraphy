@@ -12,19 +12,19 @@ class TestVertex(unittest.TestCase):
 
         prev_id = id(v0)
         v0 = v0 + v1
-        assert v0.neighbors == [v1]
-        assert v0.adjacent_edges == []
-        assert v1.neighbors == []
-        assert v1.adjacent_edges == []
+        assert v0.out_neighbors == [v1]
+        assert v0.out_edges == []
+        assert v1.out_neighbors == []
+        assert v1.out_edges == []
         assert id(v0) != prev_id
 
         v3 = v0 + v2
-        n0 = v3.neighbors[0]
+        n0 = v3.out_neighbors[0]
         assert n0.name == v1.name and n0.value == v1.value
 
-        n1 = v3.neighbors[1]
+        n1 = v3.out_neighbors[1]
         assert n1.name == v2.name and n0.value == v2.value
-        assert v3.adjacent_edges == []
+        assert v3.out_edges == []
         assert v0.name == v3.name
         assert v0.value == v3.value
 
@@ -36,14 +36,14 @@ class TestVertex(unittest.TestCase):
         prev_id = id(v0)
         v0 += v1
         assert id(v0) == prev_id
-        assert v0.neighbors == [v1]
-        assert v0.adjacent_edges == []
+        assert v0.out_neighbors == [v1]
+        assert v0.out_edges == []
 
         v2 += v0
         v2 += v1
 
-        assert v2.neighbors == [v0, v1]
-        assert v2.adjacent_edges == []
+        assert v2.out_neighbors == [v0, v1]
+        assert v2.out_edges == []
 
     def test___iadd__errors1(self):
         v1 = Vertex()
@@ -248,12 +248,12 @@ class TestVertex(unittest.TestCase):
         for v in vertices:
             v0 += Vertex(v)
 
-        pre_neighbors = [* v0.neighbors]
+        pre_neighbors = [* v0.out_neighbors]
 
         g = Graph()
         g += v0
         f = g + v0[0] # v2
-        for i in range(1, len(v0.neighbors)):
+        for i in range(1, len(v0.out_neighbors)):
             f = f + v0[i] # v3, v4, v5
 
         # only a -> v2 because with each "+" operation graph is deepcopied
@@ -269,8 +269,8 @@ class TestVertex(unittest.TestCase):
         assert e.graph is f
 
         # Should not change original vertices
-        assert v0.neighbors == pre_neighbors
-        assert v0.adjacent_edges == [] # should not add any edge
+        assert v0.out_neighbors == pre_neighbors
+        assert v0.out_edges == [] # should not add any edge
         for i, n in enumerate(v0):
             assert n.name == pre_neighbors[i].name
             assert n.value == pre_neighbors[i].value
@@ -285,7 +285,7 @@ class TestVertex(unittest.TestCase):
             v += v0
             v += v1
 
-        pre_neighbors = [* v0.neighbors]
+        pre_neighbors = [* v0.out_neighbors]
 
         g = Graph()
         for v in vertices:
@@ -305,8 +305,8 @@ class TestVertex(unittest.TestCase):
             assert e.graph is f
 
         # Should not change original vertices
-        assert v0.neighbors == pre_neighbors
-        assert v0.adjacent_edges == [] # should not add any edge
+        assert v0.out_neighbors == pre_neighbors
+        assert v0.out_edges == [] # should not add any edge
 
     def test__graph__add__neighbors_double(self):
         v0 = Vertex("a")

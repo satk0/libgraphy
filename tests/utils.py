@@ -8,15 +8,15 @@ def assert_compare_graph_values(g: Graph, f: Graph):
         vg, vf = g.vertices[i], f.vertices[i]
         assert vg.name == vf.name and vg.value == vf.value
 
-        assert len(vg.neighbors) == len(vf.neighbors) and \
-               len(vg.adjacent_edges) == len(vf.adjacent_edges)
+        assert len(vg.out_neighbors) == len(vf.out_neighbors) and \
+               len(vg.out_edges) == len(vf.out_edges)
 
-        for j in range(len(vg.neighbors)):
-            vgn, vfn = vg.neighbors[j], vf.neighbors[j]
+        for j in range(len(vg.out_neighbors)):
+            vgn, vfn = vg.out_neighbors[j], vf.out_neighbors[j]
             assert vgn.name == vfn.name and vgn.value == vfn.value
 
-        for j in range(len(vg.adjacent_edges)):
-            aeg, aef = vg.adjacent_edges[j], vf.adjacent_edges[j]
+        for j in range(len(vg.out_edges)):
+            aeg, aef = vg.out_edges[j], vf.out_edges[j]
             assert aeg.predecessor.name == aef.predecessor.name and \
                 aeg.predecessor.value == aef.predecessor.value and \
                 aeg.successor.name == aef.successor.name and \

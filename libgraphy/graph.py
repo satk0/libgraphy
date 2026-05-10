@@ -132,13 +132,13 @@ class Graph:
             visited: set[Vertex] = set()
 
             for v in self.graph.vertices:
-                for e in v.adjacent_edges:
+                for e in v.out_edges:
                     s = e.successor
                     if s in visited:
                         continue
 
                     directed_check = True
-                    for se in s.adjacent_edges:
+                    for se in s.out_edges:
                         if se.successor is v and se.value == e.value:
                             directed_check = False
 
@@ -163,7 +163,7 @@ class Graph:
                 return
             self.grid_level = 0
             for v in self.graph.vertices:
-                self.grid_level = max(self.grid_level, len(v.neighbors))
+                self.grid_level = max(self.grid_level, len(v.out_neighbors))
 
         def _cycles_util(self, v: Vertex, visited: dict[Vertex, bool], rec_stack: dict[Vertex, bool]):
 
@@ -223,7 +223,7 @@ class Graph:
             while len(queue)>0 and len(unconnected)>0:
                 v1 = queue.pop()
                 explored.append(v1)
-                for v2 in v1.neighbors:
+                for v2 in v1.out_neighbors:
                     if v2 in explored:
                         continue
                     queue.append(v2)
@@ -607,7 +607,7 @@ class Graph:
         g_copy = deepcopy(self)
         for v1 in g_copy.vertices:
             for v2 in v1:
-                if v1 not in v2.neighbors:
+                if v1 not in v2.out_neighbors:
                     g_copy += Edge(v2, v1, v1[v2])
                 elif v1[v2] != v2[v1]:
                     if mode == EdgeOverrideMode.EXCEPTION:

@@ -5,17 +5,19 @@ __all__ = ["Vertex"]
 from typing import Optional, Self, Any, Generator, TYPE_CHECKING
 if TYPE_CHECKING: # pragma: no cover
     from .graph import Graph
-    from .edge import Edge, _EdgeList
+    from .edge import Edge
+    from .edgeset import EdgeSet
 from .exception import LibgraphyError
 
 from copy import deepcopy
 
-class Vertex:
-
+class Vertex(object):
     def __init__(self, name: Any = "", value: Any = 0, graph: Optional[Graph] = None, x: Optional[int] = None, y: Optional[int] = None) -> None:
         self.name: Any = name
-        self.neighbors: list[Vertex] = []
-        self.adjacent_edges: _EdgeList = [] # Distances to the neighbors
+        self.out_neighbors: list[Vertex] = None
+        self.in_neighbors: list[Vertex] = None
+        self.In_edges: EdgeSet = None
+        self.out_edges: EdgeSet = None
         self.value: Any = value
         self.graph: Optional[Graph] = graph
         self.x: Optional[int] = x
@@ -23,13 +25,39 @@ class Vertex:
 
     def isConnected(self, vertex: Vertex) -> bool:
         """Checks if self is connected to vertex"""
-        return vertex in self.neighbors
+        return vertex in self.out_neighbors
+    
+    def distanceTo(self, vertex: Vertex) -> Any:
+        if vertex in self.out_neighbors:
+            return self.out_neighbors[vertex].value
+        else:
+            return None
 
     def __str__(self) -> str:
         return str(self.name)
 
     def __iter__(self) -> Generator[Vertex]:
-        yield from self.neighbors
+        yield from self.out_neighbors
+        
+    def __getattribute__(self, item):
+        if item == "out_neighbors":
+            if self.graph == None:
+                raise LibgraphyError("Vertex does not belong to a graph and has no out_neighbors")
+            return self.graph.edges[self].vertices
+        elif item == "out_edges":
+            if self.graph == None:
+                raise LibgraphyError("Vertex does not belong to a graph and has no out_edges")
+            return self.graph.edges[self]
+        if item == "in_neighbors":
+            if self.graph == None:
+                raise LibgraphyError("Vertex does not belong to a graph and has no in_neighbors")
+            return self.graph.edges.end_at(self).vertices
+        elif item == "in_edges":
+            if self.graph == None:
+                raise LibgraphyError("Vertex does not belong to a graph and has no in_edges")
+            return self.graph.edges.end_at(self)
+        else:
+            return super().__getattribute__(item)
 
     # assign and add a neighbor to the current vertex (+= sign)
     def __iadd__(self, vertex: Vertex) -> Self:
@@ -42,45 +70,38 @@ class Vertex:
         if g:
             g._create_edge(self, vertex)
 
-        self.neighbors.append(vertex)
         return self
 
-    # add a neighbor to the current vertex (+ sign)
-    def __add__(self, vertex: Vertex) -> Vertex:
-        v: Vertex = deepcopy(self)
-        v += vertex
-        return v
-
     # get i-th adjacency of the current vertex
-    def __getitem__(self, key: int) -> Vertex:
-        return self.neighbors[key]
-    
-    # get value of the edge towards a neighbor of the current vertex
-    def __getitem__(self, key: Vertex) -> float|list[float]|None:
-        if key not in self.neighbors:
-            return None
+    def __getitem__(self, key: int|Vertex) -> Vertex|Any|None:
+        if isinstance(key, int):
+            if key in self.out_neighbors:
+                return self.out_neighbors[key]
+        elif isinstance(key, Vertex):
+            if key in self.out_edges:
+                return self.out_edges[key]
         else:
-            values = [e.value for e in self.adjacent_edges if e.successor == key]
-            if len(values) >= 1:
-                return values[0]
-
-    # change i-th adjacency of the current vertex
-    def __setitem__(self, key: int, value: Self) -> None:
-        self.neighbors[key] = value
+            raise LibgraphyError(f"key needs to be either of int or Vertex type, {type(key)} supplied")
+        return None
         
-    # set value of the edge towards a neighbor of the current vertex
-    def __setitem__(self, key: Vertex, value: float|int) -> None:
-        edge = [e for e in self.adjacent_edges if e.successor == key][0]
-        edge.value = value
+    # change i-th adjacency of the current vertex
+    def __setitem__(self, key: int|Vertex, value: Any) -> None:
+        item = self[key]
+        if item is None:
+            raise LibgraphyError(f"'{key}' not found in '{self.name}' neighbors")
+        if isinstance(key, int) and isinstance(value, Vertex):
+            self.graph.edges.remove(self.graph.edges[self][key])
+            self += value
+        else:
+            item = value
         
     # delete i-th adjacency of the current vertex
-    def __delitem__(self, key: int) -> None:
-        vertice = self.neighbors[key]
-        toRemove = [e for e in self.adjacent_edges if e.successor == vertice]
-        for edge in toRemove:
-            del self.adjacent_edges[self.adjacent_edges.index(edge)]
-            del self.graph.edges[self.graph.edges.index(edge)]
-        del self.neighbors[key]
+    def __delitem__(self, key: int|Vertex) -> None:
+        if isinstance(key, Vertex):
+            self.graph.edges.remove(self.graph.edges[self][key])
+        elif isinstance(key, int):
+            edge = self.out_edges[self.out_neighbors[key]]
+            self.graph.edges.remove(edge)
 
     # ********** Graph **********
 
@@ -113,7 +134,7 @@ class Vertex:
         del graph.vertices[-1]
         for _ in range(edges_added):
             e: Edge = graph.edges[-1]
-            del e.predecessor.adjacent_edges[-1]
+            del e.predecessor.out_edges[-1]
             del graph.edges[-1]
         self.graph = None
         # **********************

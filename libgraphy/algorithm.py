@@ -50,7 +50,7 @@ class _Algorithm:
             if distance_from_start[current_vertex] == INFINITY:
                 break
 
-            for e in current_vertex.adjacent_edges:
+            for e in current_vertex.out_edges:
                 s: Vertex = e.successor
 
                 new_path: float = distance_from_start[current_vertex] + e.value
@@ -147,7 +147,7 @@ class _Algorithm:
             if distance_from_start[current_vertex] == INFINITY:
                 continue
 
-            for e in current_vertex.adjacent_edges:
+            for e in current_vertex.out_edges:
                 s: Vertex = e.successor
 
                 new_path: float = distance_from_start[current_vertex] + e.value

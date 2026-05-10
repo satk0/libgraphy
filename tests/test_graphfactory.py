@@ -16,7 +16,7 @@ def test_graph():
 
     # Assert mutual vertice connection
     for v1 in g.vertices:
-        for v2 in v1.neighbors:
+        for v2 in v1.out_neighbors:
             assert v2.isConnected(v1)
 
     # Assert weighted edge values
@@ -73,7 +73,7 @@ def test_digraph():
 
     # Assert different edge values in both directions
     for v1 in g.vertices:
-        for v2 in v1.neighbors:
+        for v2 in v1.out_neighbors:
             assert g.edges[(v2,v1)] == None or g.edges[(v1,v2)].value != g.edges[(v2,v1)].value
 
 
@@ -94,7 +94,7 @@ def test_complete_digraph():
 
     # Compare graph edges
     for v1 in g1.vertices:
-        for v2 in v1.neighbors:
+        for v2 in v1.out_neighbors:
             assert g1.edges[(v1,v2)].value != g1.edges[(v2,v1)].value
 
 
@@ -109,7 +109,7 @@ def test_grid():
 
     # Assert vertice degrees
     for v in g.vertices:
-        assert len(v.neighbors) == 5
+        assert len(v.out_neighbors) == 5
 
     # Assert edge values are valid
     for e in g.edges:
@@ -184,7 +184,7 @@ def test_square_grid_maze():
 
     # Assert every vertice is connected
     for v in g.vertices:
-        assert len(v.neighbors) > 0
+        assert len(v.out_neighbors) > 0
 
     # Assert edge values are valid
     for e in g.edges:
@@ -210,7 +210,7 @@ def test_ring():
 
     # Assert every vertice is connected
     for v in g.vertices:
-        assert len(v.neighbors) == 1
+        assert len(v.out_neighbors) == 1
 
     # Assert edge values are valid
     for e in g.edges:
@@ -218,10 +218,10 @@ def test_ring():
 
     # Check whether the ring loops
     visited = []
-    v = g.vertices[0].neighbors[0]
+    v = g.vertices[0].out_neighbors[0]
     while v != g.vertices[0]:
         if v in visited:
             assert False
         visited.append(v)
-        v = v.neighbors[0]
+        v = v.out_neighbors[0]
     assert True
