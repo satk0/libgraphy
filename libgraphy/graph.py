@@ -262,12 +262,12 @@ class Graph:
         return self.vertices[key]
 
     # change i-th vertex in the graph
-    def __setitem__(self, key: int, value: Vertex) -> None:
-        self.vertices[key] = value
-        
-    # change edge of the graph
-    def __setitem__(self, key: Edge|tuple, value: float|int) -> None:
-        self.edges[key] = value
+    def __setitem__(self, key: int|Edge|tuple, value: Vertex|float|int) -> None:
+        if isinstance(key, int) and isinstance(value, Vertex):
+            self.vertices[key] = value
+        else:
+    # # change edge of the graph
+            self.edges[key] = value
 
     # delete i-th vertex of the graph
     def __delitem__(self, key: int) -> None:

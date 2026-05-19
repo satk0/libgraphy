@@ -50,16 +50,16 @@ class TestGraph(unittest.TestCase):
         v2 = Vertex(2)
         v3 = Vertex('c')
 
-        e1 = Edge(v1, v2, 2)
-        e2 = Edge(v3, v2, -3)
-        e3 = Edge(v1, v3, 3)
-        e4 = Edge(v3, v1, 'aa')
-
         g = Graph()
 
         g += v1
         g += v2
         g += v3
+
+        e1 = Edge(v1, v2, 2)
+        e2 = Edge(v3, v2, -3)
+        e3 = Edge(v1, v3, 3)
+        e4 = Edge(v3, v1, 'aa')
 
         g += e1
         g += e2
