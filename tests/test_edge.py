@@ -6,14 +6,22 @@ from libgraphy.exception import LibgraphyError
 
 class TestEdge(unittest.TestCase):
     def test___init__str(self):
-        e = Edge("v1", "v2")
         g = Graph()
+        e = Edge("v1", "v2", graph=g)
+
         g += e
         assert e.predecessor.name == "v1" \
             and e.successor.name == "v2" and e.value == 1
 
     def test___mult__(self):
-        e = Edge(Vertex(), Vertex())
+        g = Graph()
+        v1 = Vertex()
+        v2 = Vertex()
+
+        g += v1
+        g += v2
+
+        e = Edge(v1, v2)
 
         prev_edge = [e.predecessor, e.successor]
         res = e * 10
@@ -27,7 +35,14 @@ class TestEdge(unittest.TestCase):
         assert [res.predecessor, res.successor] == prev_edge
 
     def test___imult__(self):
-        e = Edge(Vertex(), Vertex(), 10)
+        g = Graph()
+        v1 = Vertex()
+        v2 = Vertex()
+
+        g += v1
+        g += v2
+
+        e = Edge(v1, v2, 10)
 
         prev_id = id(e)
         prev_edge = [e.predecessor, e.successor]
