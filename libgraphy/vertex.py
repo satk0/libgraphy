@@ -14,10 +14,10 @@ from copy import deepcopy
 class Vertex(object):
     def __init__(self, name: Any = "", value: Any = 0, graph: Optional[Graph] = None, x: Optional[int] = None, y: Optional[int] = None) -> None:
         self.name: Any = name
-        self.out_neighbors: list[Vertex] = None
-        self.in_neighbors: list[Vertex] = None
-        self.In_edges: EdgeSet = None
-        self.out_edges: EdgeSet = None
+        self.out_neighbors: list[Vertex]|None = None
+        self.in_neighbors: list[Vertex]|None = None
+        self.In_edges: EdgeSet|None = None
+        self.out_edges: EdgeSet|None = None
         self.value: Any = value
         self.graph: Optional[Graph] = graph
         self.x: Optional[int] = x

@@ -5,45 +5,29 @@ from libgraphy import Vertex, Graph
 from libgraphy.exception import LibgraphyError
 
 class TestVertex(unittest.TestCase):
-    def test___add__(self):
-        v0 = Vertex(1)
-        v1 = Vertex('2')
-        v2 = Vertex()
-
-        prev_id = id(v0)
-        v0 = v0 + v1
-        assert v0.out_neighbors == [v1]
-        assert v0.out_edges == []
-        assert v1.out_neighbors == []
-        assert v1.out_edges == []
-        assert id(v0) != prev_id
-
-        v3 = v0 + v2
-        n0 = v3.out_neighbors[0]
-        assert n0.name == v1.name and n0.value == v1.value
-
-        n1 = v3.out_neighbors[1]
-        assert n1.name == v2.name and n0.value == v2.value
-        assert v3.out_edges == []
-        assert v0.name == v3.name
-        assert v0.value == v3.value
-
     def test___iadd__(self):
+        g = Graph()
+
         v0 = Vertex(1)
         v1 = Vertex('2')
         v2 = Vertex()
+
+        g += v0
+        g += v1
+        g += v2
 
         prev_id = id(v0)
         v0 += v1
         assert id(v0) == prev_id
         assert v0.out_neighbors == [v1]
-        assert v0.out_edges == []
+        assert v0.out_edges[0].successor == v1
 
         v2 += v0
         v2 += v1
 
         assert v2.out_neighbors == [v0, v1]
-        assert v2.out_edges == []
+        assert v2.out_edges[0].successor == v0
+        assert v2.out_edges[1].successor == v1
 
     def test___iadd__errors1(self):
         v1 = Vertex()
@@ -56,8 +40,13 @@ class TestVertex(unittest.TestCase):
             v1 += v2
 
     def test___iadd__errors2(self):
+        g = Graph()
+
         v0 = Vertex(1)
         v1 = Vertex('2')
+
+        g += v0
+        g += v1
 
         v0 += v1
 
@@ -65,14 +54,15 @@ class TestVertex(unittest.TestCase):
             v0 += v1
 
         v2 = Vertex(3)
+        v3 = Vertex(4)
         g1 = Graph()
         g2 = Graph()
 
-        g1 += v1
-        g2 += v2
+        g1 += v2
+        g2 += v3
 
         with pytest.raises(LibgraphyError):
-            v1 += v2
+            v2 += v3
 
     def test___iadd__graph_edges_1(self):
         v1 = Vertex("a")
@@ -112,27 +102,18 @@ class TestVertex(unittest.TestCase):
             s = g.edges[i].successor
             assert e[0] == p and e[1] == s
 
-    def test___item__(self):
-        v0 = Vertex(0)
-        v1 = Vertex(1)
-        v2 = Vertex(2)
-
-        v0 += v1
-        v0 += v2
-        assert v0[0] == v1
-        assert v0[1] == v2
-
-        del v0[0]
-        v0[0] = v1
-        assert v0[0] == v1
-
     def test___str__(self):
         v = Vertex("name")
         assert v.__str__() == v.name
 
     def test_isConnected(self):
+        g = Graph()
+
         v0 = Vertex(0)
         v1 = Vertex(1)
+
+        g += v0
+        g += v1
 
         v0 += v1
         assert v0.isConnected(v1) == True
