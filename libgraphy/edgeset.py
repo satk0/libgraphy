@@ -300,12 +300,12 @@ class EdgeSet(object):
 		# Return self
 		return self
 	
-	def __imul__(self, scalar) -> EdgeSet:
+	def __imul__(self, scalar: int | float) -> EdgeSet:
 		for starting_vertex, subset in self.__container.items():
 			for ending_vertex, edge in subset.items():
 				self.__container[starting_vertex][ending_vertex].value *= scalar
 		return self
-		
+
 	def __len__(self) -> int:
 		return self.__size
 	

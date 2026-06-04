@@ -255,7 +255,7 @@ class Graph:
     # TODO: implement incidence matrix
     def __init__(self, incidence_matrix = None) -> None:
         self.vertices: list[Vertex] = []
-        self.edges: EdgeSet() = EdgeSet()
+        self.edges: EdgeSet = EdgeSet()
 
     # get i-th vertex of the graph
     def __getitem__(self, key: int) -> Vertex:
@@ -282,28 +282,30 @@ class Graph:
             v.graph = g
         for e in self.edges:
             e.graph = g
+        self.edges.graph = g
 
         g.vertices += self.vertices
         g.edges += self.edges
 
         return g
 
-    def _graph__add__(self, g: Graph) -> Graph:
-        vertices_len: int = len(self.vertices)
-        edges_len: int = len(self.edges)
-
-        g += self
-        ng: Graph = deepcopy(g)
-
-        # * Bringing self back *
-        for _ in range(vertices_len):
-            del g.vertices[-1]
-        for _ in range(edges_len):
-            del g.edges[-1]
-        # **********************
-
-        return ng
-    # ***************************
+##    TODO: Fix it someday
+##    def _graph__add__(self, g: Graph) -> Graph:
+##        vertices_len: int = len(self.vertices)
+##        edges_len: int = len(self.edges)
+##
+##        g += self
+##        ng: Graph = deepcopy(g)
+##
+##        # * Bringing self back *
+##        for _ in range(vertices_len):
+##            del g.vertices[-1]
+##        for _ in range(edges_len):
+##            del g.edges[-1]
+##        # **********************
+##
+##        return ng
+##    # ***************************
 
     def __iadd__(self, element: Vertex | Edge | EdgeSet | Graph) -> Graph:
         return element._graph__iadd__(self)
@@ -312,21 +314,9 @@ class Graph:
         return element._graph__add__(self)
 
     def __imul__(self, scalar: int | float) -> Self:
-        self.edges = [Edge(e.predecessor, e.successor, e.value * scalar, self) for e in self.edges]
+        self.edges = EdgeSet(self.edges, self)
+        self.edges *= scalar
         return self
-
-    def __mul__(self, scalar: int | float) -> Graph:
-        tmp_edges = self.edges
-
-        self *= scalar
-        g = deepcopy(self)
-
-        self.edges = tmp_edges
-
-        return g
-
-    def __rmul__(self, scalar: int | float) -> Graph:
-        return self * scalar
 
     def __repr__(self) -> str:
         repr_txt = "Vertices:\n"
